@@ -1,8 +1,10 @@
-#!/usr/bin/env python3
-
 import wpilib
-from wpilib.cantalon import CANTalon
+import enum
 
+class Swerve(enum.Enum):
+    DRIVE = 0
+    ROTATE = 1
+    
 class MyRobot(wpilib.SampleRobot):
     
     def robotInit(self):
@@ -23,7 +25,7 @@ class MyRobot(wpilib.SampleRobot):
         
         # #ROBOT DRIVE##
         #self.robot_drive = wpilib.RobotDrive(self.lf_motor, self.lr_motor, self.rf_motor, self.rr_motor)
-        self.robot_drive = wpilib.RobotDrive(self.lf_wheel(0),self.lr_wheel(0),self.rf_wheel(0),self.rr_wheel(0))
+        self.robot_drive = wpilib.RobotDrive(self.lf_wheel(Swerve.DRIVE),self.lr_wheel(Swerve.DRIVE),self.rf_wheel(Swerve.DRIVE),self.rr_wheel(Swerve.DRIVE))
     def disabled(self):
         # self.talon.setSensorPosition(0)
         wpilib.Timer.delay(.01)
@@ -59,11 +61,10 @@ class MyRobot(wpilib.SampleRobot):
 
             self.robot_drive.arcadeDrive(self.x,self.y)
             
-            if(self.rotation is not 0):
-                lf_wheel(1).set(self.rotation)
-                lr_wheel(1).set(self.rotation) 
-                rf_wheel(1).set(self.rotation)
-                rr_wheel(1).set(self.rotation)
+            lf_wheel(Swerve.ROTATE).set(self.rotation)
+            lr_wheel(Swerve.ROTATE).set(self.rotation) 
+            rf_wheel(Swerve.ROTATE).set(self.rotation)
+            rr_wheel(Swerve.ROTATE).set(self.rotation)
                                 
             
             
