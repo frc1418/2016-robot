@@ -2,7 +2,7 @@
 import wpilib
 import enum
 
-class Swerve(enum.Enum):
+class Swerve(enum.IntEnum):
     DRIVE = 0
     ROTATE = 1
     
@@ -17,16 +17,16 @@ class MyRobot(wpilib.SampleRobot):
 
         
         # #INITIALIZE MOTORS##
-        self.lf_wheel = (wpilib.Victor(0), wpilib.CANTalon(1))
-        self.lr_wheel = (wpilib.Victor(2), wpilib.CANTalon(3))
-        self.rf_wheel = (wpilib.Victor(4), wpilib.CANTalon(5))
-        self.rr_wheel = (wpilib.Victor(6), wpilib.CANTalon(7))
+        self.lf_wheel = (wpilib.Victor(1), wpilib.CANTalon(5))
+        self.lr_wheel = (wpilib.Victor(2), wpilib.CANTalon(10))
+        self.rf_wheel = (wpilib.Victor(3), wpilib.CANTalon(15))
+        self.rr_wheel = (wpilib.Victor(4), wpilib.CANTalon(20))
                 
         # #SMART DASHBOARD
         
         # #ROBOT DRIVE##
         #self.robot_drive = wpilib.RobotDrive(self.lf_motor, self.lr_motor, self.rf_motor, self.rr_motor)
-        self.robot_drive = wpilib.RobotDrive(self.lf_wheel(Swerve.DRIVE),self.lr_wheel(Swerve.DRIVE),self.rf_wheel(Swerve.DRIVE),self.rr_wheel(Swerve.DRIVE))
+        self.robot_drive = wpilib.RobotDrive(self.lf_wheel[Swerve.DRIVE],self.lr_wheel[Swerve.DRIVE],self.rf_wheel[Swerve.DRIVE],self.rr_wheel[Swerve.DRIVE])
     def disabled(self):
         # self.talon.setSensorPosition(0)
         wpilib.Timer.delay(.01)
@@ -56,17 +56,17 @@ class MyRobot(wpilib.SampleRobot):
             rr2 = (sqrt((rr(0)*rr(0))+(rr(1)*rr(1))), atan2(rr(0),rr(1)))
             '''
             
-            self.x = joystick1.getX()
-            self.y = joystick1.getY()
+            self.x = self.joystick1.getX()
+            self.y = self.joystick1.getY()
             self.rotation = self.joystick2.getX() #no greater than 1, no less than -1
 
             self.robot_drive.arcadeDrive(self.x,self.y)
             
-            lf_wheel(Swerve.ROTATE).set(self.rotation)
-            lr_wheel(Swerve.ROTATE).set(self.rotation) 
-            rf_wheel(Swerve.ROTATE).set(self.rotation)
-            rr_wheel(Swerve.ROTATE).set(self.rotation)
-                                
+            self.lf_wheel[Swerve.ROTATE].set(self.rotation)
+            self.lr_wheel[Swerve.ROTATE].set(self.rotation) 
+            self.rf_wheel[Swerve.ROTATE].set(self.rotation)
+            self.rr_wheel[Swerve.ROTATE].set(self.rotation)
+            
             
             
             wpilib.Timer.delay(0.005)
