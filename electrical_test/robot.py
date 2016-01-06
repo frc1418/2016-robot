@@ -3,6 +3,7 @@ import wpilib
 import enum
 
 from networktables import NetworkTable
+from wpilib import cantalon
 
 class Swerve(enum.IntEnum):
     DRIVE = 0
@@ -29,9 +30,8 @@ class MyRobot(wpilib.SampleRobot):
         self.rr_wheel = (wpilib.Victor(3), wpilib.CANTalon(20))
         
         self.lf_wheel[Swerve.ROTATE].changeControlMode(wpilib.CANTalon.ControlMode.Position)
-        self.lr_wheel[Swerve.ROTATE].changeControlMode(wpilib.CANTalon.ControlMode.Position)
-        self.rf_wheel[Swerve.ROTATE].changeControlMode(wpilib.CANTalon.ControlMode.Position)
-        self.rr_wheel[Swerve.ROTATE].changeControlMode(wpilib.CANTalon.ControlMode.Position)
+        self.lf_wheel[Swerve.ROTATE].setFeedbackDevice(wpilib.CANTalon.FeedbackDevice.AnalogEncoder)
+        self.lf_wheel[Swerve.ROTATE].setP(10)
         # #SMART DASHBOARD
         
         # #ROBOT DRIVE##
@@ -74,16 +74,8 @@ class MyRobot(wpilib.SampleRobot):
 
             self.robot_drive.arcadeDrive(self.x,self.y)
             
-            if self.joystick1.getRawButton(1):
-                self.lf_wheel[Swerve.ROTATE].set(self.lf_wheel[Swerve.ROTATE].getEncPosition() + 300)
-                self.lr_wheel[Swerve.ROTATE].set(self.lf_wheel[Swerve.ROTATE].getEncPosition() + 300) 
-                self.rf_wheel[Swerve.ROTATE].set(self.lf_wheel[Swerve.ROTATE].getEncPosition() + 300)
-                self.rr_wheel[Swerve.ROTATE].set(self.lf_wheel[Swerve.ROTATE].getEncPosition() + 300)
-            
-            self.sd.putNumber("Encoder Position", self.lr_wheel[Swerve.ROTATE].getEncPosition())
-            self.sd.putNumber("Encoder Position", self.rf_wheel[Swerve.ROTATE].getEncPosition())
-            self.sd.putNumber("Encoder Position", self.rr_wheel[Swerve.ROTATE].getEncPosition())
-            self.sd.putNumber("Encoder Position", self.lf_wheel[Swerve.ROTATE].getEncPosition())
+            self.lf_wheel[Swerve.ROTATE].set(self.lf_wheel[Swerve.ROTATE].getAnalogInPosition()+(30*self.x))
+            self.sd.putNumber("Encoder Position", self.lf_wheel[Swerve.ROTATE].getAnalogInPosition())
             
             wpilib.Timer.delay(0.005)
             
