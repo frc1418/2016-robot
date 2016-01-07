@@ -2,6 +2,9 @@
 import wpilib
 import enum
 
+from networktables import NetworkTable
+from wpilib import cantalon
+
 class Swerve(enum.IntEnum):
     DRIVE = 0
     ROTATE = 1
@@ -9,24 +12,33 @@ class Swerve(enum.IntEnum):
 class MyRobot(wpilib.SampleRobot):
     
     def robotInit(self):
+        self.sd = NetworkTable.getTable('SmartDashboard')
+        
+    
         self.timercounter = 0
 
         # #INITIALIZE JOYSTICKS##
         self.joystick1 = wpilib.Joystick(0)
         self.joystick2 = wpilib.Joystick(1)
-
+        
+        
         
         # #INITIALIZE MOTORS##
-        self.lf_wheel = (wpilib.Victor(1), wpilib.CANTalon(5))
-        self.lr_wheel = (wpilib.Victor(2), wpilib.CANTalon(10))
-        self.rf_wheel = (wpilib.Victor(3), wpilib.CANTalon(15))
-        self.rr_wheel = (wpilib.Victor(4), wpilib.CANTalon(20))
-                
+        self.lf_wheel = (wpilib.Victor(0), wpilib.CANTalon(5))
+        self.lr_wheel = (wpilib.Victor(1), wpilib.CANTalon(10))
+        self.rf_wheel = (wpilib.Victor(2), wpilib.CANTalon(15))
+        self.rr_wheel = (wpilib.Victor(3), wpilib.CANTalon(20))
+        
+        self.lf_wheel[Swerve.ROTATE].changeControlMode(wpilib.CANTalon.ControlMode.Position)
+        self.lf_wheel[Swerve.ROTATE].setFeedbackDevice(wpilib.CANTalon.FeedbackDevice.AnalogEncoder)
+        self.lf_wheel[Swerve.ROTATE].setP(10)
         # #SMART DASHBOARD
         
         # #ROBOT DRIVE##
         #self.robot_drive = wpilib.RobotDrive(self.lf_motor, self.lr_motor, self.rf_motor, self.rr_motor)
         self.robot_drive = wpilib.RobotDrive(self.lf_wheel[Swerve.DRIVE],self.lr_wheel[Swerve.DRIVE],self.rf_wheel[Swerve.DRIVE],self.rr_wheel[Swerve.DRIVE])
+        self.robot_drive.setInvertedMotor(wpilib.RobotDrive.MotorType.kFrontLeft, True);
+        self.robot_drive.setInvertedMotor(wpilib.RobotDrive.MotorType.kRearLeft, True);
     def disabled(self):
         # self.talon.setSensorPosition(0)
         wpilib.Timer.delay(.01)
@@ -62,12 +74,8 @@ class MyRobot(wpilib.SampleRobot):
 
             self.robot_drive.arcadeDrive(self.x,self.y)
             
-            self.lf_wheel[Swerve.ROTATE].set(self.rotation)
-            self.lr_wheel[Swerve.ROTATE].set(self.rotation) 
-            self.rf_wheel[Swerve.ROTATE].set(self.rotation)
-            self.rr_wheel[Swerve.ROTATE].set(self.rotation)
-            
-            
+            self.lf_wheel[Swerve.ROTATE].set(self.lf_wheel[Swerve.ROTATE].getAnalogInPosition()+(30*self.x))
+            self.sd.putNumber("Encoder Position", self.lf_wheel[Swerve.ROTATE].getAnalogInPosition())
             
             wpilib.Timer.delay(0.005)
             
