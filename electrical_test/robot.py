@@ -79,6 +79,7 @@ class MyRobot(wpilib.SampleRobot):
             
             
             wpilib.Timer.delay(0.005)
+
             
             '''
             asdasd
@@ -102,7 +103,14 @@ class MyRobot(wpilib.SampleRobot):
             asd
             MREGERCONFLICT
             '''
-            
-            
+
+		   '''
+	        my arms like spaghetti
+
+
+
+
+            huehue
+            '''            
 if __name__ == '__main__':
     wpilib.run(MyRobot)
