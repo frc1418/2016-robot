@@ -78,6 +78,13 @@ class MyRobot(wpilib.SampleRobot):
             self.sd.putNumber("Encoder Position", self.lf_wheel[Swerve.ROTATE].getAnalogInPosition())
             
             wpilib.Timer.delay(0.005)
-            
+		'''
+	my arms like spaghetti
+
+
+
+
+huehue
+'''            
 if __name__ == '__main__':
     wpilib.run(MyRobot)
