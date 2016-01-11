@@ -29,7 +29,6 @@ class MyRobot(wpilib.SampleRobot):
         self.rf_wheel = (wpilib.Victor(2), wpilib.CANTalon(15))
         self.rr_wheel = (wpilib.Victor(3), wpilib.CANTalon(20))
         
-        self.lf_wheel[Swerve.ROTATE].changeControlMode(wpilib.CANTalon.ControlMode.Position)
         self.lf_wheel[Swerve.ROTATE].setFeedbackDevice(wpilib.CANTalon.FeedbackDevice.AnalogEncoder)
         self.lf_wheel[Swerve.ROTATE].setP(10)
         # #SMART DASHBOARD
@@ -74,7 +73,7 @@ class MyRobot(wpilib.SampleRobot):
 
             self.robot_drive.arcadeDrive(self.x,self.y)
             
-            self.lf_wheel[Swerve.ROTATE].set(self.lf_wheel[Swerve.ROTATE].getAnalogInPosition()+(30*self.x))
+            self.lf_wheel[Swerve.ROTATE].set(self.rotation)
             self.sd.putNumber("Encoder Position", self.lf_wheel[Swerve.ROTATE].getAnalogInPosition())
             
             wpilib.Timer.delay(0.005)
