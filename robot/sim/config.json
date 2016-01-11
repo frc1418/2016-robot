@@ -1,0 +1,62 @@
+{
+  "pyfrc": {
+  
+  	"robot": {
+  	  "w": 2,
+  	  "h": 3,
+      "starting_x": 2, 
+      "starting_y": 20,
+      "starting_angle": 0
+  	},
+  
+    "analog": {
+    },
+    
+    "dio": {
+    },
+    
+    "pwm": {
+      "0": "Left Front",
+      "1": "Left Rear",
+      "2": "Right Front",
+      "3": "Right Rear"
+    },
+    
+    "CAN": {
+    },
+    
+    "field": {
+      "w": 25,
+      "h": 27,
+      "px_per_ft": 10,
+      
+      "objects": [
+      	{ "color": "grey",
+      	  "points": [ [7.25,11.21], [10.333,11.21], [10.333,27], [7.25,27] ] },
+      	  
+      	{ "color": "grey",
+      	  "points": [ [16.83, 0], [19.90, 0], [19.90, 15.75], [16.83, 15.75] ] }
+      ]
+    },
+    
+    "joysticks": {
+      "0": {
+      	"axes": {
+      	  "Y": "Left Side" 
+      	},
+      
+        "buttons": {
+        }
+      },
+      
+      "1": {
+        "axes": {
+      	  "Y": "Right Side" 
+      	},
+      
+        "buttons": {
+        }
+      }
+    }
+  }
+}
