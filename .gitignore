@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-robot/__pycache__
-robot/.deploy_cfg
-
-=======
 .deploy_cfg
 .pydevproject
 .project
@@ -62,4 +57,3 @@ docs/_build/
 # PyBuilder
 target/
 /bin/
->>>>>>> bcb80ab7adeb8307eaea0a47c0a33bd8dec37838
