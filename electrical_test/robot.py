@@ -29,8 +29,6 @@ class MyRobot(wpilib.SampleRobot):
         self.rf_wheel = (wpilib.Victor(2), wpilib.CANTalon(15))
         self.rr_wheel = (wpilib.Victor(3), wpilib.CANTalon(20))
         
-        self.lf_wheel[Swerve.ROTATE].setFeedbackDevice(wpilib.CANTalon.FeedbackDevice.AnalogEncoder)
-        self.lf_wheel[Swerve.ROTATE].setP(10)
         # #SMART DASHBOARD
         
         # #ROBOT DRIVE##

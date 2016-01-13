@@ -2,6 +2,8 @@
 
 import wpilib
 from wpilib.cantalon import CANTalon
+import robotpy_ext
+from robotpy_ext.control.button_debouncer import ButtonDebouncer
 
 class MyRobot(wpilib.SampleRobot):
     
@@ -23,8 +25,6 @@ class MyRobot(wpilib.SampleRobot):
         
         # #ROBOT DRIVE##
         self.robot_drive = wpilib.RobotDrive(self.lf_motor, self.lr_motor, self.rf_motor, self.rr_motor)
-        #self.robot_drive.setInvertedMotor(wpilib.RobotDrive.MotorType.kFrontLeft, True)
-        #self.robot_drive.setInvertedMotor(wpilib.RobotDrive.MotorType.kRearLeft, True)
 
     def disabled(self):
         # self.talon.setSensorPosition(0)
@@ -32,25 +32,17 @@ class MyRobot(wpilib.SampleRobot):
     
     def operatorControl(self):
         # self.myRobot.setSafetyEnabled(True)
-        
-        while self.isOperatorControl() and self.isEnabled():    
-            
-            '''
-            wpilib.SmartDashboard.putNumber('Enc', self.toteMotor.getEncPosition())
-            
-            if wpilib.SmartDashboard.getNumber('P') is not self.talon.getP():
-                self.talon.setP(wpilib.SmartDashboard.getNumber('P'))
-            
-            position = (wpilib.SmartDashboard.getNumber('Dist')*1440)/5.75
-            canPosition = (wpilib.SmartDashboard.getNumber('Dist')*1440)/9.625
-            self.talon.set(wpilib.SmartDashboard.getNumber('Pos')*-1)
-            #self.XOfRobot=self.XOfRobot+(self.accelerometer.getX()*.5*(self.timercounter**2))
-            #self.YOfRobot=self.YOfRobot+(self.acwcelerometer.getY()*.5*(self.timercounter**2))
-            '''
+        reverse = False
+        while self.isOperatorControl() and self.isEnabled():
             
             
-            self.robot_drive.tankDrive(self.joystick1.getY(), self.joystick2.getY())
-            
+            reverseButton = ButtonDebouncer(self.joystick1, 1, period=.6)
+            if reverseButton.get():
+                reverse = not reverse
+            if not reverse:    
+                self.robot_drive.arcadeDrive(self.joystick1.getY(), self.joystick2.getX())
+            else:
+                self.robot_drive.arcadeDrive(self.joystick1.getY()*-1, self.joystick2.getX())
             wpilib.Timer.delay(0.005)
             
 if __name__ == '__main__':
