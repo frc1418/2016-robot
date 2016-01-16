@@ -15,10 +15,10 @@ class MyRobot(wpilib.SampleRobot):
 
         
         # #INITIALIZE MOTORS##
-        self.lf_motor = wpilib.Talon(0)
-        self.lr_motor = wpilib.Talon(1)
-        self.rf_motor = wpilib.Talon(2)
-        self.rr_motor = wpilib.Talon(3)
+        self.lf_motor = wpilib.CANTalon(5)
+        self.lr_motor = wpilib.CANTalon(10)
+        self.rf_motor = wpilib.CANTalon(15)
+        self.rr_motor = wpilib.CANTalon(20)
         
         
         # #SMART DASHBOARD
