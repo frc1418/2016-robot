@@ -20,6 +20,12 @@ class MyRobot(wpilib.SampleRobot):
         self.rf_motor = wpilib.CANTalon(15)
         self.rr_motor = wpilib.CANTalon(20)
         
+        self.leftBall = wpilib.Relay(0)
+        self.rightBall = wpilib.Relay(1)
+        self.rightBall.setDirection(wpilib.Relay.Direction.kBoth)
+        
+        self.ballArm = wpilib.CANTalon(25)
+        
         
         # #SMART DASHBOARD
         
@@ -36,13 +42,31 @@ class MyRobot(wpilib.SampleRobot):
         while self.isOperatorControl() and self.isEnabled():
             
             
-            reverseButton = ButtonDebouncer(self.joystick1, 1, period=.6)
+            reverseButton = ButtonDebouncer(self.joystick1, 1, period=1)
             if reverseButton.get():
                 reverse = not reverse
-            if not reverse:    
-                self.robot_drive.arcadeDrive(self.joystick1.getY(), self.joystick2.getX())
+            if reverse:    
+                self.robot_drive.arcadeDrive(self.joystick1.getY(), self.joystick2.getX()*-1)
             else:
-                self.robot_drive.arcadeDrive(self.joystick1.getY()*-1, self.joystick2.getX())
+                self.robot_drive.arcadeDrive(self.joystick1.getY()*-1, self.joystick2.getX()*-1)
+            
+            if self.joystick2.getRawButton(4):
+                self.leftBall.set(wpilib.Relay.Value.kForward)
+                self.rightBall.set(wpilib.Relay.Value.kForward)
+            elif self.joystick2.getRawButton(5):
+                self.leftBall.set(wpilib.Relay.Value.kReverse)
+                self.rightBall.set(wpilib.Relay.Value.kReverse)
+            else:
+                self.leftBall.set(wpilib.Relay.Value.kOff)
+                self.rightBall.set(wpilib.Relay.Value.kOff)
+                
+            if self.joystick2.getRawButton(3):
+                self.ballArm.set(-self.joystick2.getZ())
+            elif self.joystick2.getRawButton(2):
+                self.ballArm.set(self.joystick2.getZ())
+            else:
+                self.ballArm.set(0)
+                                            
             wpilib.Timer.delay(0.005)
             
 if __name__ == '__main__':
