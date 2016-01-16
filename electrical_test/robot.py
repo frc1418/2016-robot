@@ -25,7 +25,10 @@ class MyRobot(wpilib.SampleRobot):
         self.lr_wheel = wpilib.CANTalon(10)
         self.rf_wheel = wpilib.CANTalon(15)
         self.rr_wheel = wpilib.CANTalon(20)
+        self.leftBall = wpilib.Relay(0)
+        self.rightBall = wpilib.Relay(1)
         
+        self.ballArm = wpilib.CANTalon(25)
         
     def disabled(self):
         # self.talon.setSensorPosition(0)
@@ -42,8 +45,11 @@ class MyRobot(wpilib.SampleRobot):
             self.lr_wheel.set(self.joystick1.getRawButton(2))
             self.rf_wheel.set(self.joystick1.getRawButton(3))
             self.rr_wheel.set(self.joystick1.getRawButton(4))
-        
             
+            
+            self.leftBall.set(wpilib.Relay.Value.kForward*self.joystick1.getRawButton(5))
+            self.rightBall.set(wpilib.Relay.Value.kReverse*self.joystick1.getRawButton(5))
+            self.ballArm.set(self.joystick1.getRawButton(6))
             wpilib.Timer.delay(0.005)
 if __name__ == '__main__':
     wpilib.run(MyRobot)
