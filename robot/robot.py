@@ -3,6 +3,7 @@
 import wpilib
 from robotpy_ext.control.button_debouncer import ButtonDebouncer
 from components import drive, intake
+from automations import auto, gateLift
 
 class MyRobot(wpilib.SampleRobot):
     
@@ -88,6 +89,7 @@ class MyRobot(wpilib.SampleRobot):
     
     def update(self):
         for component in self.components.values():
+            if is instanceof(component, )
             component.doit()
             
             

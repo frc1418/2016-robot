@@ -2,6 +2,10 @@ import wpilib
 
 from networktables import NetworkTable
 
+class DriveMode(Enum):
+	MANUAL = 1
+	AUTO = 2
+
 class Drive(object):
 	'''
 		The sole interaction between the robot and its driving system
@@ -26,11 +30,19 @@ class Drive(object):
 		
 		self.robotDrive = robotDrive
 		
-		# Strafe stuff
-		
 		sd = NetworkTable.getTable('SmartDashboard')
 		
+		#Auto / Manual
+		self.mode = DriveMode.MANUAL
 		
+		self.want_manual = False
+		self.want_auto = False
+		
+		#Drive Straight
+		self.drive_timer = wpilib.Timer
+		self.drive_start_time = 0
+		self.drive_want_time = 0
+		self.drive_want_speed = 0
 		
 	#
 	# Verb functions -- these functions do NOT talk to motors directly. This
@@ -47,6 +59,9 @@ class Drive(object):
 			:param rotation:  The rate of rotation for the robot that is completely independent of the translation. 1 is rotate to the right [-1.0..1.0]
 			:param squaredInputs: If True, the x and y values will be squared, allowing for more gradual speed. 
 		'''
+		if y != 0 and rotation != 0:
+			self.want_manual = True
+		
 		if squaredInputs:
 			if y >= 0.0:
 				y = (y * y)
@@ -108,21 +123,41 @@ class Drive(object):
 		'''when called the robot will reverse front/back'''
 		self.isTheRobotBackwards = not self.isTheRobotBackwards
 	
-	
-	# Actually tells the motors to do something
-	#
+	def drive_straight(self, time, speed):
+		self.angle_rotation(self.return_gyro_angle())
+
+		self.drive_start_time = self.drive_timer.getFPGATimestamp();
+		self.drive_want_time = float(time)
+		self.drive_want_speed = min(max(-1.0, speed), 1.0);
+		
 	
 	def doit(self):
 		''' actually makes the robot drive'''
-		if(self.isTheRobotBackwards):
-			self.robotDrive.arcadeDrive(-self.y, self.rotation)
-		else:
-			self.robotDrive.arcadeDrive(self.y, self.rotation)
-
-		# print('x=%s, y=%s, r=%s ' % (self.x, self.y, self.rotation))
+		if self.want_manual:
+			self.mode = DriveMode.MANUAL
+		elif self.want_auto:
+			self.mode = DriveMode.AUTO
 		
-		# by default, the robot shouldn't move
-		self.x = 0
-		self.y = 0
-		self.rotation = 0
+		if self.mode == DriveMode.MANUAL:
+			if(self.isTheRobotBackwards):
+				self.robotDrive.arcadeDrive(-self.y, self.rotation)
+			else:
+				self.robotDrive.arcadeDrive(self.y, self.rotation)
 	
+			# print('x=%s, y=%s, r=%s ' % (self.x, self.y, self.rotation))
+			
+			# by default, the robot shouldn't move
+			self.x = 0
+			self.y = 0
+			self.rotation = 0
+			
+		elif self.mode == DriveMode.AUTO:
+			if (self.drive_start_time-self.drive_timer.getFPGATimestamp()) < self.drive_want_time:
+				self.robotDrive.arcadeDrive(self.drive_want_speed, 0)
+			else:
+				self.drive_start_time = 0
+				self.drive_want_speed = 0
+				self.drive_want_time = 0
+				
+				self.want_manual = True
+				

@@ -25,6 +25,9 @@ class MyRobot(wpilib.SampleRobot):
         self.lr_wheel = wpilib.CANTalon(10)
         self.rf_wheel = wpilib.CANTalon(15)
         self.rr_wheel = wpilib.CANTalon(20)
+        
+        self.armMotor = wpilib.CANTalon(25)
+        
         self.leftBall = wpilib.Relay(0)
         self.rightBall = wpilib.Relay(1)
         
