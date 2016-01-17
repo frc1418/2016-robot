@@ -20,7 +20,7 @@ class ShootState(enum.Enum):
     
 class Arm (object):
     
-    def __init__ (self, motor, leftBall, rightBall, init_down_speed):
+    def __init__ (self, motor, leftBallMotor, rightBallMotor, init_down_speed):
         
         
         self.target_position = None
@@ -46,8 +46,8 @@ class Arm (object):
         self.sd = NetworkTable.getTable('SmartDashboard')
         
         self.motor = motor
-        self.leftBall = leftBall
-        self.rightBall = rightBall
+        self.leftBallMotor = leftBallMotor
+        self.rightBallMotor = rightBallMotor
         
         self.leftBallSpeed = 0
         self.rightBallSpeed = 0
@@ -55,18 +55,16 @@ class Arm (object):
         self.shoot_mode = ShootState.ARM_UP
         self.shot = False
         
-        sd = NetworkTable.getTable('SmartDashboard')
-        
         self.positions = [
-            sd.getAutoUpdateValue('Arm | Bottom', 1440),
-            sd.getAutoUpdateValue('Arm | Middle', 800),
-            sd.getAutoUpdateValue('Arm | Top', 0)
+            self.sd.getAutoUpdateValue('Arm | Bottom', 1440),
+            self.sd.getAutoUpdateValue('Arm | Middle', 800),
+            self.sd.getAutoUpdateValue('Arm | Top', 0)
           ]
         
         self.wanted_pid = (
-            sd.getAutoUpdateValue('Arm |P', 10),
-            sd.getAutoUpdateValue('Arm |I', 0), 
-            sd.getAutoUpdateValue('Arm |D', 0)
+            self.sd.getAutoUpdateValue('Arm |P', 10),
+            self.sd.getAutoUpdateValue('Arm |I', 0), 
+            self.sd.getAutoUpdateValue('Arm |D', 0)
         )
         
             
@@ -110,9 +108,7 @@ class Arm (object):
         if not self.isCalibrated:
             return None
         
-        # If we're not in auto mode, we need to try and detect where the
-        # forklift is... 
-        
+        # If we're not in auto mode, we need to try and detect where the arm is... 
         current_pos = self.get_position()
         
         for i, pos in enumerate(self.positions):
@@ -123,7 +119,7 @@ class Arm (object):
         return (len(self.positions) - 1) + pos_idx
     
     def raise_arm(self):
-        '''Raises the forklift by one position'''   
+        '''Raises the arm by one position'''   
         target_index = self._detect_position_index(-170, -1)
         
         if target_index == -1:
@@ -140,7 +136,7 @@ class Arm (object):
         self._set_position(index)
     
     def lower_arm(self):
-        '''Lowers the forklift by one position'''
+        '''Lowers the arm by one position'''
         
         target_index = self._detect_position_index(170, 0)
         
@@ -176,8 +172,6 @@ class Arm (object):
             
         self.motor.changeControlMode(wpilib.CANTalon.ControlMode.Position)
         self.isCalibrated = True
-                
-        self.on_calibrate()
 
     
     def _calibrate(self):
@@ -191,16 +185,10 @@ class Arm (object):
             
                 self.motor.changeControlMode(wpilib.CANTalon.ControlMode.Position)
                 self.isCalibrated = True
-                
-                self.on_calibrate()
-    
-    def on_calibrate(self):
-        pass
     
     def intake(self):
         self.leftBallSpeed = forward
         self.rightBallSpeed = reverse
-    
     
     def outtake(self):
         self.leftBallSpeed = reverse
@@ -240,9 +228,8 @@ class Arm (object):
             else:
                 raise ValueError("INVALID MODE")
                 
-            
             self.last_mode = self.mode
-        
+            
         if self.mode == ArmMode.MANUAL:
             self.motor.set(self.manual_value)
             self.target_index = -1
@@ -262,8 +249,8 @@ class Arm (object):
         else:
             self.motor.set(0)
             
-        self.leftBall.set(self.leftBallSpeed)
-        self.rightBall.set(self.rightBallSpeed)
+        self.leftBallMotor.set(self.leftBallSpeed)
+        self.rightBallMotor.set(self.rightBallSpeed)
         
         self.leftBallSpeed = off
         self.rightBallSpeed = off
