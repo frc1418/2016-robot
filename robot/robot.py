@@ -2,7 +2,7 @@
 
 import wpilib
 from robotpy_ext.control.button_debouncer import ButtonDebouncer
-from components import drive, intake, button
+from components import drive, intake
 
 class MyRobot(wpilib.SampleRobot):
     
@@ -52,13 +52,13 @@ class MyRobot(wpilib.SampleRobot):
     
     def operatorControl(self):
         # self.myRobot.setSafetyEnabled(True)
+        reverseButton = ButtonDebouncer(self.joystick1, 1)
+        raiseButton = ButtonDebouncer(self.joystick2, 3)
+        lowerButton = ButtonDebouncer(self.joystick2, 2)
+        shoot = ButtonDebouncer(self.joystick1, 1)
+        shooting = False
+        
         while self.isOperatorControl() and self.isEnabled():
-            
-            
-            reverseButton = button.Button(self.joystick1, 1)
-            raiseButton = button.Button(self.joystick2, 3)
-            lowerButton = button.Button(self.joystick2, 2)
-            
             if reverseButton.get():
                 self.drive.switch_direction()
             
@@ -69,12 +69,17 @@ class MyRobot(wpilib.SampleRobot):
                 
                 
             if raiseButton.get():
-                print("Hello")
                 self.intake.raise_arm()
             elif lowerButton.get():
-                print("Goodbye")
                 self.intake.lower_arm()
                 
+            if shoot.get():
+                shooting = True
+            
+            if shooting:
+                self.intake.shoot()
+                shooting = not self.intake.shot  
+            
             self.drive.move(self.joystick1.getY(), self.joystick2.getX())
             
             self.update()            

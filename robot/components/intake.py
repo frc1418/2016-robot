@@ -9,10 +9,15 @@ forward = wpilib.Relay.Value.kForward
 reverse = wpilib.Relay.Value.kReverse
 off = wpilib.Relay.Value.kOff
 
+
 class ArmMode(enum.Enum):
     MANUAL = 1
     AUTO = 2
 
+class ShootState(enum.Enum):
+    ARM_UP = 1
+    ARM_DOWN = 2  
+    
 class Arm (object):
     
     def __init__ (self, motor, leftBall, rightBall, init_down_speed):
@@ -47,6 +52,9 @@ class Arm (object):
         self.leftBallSpeed = 0
         self.rightBallSpeed = 0
         
+        self.shoot_mode = ShootState.ARM_UP
+        self.shot = False
+        
         sd = NetworkTable.getTable('SmartDashboard')
         
         self.positions = [
@@ -56,28 +64,20 @@ class Arm (object):
           ]
         
         self.wanted_pid = (
-            sd.getAutoUpdateValue('Tote Forklift|P', 10),
-            sd.getAutoUpdateValue('Tote Forklift|I', 0), 
-            sd.getAutoUpdateValue('Tote Forklift|D', 0)
+            sd.getAutoUpdateValue('Arm |P', 10),
+            sd.getAutoUpdateValue('Arm |I', 0), 
+            sd.getAutoUpdateValue('Arm |D', 0)
         )
+        
             
-    def set_pos_stack5(self):
-        self._set_position(5)
-    set_pos_top = set_pos_stack5
-     
-    def set_pos_stack4(self):
-        self._set_position(4)
-        
-    def set_pos_stack3(self):
-        self._set_position(3)
-        
-    def set_pos_stack2(self):
+    
+    def set_arm_top(self):
         self._set_position(2)
         
-    def set_pos_stack1(self):
+    def set_arm_middle(self):
         self._set_position(1)
         
-    def set_pos_bottom(self):
+    def set_arm_bottom(self):
         self._set_position(0)
     
     def get_limit_switch(self):
@@ -158,16 +158,7 @@ class Arm (object):
         '''Sets position to index of positions list'''
         self.want_auto = True
         self.target_index = index
-        self.target_position = self.positions[index].value
-    
-    def set_auto_position(self, target):
-        '''Goes to encoder position [target]
-            :param target: Encoder position
-            :type target: int [0..11600]
-        '''
-        self.want_auto = True
-        self.target_index = 0
-        self.target_position = target 
+        self.target_position = self.positions[index].value 
         
     def on_target(self):
         '''
@@ -215,6 +206,22 @@ class Arm (object):
         self.leftBallSpeed = reverse
         self.rightBallSpeed = forward
     
+    def shoot(self):
+        self.shot = False
+        if self.shoot_mode == ShootState.ARM_UP:
+            self.set_arm_middle()
+            print("Moving to middle")
+            if self.on_target():
+                self.shoot_mode = ShootState.ARM_DOWN
+                print("On target. Running motors")
+                self.outtake()
+        if self.shoot_mode == ShootState.ARM_DOWN:
+            self.outtake()
+            print("Moving arm to bottom")
+            self.set_arm_bottom()
+            if self.on_target():
+                self.shot = True
+            
     def doit(self):
         '''Actually does stuff'''
         if self.want_manual:
