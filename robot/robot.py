@@ -30,8 +30,7 @@ class MyRobot(wpilib.SampleRobot):
         self.leftBall = wpilib.Relay(0)
         self.rightBall = wpilib.Relay(1)
         
-        self.arm = wpilib.CANTalon(25)
-        self.arm.setF
+        self.intake = intake.Arm(wpilib.CANTalon(25), self.leftBall, self.rightBall, -1)
         
         # #SMART DASHBOARD
         
@@ -39,7 +38,6 @@ class MyRobot(wpilib.SampleRobot):
         
         self.drive = drive.Drive(self.robot_drive)
         
-        self.intake = intake.Intake(self.leftBall, self.rightBall, self.arm)
         
         self.components = {
             'drive': self.drive,
