@@ -19,6 +19,6 @@ class GateLift():
     
     def override(self):
         self.drive.set_manual()
-        self.intake.set_manual()
+        self.intake.set_manual(0)
         
         self.is_running = False

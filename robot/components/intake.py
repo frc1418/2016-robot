@@ -206,9 +206,6 @@ class Arm (object):
             self.set_arm_bottom()
             if self.on_target():
                 self.shot = True
-                
-    def set_manual(self):
-        self.want_manual = True
             
     def doit(self):
         '''Actually does stuff'''
