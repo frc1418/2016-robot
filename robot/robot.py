@@ -20,12 +20,13 @@ class MyRobot(wpilib.SampleRobot):
         self.rf_motor = wpilib.CANTalon(15)
         self.rr_motor = wpilib.CANTalon(20)
         
+        self.lf_motor.reverseOutput(True)
+        self.lr_motor.reverseOutput(True)
+        self.rf_motor.reverseOutput(True)
+        self.rr_motor.reverseOutput(True)
+        
         self.robot_drive = wpilib.RobotDrive(self.lf_motor, self.lr_motor, self.rf_motor, self.rr_motor)
         
-        self.robot_drive.setInvertedMotor(wpilib.RobotDrive.MotorType.kFrontLeft, True)
-        self.robot_drive.setInvertedMotor(wpilib.RobotDrive.MotorType.kFrontRight, True)
-        self.robot_drive.setInvertedMotor(wpilib.RobotDrive.MotorType.kRearLeft, True)
-        self.robot_drive.setInvertedMotor(wpilib.RobotDrive.MotorType.kRearRight, True)
         
         ##Intake Mechanism
         self.leftBall = wpilib.Relay(0)
@@ -57,7 +58,8 @@ class MyRobot(wpilib.SampleRobot):
         reverseButton = ButtonDebouncer(self.joystick1, 1)
         raiseButton = ButtonDebouncer(self.joystick2, 3)
         lowerButton = ButtonDebouncer(self.joystick2, 2)
-        shoot = ButtonDebouncer(self.joystick1, 1)
+        shoot = ButtonDebouncer(self.joystick1, 2)
+        manualZero = ButtonDebouncer(self.joystick1,3)
         shooting = False
         
         while self.isOperatorControl() and self.isEnabled():
@@ -75,8 +77,14 @@ class MyRobot(wpilib.SampleRobot):
             elif lowerButton.get():
                 self.intake.lower_arm()
                 
+            if self.joystick1.getRawButton(3):
+                self.intake.set_manual(-1)
+            if self.joystick1.getRawButton(2):
+                self.intake.set_manual(1)
+            
             if shoot.get():
                 shooting = True
+            
             
             if shooting:
                 self.intake.shoot()
@@ -89,6 +97,7 @@ class MyRobot(wpilib.SampleRobot):
             
             self.drive.move(self.joystick1.getY(), self.joystick2.getX())
             
+            self.drive.move(self.joystick1.getY(), -self.joystick2.getX())
             self.update()            
             wpilib.Timer.delay(0.005)
     
