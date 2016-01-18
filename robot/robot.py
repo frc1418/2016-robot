@@ -68,25 +68,30 @@ class MyRobot(wpilib.SampleRobot):
             
             if self.joystick2.getRawButton(4):
                 self.intake.intake()
+                self.shootBall.override()
             elif self.joystick2.getRawButton(5):
                 self.intake.outtake()
+                self.shootBall.override()
                 
                 
             if raiseButton.get():
                 self.intake.raise_arm()
+                self.shootBall.override()
             elif lowerButton.get():
                 self.intake.lower_arm()
+                self.shootBall.override()
                 
-            if self.joystick1.getRawButton(3):
+            if self.joystick1.getRawButton(3):                
                 self.intake.set_manual(-1)
+                self.shootBall.override()
             if self.joystick1.getRawButton(2):
                 self.intake.set_manual(1)
+                self.shootBall.override()
             
             if shoot.get():
                 shooting = True
-            
             if shooting:
-                self.shootBall.go()
+                self.shootBall.doit()
                 shooting = self.shootBall.get_running()  
                 
             if self.joystick1.getRawButton(10) and not self.auto_gate_lift.get_running():
