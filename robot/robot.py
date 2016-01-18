@@ -91,7 +91,7 @@ class MyRobot(wpilib.SampleRobot):
             if shoot.get():
                 shooting = True
             if shooting:
-                self.shootBall.go()
+                self.shootBall.doit()
                 shooting = self.shootBall.get_running()  
                 
             if self.joystick1.getRawButton(10) and not self.auto_gate_lift.get_running():
