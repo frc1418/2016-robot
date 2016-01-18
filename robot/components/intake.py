@@ -210,14 +210,11 @@ class Arm (object):
         self.shot = False
         if self.shoot_mode == ShootState.ARM_UP:
             self.set_arm_middle()
-            print("Moving to middle")
             if self.on_target():
                 self.shoot_mode = ShootState.ARM_DOWN
-                print("On target. Running motors")
                 self.outtake()
         if self.shoot_mode == ShootState.ARM_DOWN:
             self.outtake()
-            print("Moving arm to bottom")
             self.set_arm_bottom()
             if self.on_target():
                 self.shot = True
