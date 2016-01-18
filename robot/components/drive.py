@@ -70,7 +70,7 @@ class Drive(object):
 				y = -(y * y)
 		
 		self.y = y
-		self.rotation = max(min(1.0, rotation), -1) / 2.0
+		self.rotation = max(min(1.0, rotation), -1)
 
 	
 	def set_gyro_enabled(self, value):
@@ -138,6 +138,7 @@ class Drive(object):
 	
 	def doit(self):
 		''' actually makes the robot drive'''
+		
 		if self.want_manual:
 			self.mode = DriveMode.MANUAL
 		elif self.want_auto:

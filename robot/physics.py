@@ -43,10 +43,10 @@ class PhysicsEngine:
             armDict['enc_position'] = max(min(armDict['enc_position'], 1440), 0) # Keep encoder between these values
             
         # Simulate the drivetrain
-        lf_motor = hal_data['CAN'][5]['value']*-1
-        lr_motor = hal_data['CAN'][10]['value']*-1
-        rf_motor = hal_data['CAN'][15]['value']*-1
-        rr_motor = hal_data['CAN'][20]['value']*-1
+        lf_motor = hal_data['CAN'][5]['value']
+        lr_motor = hal_data['CAN'][10]['value']
+        rf_motor = hal_data['CAN'][15]['value']
+        rr_motor = hal_data['CAN'][20]['value']
         
         fwd, rcw = four_motor_drivetrain(lr_motor, rr_motor, lf_motor, rf_motor)
         self.controller.drive(fwd, rcw, tm_diff)

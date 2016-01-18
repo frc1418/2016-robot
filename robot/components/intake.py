@@ -58,7 +58,10 @@ class Arm (object):
         self.positions = [
             self.sd.getAutoUpdateValue('Arm | Bottom', 1440),
             self.sd.getAutoUpdateValue('Arm | Middle', 800),
-            self.sd.getAutoUpdateValue('Arm | Top', 0)
+            self.sd.getAutoUpdateValue('Arm | Top', 0),
+            self.sd.getAutoUpdateValue('Encoder Pos', self.motor.getEncPosition()),
+            self.sd.getAutoUpdateValue('Arm fwd Limit Switch', self.motor.isFwdLimitSwitchClosed()),
+            self.sd.getAutoUpdateValue('Arm rev Limit Switch', self.motor.isRevLimitSwitchClosed())
           ]
         
         self.wanted_pid = (
@@ -206,7 +209,16 @@ class Arm (object):
             self.set_arm_bottom()
             if self.on_target():
                 self.shot = True
-            
+    
+    def manualZero(self):
+        self.motor.set(0)
+        self.motor.setSensorPosition(0)
+    
+        self.isCalibrated = True
+        
+        self.on_calibrate()
+
+                
     def doit(self):
         '''Actually does stuff'''
         if self.want_manual:
@@ -262,6 +274,7 @@ class Arm (object):
         self.sd.putBoolean('%s|Calibrated' % name, self.isCalibrated)
         self.sd.putBoolean('%s|Manual' % name, self.mode == ArmMode.MANUAL)
         self.sd.putBoolean('%s|Limit' % name, self.get_limit_switch())
+        
         if self.target_position is None:
             self.sd.putNumber('%s|Target Position' % name, -1)
         else:
