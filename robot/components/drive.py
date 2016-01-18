@@ -1,6 +1,7 @@
 import wpilib
 
 from networktables import NetworkTable
+from enum import Enum
 
 class DriveMode(Enum):
 	MANUAL = 1
@@ -124,12 +125,16 @@ class Drive(object):
 		self.isTheRobotBackwards = not self.isTheRobotBackwards
 	
 	def drive_straight(self, time, speed):
-		self.angle_rotation(self.return_gyro_angle())
+		#self.angle_rotation(self.return_gyro_angle())
 
 		self.drive_start_time = self.drive_timer.getFPGATimestamp();
 		self.drive_want_time = float(time)
 		self.drive_want_speed = min(max(-1.0, speed), 1.0);
 		
+		self.want_auto = True
+	
+	def set_manual(self):
+		self.want_manual = True
 	
 	def doit(self):
 		''' actually makes the robot drive'''
