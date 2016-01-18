@@ -3,7 +3,7 @@
 import wpilib
 from robotpy_ext.control.button_debouncer import ButtonDebouncer
 from components import drive, intake
-from automations import gateLift
+from automations import gateLift, shootBall
 
 class MyRobot(wpilib.SampleRobot):
     
@@ -47,11 +47,11 @@ class MyRobot(wpilib.SampleRobot):
         
         ##AUTO FUNCTIONALITY##
         self.auto_gate_lift = gateLift.GateLift(self.drive, self.intake)
+        self.shootBall = shootBall.shootBall(self.intake)
         
     def disabled(self):
         # self.talon.setSensorPosition(0)
         wpilib.Timer.delay(.01)
-    
     
     def operatorControl(self):
         # self.myRobot.setSafetyEnabled(True)
@@ -85,10 +85,9 @@ class MyRobot(wpilib.SampleRobot):
             if shoot.get():
                 shooting = True
             
-            
             if shooting:
-                self.intake.shoot()
-                shooting = not self.intake.shot  
+                self.shootBall.go()
+                shooting = self.shootBall.get_running()  
                 
             if self.joystick1.getRawButton(10) and not self.auto_gate_lift.get_running():
                 self.auto_gate_lift.go()

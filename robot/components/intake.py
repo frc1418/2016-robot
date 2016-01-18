@@ -14,10 +14,6 @@ class ArmMode(enum.Enum):
     MANUAL = 1
     AUTO = 2
 
-class ShootState(enum.Enum):
-    ARM_UP = 1
-    ARM_DOWN = 2  
-    
 class Arm (object):
     
     def __init__ (self, motor, leftBallMotor, rightBallMotor, init_down_speed):
@@ -51,10 +47,7 @@ class Arm (object):
         
         self.leftBallSpeed = 0
         self.rightBallSpeed = 0
-        
-        self.shoot_mode = ShootState.ARM_UP
-        self.shot = False
-        
+                
         self.positions = [
             self.sd.getAutoUpdateValue('Arm | Bottom', 1440),
             self.sd.getAutoUpdateValue('Arm | Middle', 800),
@@ -196,20 +189,7 @@ class Arm (object):
     def outtake(self):
         self.leftBallSpeed = reverse
         self.rightBallSpeed = forward
-    
-    def shoot(self):
-        self.shot = False
-        if self.shoot_mode == ShootState.ARM_UP:
-            self.set_arm_middle()
-            if self.on_target():
-                self.shoot_mode = ShootState.ARM_DOWN
-                self.outtake()
-        if self.shoot_mode == ShootState.ARM_DOWN:
-            self.outtake()
-            self.set_arm_bottom()
-            if self.on_target():
-                self.shot = True
-    
+
     def manualZero(self):
         self.motor.set(0)
         self.motor.setSensorPosition(0)
