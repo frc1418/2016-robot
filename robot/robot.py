@@ -3,6 +3,7 @@
 import wpilib
 from robotpy_ext.control.button_debouncer import ButtonDebouncer
 from components import drive, intake
+from automations import gateLift
 
 class MyRobot(wpilib.SampleRobot):
     
@@ -34,8 +35,7 @@ class MyRobot(wpilib.SampleRobot):
         
         # #SMART DASHBOARD
         
-        # #ROBOT DRIVE##
-        
+        ##ROBOT DRIVE##
         self.drive = drive.Drive(self.robot_drive)
         
         
@@ -44,6 +44,8 @@ class MyRobot(wpilib.SampleRobot):
             'intake': self.intake
         }
         
+        ##AUTO FUNCTIONALITY##
+        self.auto_gate_lift = gateLift.GateLift(self.drive, self.intake)
         
     def disabled(self):
         # self.talon.setSensorPosition(0)
@@ -79,6 +81,11 @@ class MyRobot(wpilib.SampleRobot):
             if shooting:
                 self.intake.shoot()
                 shooting = not self.intake.shot  
+                
+            if self.joystick1.getRawButton(10) and not self.auto_gate_lift.get_running():
+                self.auto_gate_lift.go()
+            elif not self.joystick1.getRawButton(10) and self.auto_gate_lift.get_running():
+                self.auto_gate_lift.override()
             
             self.drive.move(self.joystick1.getY(), self.joystick2.getX())
             
