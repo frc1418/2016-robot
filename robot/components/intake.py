@@ -16,7 +16,7 @@ class ArmMode(enum.Enum):
 
 class Arm:
     
-    def __init__ (self, motor, leftBallMotor, rightBallMotor, init_down_speed):
+    def __init__ (self, motor, followMotor, leftBallMotor, rightBallMotor, init_down_speed):
         
         
         self.target_position = None
@@ -42,6 +42,8 @@ class Arm:
         self.sd = NetworkTable.getTable('SmartDashboard')
         
         self.motor = motor
+        self.followMotor = followMotor
+        self.followMotor.changeControlMode(wpilib.CANTalon.ControlMode.Position)
         self.leftBallMotor = leftBallMotor
         self.rightBallMotor = rightBallMotor
         
@@ -236,7 +238,8 @@ class Arm:
                 
         else:
             self.motor.set(0)
-            
+        
+        self.followMotor.set(self.motor.getEncPosition())
         self.leftBallMotor.set(self.leftBallSpeed)
         self.rightBallMotor.set(self.rightBallSpeed)
         
