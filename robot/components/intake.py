@@ -14,7 +14,7 @@ class ArmMode(enum.Enum):
     MANUAL = 1
     AUTO = 2
 
-class Arm (object):
+class Arm:
     
     def __init__ (self, motor, leftBallMotor, rightBallMotor, init_down_speed):
         
@@ -117,7 +117,6 @@ class Arm (object):
     def raise_arm(self):
         '''Raises the arm by one position'''   
         target_index = self._detect_position_index(-170, -1)
-        
         if target_index == -1:
             target_index = 0
         

@@ -1,9 +1,10 @@
-#!/usr/bin/env python3
+#!/usr/local/bin/python3 
 
 import wpilib
 from robotpy_ext.control.button_debouncer import ButtonDebouncer
 from components import drive, intake
-from automations import gateLift, shootBall
+from automations import shootBall
+from automations import portcullis
 
 class MyRobot(wpilib.SampleRobot):
     
@@ -46,7 +47,7 @@ class MyRobot(wpilib.SampleRobot):
         }
         
         ##AUTO FUNCTIONALITY##
-        self.auto_gate_lift = gateLift.GateLift(self.drive, self.intake)
+        self.auto_portcullis = portcullis.PortcullisLift(self.drive, self.intake)
         self.shootBall = shootBall.shootBall(self.intake)
         
     def disabled(self):
@@ -56,52 +57,63 @@ class MyRobot(wpilib.SampleRobot):
     def operatorControl(self):
         # self.myRobot.setSafetyEnabled(True)
         reverseButton = ButtonDebouncer(self.joystick1, 1)
+        
+        shoot = ButtonDebouncer(self.joystick2, 1)
         raiseButton = ButtonDebouncer(self.joystick2, 3)
         lowerButton = ButtonDebouncer(self.joystick2, 2)
-        shoot = ButtonDebouncer(self.joystick1, 2)
-        manualZero = ButtonDebouncer(self.joystick1,3)
+        portcullis = ButtonDebouncer(self.joystick2, 10)
+    
         shooting = False
+        raise_portcullis = False
+        
+        self.intake._calibrate()
         
         while self.isOperatorControl() and self.isEnabled():
+            
+                
+            self.drive.move(self.joystick1.getY(), -self.joystick2.getX())
+            
             if reverseButton.get():
                 self.drive.switch_direction()
-            
+                
             if self.joystick2.getRawButton(4):
                 self.intake.intake()
-                self.shootBall.override()
+                shooting = False
             elif self.joystick2.getRawButton(5):
                 self.intake.outtake()
-                self.shootBall.override()
+                shooting = False
                 
                 
             if raiseButton.get():
                 self.intake.raise_arm()
-                self.shootBall.override()
+                shooting = False
             elif lowerButton.get():
                 self.intake.lower_arm()
-                self.shootBall.override()
+                shooting = False
+                raise_portcullis = False
                 
             if self.joystick1.getRawButton(3):                
                 self.intake.set_manual(-1)
-                self.shootBall.override()
+                shooting = False
             if self.joystick1.getRawButton(2):
                 self.intake.set_manual(1)
-                self.shootBall.override()
+                shooting = False
             
             if shoot.get():
-                shooting = True
+                shooting = not shooting
+                raise_portcullis = False
             if shooting:
+                raise_portcullis = False
                 self.shootBall.doit()
                 shooting = self.shootBall.get_running()  
                 
-            if self.joystick1.getRawButton(10) and not self.auto_gate_lift.get_running():
-                self.auto_gate_lift.go()
-            elif not self.joystick1.getRawButton(10) and self.auto_gate_lift.get_running():
-                self.auto_gate_lift.override()
             
-            self.drive.move(self.joystick1.getY(), self.joystick2.getX())
-            
-            self.drive.move(self.joystick1.getY(), -self.joystick2.getX())
+            if portcullis.get():
+                raise_portcullis = not raise_portcullis
+            if raise_portcullis:
+                self.auto_portcullis.doit()
+                raise_portcullis = self.auto_portcullis.get_running()  
+                
             self.update()            
             wpilib.Timer.delay(0.005)
     

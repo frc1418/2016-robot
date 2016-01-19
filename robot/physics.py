@@ -38,7 +38,9 @@ class PhysicsEngine:
             
             if self.armAct in range(-50, 50): # If the measured encoder value is within this range
                 armDict['limit_switch_closed_for'] = True # Fake closing the limit switch
-                
+              
+            if self.armAct in range(1390, 1400):
+                armDict['limit_switch_closed_rev'] = True
                 
             armDict['enc_position'] = max(min(armDict['enc_position'], 1440), 0) # Keep encoder between these values
             
@@ -47,6 +49,11 @@ class PhysicsEngine:
         lr_motor = hal_data['CAN'][10]['value']
         rf_motor = hal_data['CAN'][15]['value']
         rr_motor = hal_data['CAN'][20]['value']
+        
+        lf_motor = max(min(lf_motor, 1), -1)
+        lr_motor = max(min(lr_motor, 1), -1)
+        rf_motor = max(min(rf_motor, 1), -1)
+        rr_motor = max(min(rr_motor, 1), -1)
         
         fwd, rcw = four_motor_drivetrain(lr_motor, rr_motor, lf_motor, rf_motor)
         self.controller.drive(fwd, rcw, tm_diff)
