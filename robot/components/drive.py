@@ -3,11 +3,8 @@ import wpilib
 from networktables import NetworkTable
 from enum import Enum
 
-class DriveMode(Enum):
-	MANUAL = 1
-	AUTO = 2
 
-class Drive(object):
+class Drive:
 	'''
 		The sole interaction between the robot and its driving system
 		occurs here. Anything that wants to drive the robot must go
@@ -34,7 +31,6 @@ class Drive(object):
 		sd = NetworkTable.getTable('SmartDashboard')
 		
 		#Auto / Manual
-		self.mode = DriveMode.MANUAL
 		
 		self.want_manual = False
 		self.want_auto = False
@@ -124,46 +120,18 @@ class Drive(object):
 		'''when called the robot will reverse front/back'''
 		self.isTheRobotBackwards = not self.isTheRobotBackwards
 	
-	def drive_straight(self, time, speed):
-		#self.angle_rotation(self.return_gyro_angle())
-
-		self.drive_start_time = self.drive_timer.getFPGATimestamp();
-		self.drive_want_time = float(time)
-		self.drive_want_speed = min(max(-1.0, speed), 1.0);
-		
-		self.want_auto = True
-	
-	def set_manual(self):
-		self.want_manual = True
-	
 	def doit(self):
 		''' actually makes the robot drive'''
 		
-		if self.want_manual:
-			self.mode = DriveMode.MANUAL
-		elif self.want_auto:
-			self.mode = DriveMode.AUTO
+		if(self.isTheRobotBackwards):
+			self.robotDrive.arcadeDrive(-self.y, self.rotation)
+		else:
+			self.robotDrive.arcadeDrive(self.y, self.rotation)
+
 		
-		if self.mode == DriveMode.MANUAL:
-			if(self.isTheRobotBackwards):
-				self.robotDrive.arcadeDrive(-self.y, self.rotation)
-			else:
-				self.robotDrive.arcadeDrive(self.y, self.rotation)
-	
-			# print('x=%s, y=%s, r=%s ' % (self.x, self.y, self.rotation))
-			
-			# by default, the robot shouldn't move
-			self.x = 0
-			self.y = 0
-			self.rotation = 0
-			
-		elif self.mode == DriveMode.AUTO:
-			if (self.drive_start_time-self.drive_timer.getFPGATimestamp()) < self.drive_want_time:
-				self.robotDrive.arcadeDrive(self.drive_want_speed, 0)
-			else:
-				self.drive_start_time = 0
-				self.drive_want_speed = 0
-				self.drive_want_time = 0
-				
-				self.want_manual = True
+		# by default, the robot shouldn't move
+		self.x = 0
+		self.y = 0
+		self.rotation = 0
+		
 				
