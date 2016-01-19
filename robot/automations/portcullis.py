@@ -2,12 +2,11 @@ ARM_DOWN = 1
 ARM_UP = 2
 class PortcullisLift:
  
-    def __init__(self, drive, intake, drive_speed=-.5, drive_time=5):
+    def __init__(self, drive, intake, drive_speed=-.5):
         self.intake = intake
         self.drive = drive
         
         self.drive_speed = drive_speed
-        self.drive_time = drive_time
         
         self.is_running = False
         self.state = ARM_DOWN
