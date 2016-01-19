@@ -10,15 +10,12 @@ class PortcullisLift:
         
         self.is_running = False
         self.state = ARM_DOWN
+        
+        
     def get_running(self):
         return self.is_running
     
-    def override(self):
-        self.drive.set_manual()
-        self.intake.set_manual(0)
-        
-        self.is_running = False
-        
+    
     def doit(self):
         self.is_running = True
         #Add state machine to put the arm at the bottom first
