@@ -53,9 +53,6 @@ class Arm:
             self.sd.getAutoUpdateValue('Arm | Bottom', 1440),
             self.sd.getAutoUpdateValue('Arm | Middle', 800),
             self.sd.getAutoUpdateValue('Arm | Top', 0),
-            self.sd.getAutoUpdateValue('Encoder Pos', self.motor.getEncPosition()),
-            self.sd.getAutoUpdateValue('Arm fwd Limit Switch', self.motor.isFwdLimitSwitchClosed()),
-            self.sd.getAutoUpdateValue('Arm rev Limit Switch', self.motor.isRevLimitSwitchClosed())
           ]
         
         self.wanted_pid = (
