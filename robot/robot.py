@@ -84,13 +84,14 @@ class MyRobot(wpilib.SampleRobot):
                 shooting = False
                 
                 
-            if raiseButton.get():
-                self.intake.raise_arm()
-                shooting = False
-            elif lowerButton.get():
-                self.intake.lower_arm()
-                shooting = False
-                raise_portcullis = False
+            #if raiseButton.get():
+            #    self.intake.raise_arm()
+            #    shooting = False
+            #elif lowerButton.get():
+            #    self.intake.lower_arm()
+            #    shooting = False
+            #    raise_portcullis = False
+             
                 
             if self.joystick1.getRawButton(3):                
                 self.intake.set_manual(-1)
@@ -99,20 +100,20 @@ class MyRobot(wpilib.SampleRobot):
                 self.intake.set_manual(1)
                 shooting = False
             
-            if shoot.get():
-                shooting = not shooting
-                raise_portcullis = False
-            if shooting:
-                raise_portcullis = False
-                self.shootBall.doit()
-                shooting = self.shootBall.get_running()  
+            #if shoot.get():
+            #    shooting = not shooting
+            #    raise_portcullis = False
+            #if shooting:
+            #    raise_portcullis = False
+            #    self.shootBall.doit()
+            #    shooting = self.shootBall.get_running()  
                 
             
-            if portcullis.get():
-                raise_portcullis = not raise_portcullis
-            if raise_portcullis:
-                self.auto_portcullis.doit()
-                raise_portcullis = self.auto_portcullis.get_running()  
+            #if portcullis.get():
+            #    raise_portcullis = not raise_portcullis
+            #if raise_portcullis:
+            #    self.auto_portcullis.doit()
+            #    raise_portcullis = self.auto_portcullis.get_running()  
                 
             self.update()            
             wpilib.Timer.delay(0.005)
