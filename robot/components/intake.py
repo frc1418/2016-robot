@@ -43,8 +43,6 @@ class Arm:
         
         self.motor = motor
         self.followMotor = followMotor
-        self.followMotor.changeControlMode(wpilib.CANTalon.ControlMode.Position)
-        #self.followMotor.reverseOutput()
         self.leftBallMotor = leftBallMotor
         self.rightBallMotor = rightBallMotor
         
@@ -55,9 +53,6 @@ class Arm:
             self.sd.getAutoUpdateValue('Arm | Bottom', 1440),
             self.sd.getAutoUpdateValue('Arm | Middle', 800),
             self.sd.getAutoUpdateValue('Arm | Top', 0),
-            self.sd.getAutoUpdateValue('Encoder Pos', self.motor.getEncPosition()),
-            self.sd.getAutoUpdateValue('Arm fwd Limit Switch', self.motor.isFwdLimitSwitchClosed()),
-            self.sd.getAutoUpdateValue('Arm rev Limit Switch', self.motor.isRevLimitSwitchClosed())
           ]
         
         self.wanted_pid = (
@@ -132,6 +127,7 @@ class Arm:
             index = len(self.positions)-1
         
         self._set_position(index)
+        
     
     def lower_arm(self):
         '''Lowers the arm by one position'''
@@ -223,6 +219,7 @@ class Arm:
             
         if self.mode == ArmMode.MANUAL:
             self.motor.set(self.manual_value)
+            self.followMotor.set(self.manual_value)
             self.target_index = -1
         
         elif self.mode == ArmMode.AUTO:
@@ -240,7 +237,6 @@ class Arm:
         else:
             self.motor.set(0)
         
-        self.followMotor.set(self.motor.getEncPosition())
         self.leftBallMotor.set(self.leftBallSpeed)
         self.rightBallMotor.set(self.rightBallSpeed)
         
@@ -251,15 +247,18 @@ class Arm:
         self.want_manual = False
         self.manual_value = 0
         
+        self.update_sd("Arm")
+        
     def update_sd(self, name):
         '''Puts refreshed values to SmartDashboard'''
-        self.sd.putNumber('%s|Encoder' % name, self.motor.getEncPosition())
-        self.sd.putBoolean('%s|Calibrated' % name, self.isCalibrated)
-        self.sd.putBoolean('%s|Manual' % name, self.mode == ArmMode.MANUAL)
-        self.sd.putBoolean('%s|Limit' % name, self.get_limit_switch())
+        self.sd.getAutoUpdateValue('%s|Encoder' % name, self.motor.getEncPosition())
+        self.sd.getAutoUpdateValue('%s|Follow Encoder'% name, self.followMotor.getEncPosition())
+        self.sd.getAutoUpdateValue("Arm|Reverse Limit Switch", self.motor.isRevLimitSwitchClosed())
+        self.sd.getAutoUpdateValue('%s|Calibrated' % name, self.isCalibrated)
+        self.sd.getAutoUpdateValue('%s|Manual' % name, self.mode == ArmMode.MANUAL)
         
         if self.target_position is None:
-            self.sd.putNumber('%s|Target Position' % name, -1)
+            self.sd.getAutoUpdateValue('%s|Target Position' % name, -1)
         else:
-            self.sd.putNumber('%s|Target Position' % name, self.target_index)
+            self.sd.getAutoUpdateValue('%s|Target Position' % name, self.target_index)
         

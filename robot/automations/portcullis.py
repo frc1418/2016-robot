@@ -4,7 +4,7 @@ DRIVE = 2
 ARM_UP = 3
 class PortcullisLift:
  
-    def __init__(self, drive, intake, drive_speed=-.5):
+    def __init__(self, drive, intake, drive_speed=-.2):
         self.intake = intake
         self.drive = drive
         
