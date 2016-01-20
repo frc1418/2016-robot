@@ -44,7 +44,7 @@ class Arm:
         self.motor = motor
         self.followMotor = followMotor
         self.followMotor.changeControlMode(wpilib.CANTalon.ControlMode.Position)
-        self.followMotor.reverseOutput()
+        #self.followMotor.reverseOutput()
         self.leftBallMotor = leftBallMotor
         self.rightBallMotor = rightBallMotor
         
