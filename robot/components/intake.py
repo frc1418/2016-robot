@@ -52,9 +52,9 @@ class Arm:
         self.rightBallSpeed = 0
                 
         self.positions = [
-            self.sd.getAutoUpdateValue('Arm | Bottom', 1440),
-            self.sd.getAutoUpdateValue('Arm | Middle', 922),
-            self.sd.getAutoUpdateValue('Arm | Top', 0),
+            self.sd.getAutoUpdateValue('Arm | Bottom', 0),
+            self.sd.getAutoUpdateValue('Arm | Middle', 300),
+            self.sd.getAutoUpdateValue('Arm | Top', 1440),
           ]
         
         self.wanted_pid = (
@@ -173,7 +173,7 @@ class Arm:
     def _calibrate(self):
         '''Moves the motor towards the limit switch to reset the encoder to 0'''
         if not self.isCalibrated:
-            if not self.motor.isRevLimitSwitchClosed():
+            if not self.motor.isFwdLimitSwitchClosed():
                 self.motor.set(self.init_down_speed)
             else:
                 self.motor.set(0)
