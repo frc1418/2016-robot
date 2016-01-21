@@ -21,6 +21,7 @@ class Drive:
 		# set defaults here
 		self.y = 0
 		self.rotation = 0
+		self.squaredInputs = False
 		#self.gyro = gyro
 		
 		self.angle_constant = .040
@@ -56,17 +57,10 @@ class Drive:
 			:param rotation:  The rate of rotation for the robot that is completely independent of the translation. 1 is rotate to the right [-1.0..1.0]
 			:param squaredInputs: If True, the x and y values will be squared, allowing for more gradual speed. 
 		'''
-		if y != 0 and rotation != 0:
-			self.want_manual = True
-		
-		if squaredInputs:
-			if y >= 0.0:
-				y = (y * y)
-			else:
-				y = -(y * y)
 		
 		self.y = y
 		self.rotation = max(min(1.0, rotation), -1)
+		self.squaredInputs = squaredInputs
 
 	
 	def set_gyro_enabled(self, value):
@@ -122,11 +116,10 @@ class Drive:
 	
 	def doit(self):
 		''' actually makes the robot drive'''
-		
 		if(self.isTheRobotBackwards):
-			self.robotDrive.arcadeDrive(-self.y, self.rotation)
+			self.robotDrive.arcadeDrive(-self.y, self.rotation, self.squaredInputs)
 		else:
-			self.robotDrive.arcadeDrive(self.y, self.rotation)
+			self.robotDrive.arcadeDrive(self.y, self.rotation, self.squaredInputs)
 
 		
 		# by default, the robot shouldn't move
