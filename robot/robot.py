@@ -29,7 +29,7 @@ class MyRobot(wpilib.SampleRobot):
         self.leftBall = wpilib.Relay(0)
         self.rightBall = wpilib.Relay(1)
         
-        self.intake = intake.Arm(wpilib.CANTalon(25),wpilib.CANTalon(30), self.leftBall, self.rightBall, -1)
+        self.intake = intake.Arm(wpilib.CANTalon(25),wpilib.CANTalon(30), self.leftBall, self.rightBall, -.5)
         
         # #SMART DASHBOARD
         
@@ -91,10 +91,10 @@ class MyRobot(wpilib.SampleRobot):
              
                 
             if self.joystick1.getRawButton(3):                
-                self.intake.set_manual(-1)
+                self.intake.set_manual(-.25)
                 shooting = False
             if self.joystick1.getRawButton(2):
-                self.intake.set_manual(1)
+                self.intake.set_manual(.25)
                 shooting = False
             
             if shoot.get():
