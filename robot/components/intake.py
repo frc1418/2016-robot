@@ -16,7 +16,7 @@ class ArmMode(enum.Enum):
 
 class Arm:
     
-    def __init__ (self, motor, followMotor, leftBallMotor, rightBallMotor, init_down_speed):
+    def __init__ (self, motor, followMotor, leftBallMotor, init_down_speed):
         
         
         self.target_position = None
@@ -46,10 +46,8 @@ class Arm:
         self.followMotor.changeControlMode(wpilib.CANTalon.ControlMode.Follower)
         self.followMotor.reverseOutput(True)
         self.leftBallMotor = leftBallMotor
-        self.rightBallMotor = rightBallMotor
         
         self.leftBallSpeed = 0
-        self.rightBallSpeed = 0
                 
         self.positions = [
             self.sd.getAutoUpdateValue('Arm | Bottom', 1440),
@@ -184,11 +182,9 @@ class Arm:
     
     def intake(self):
         self.leftBallSpeed = forward
-        self.rightBallSpeed = reverse
     
     def outtake(self):
         self.leftBallSpeed = reverse
-        self.rightBallSpeed = forward
 
     def manualZero(self):
         self.motor.set(0)
@@ -241,10 +237,8 @@ class Arm:
             self.motor.set(0)
         self.followMotor.set(self.motor.getDeviceID())
         self.leftBallMotor.set(self.leftBallSpeed)
-        self.rightBallMotor.set(self.rightBallSpeed)
         
         self.leftBallSpeed = off
-        self.rightBallSpeed = off
             
         self.want_auto = False
         self.want_manual = False

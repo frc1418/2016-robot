@@ -26,10 +26,9 @@ class MyRobot(wpilib.SampleRobot):
         
         
         ##Intake Mechanism
-        self.leftBall = wpilib.Relay(0)
-        self.rightBall = wpilib.Relay(1)
+        self.leftBall = wpilib.Talon(0)
         
-        self.intake = intake.Arm(wpilib.CANTalon(25),wpilib.CANTalon(30), self.leftBall, self.rightBall, 1)
+        self.intake = intake.Arm(wpilib.CANTalon(25),wpilib.CANTalon(30), self.leftBall, 1)
 
         
         # #SMART DASHBOARD
