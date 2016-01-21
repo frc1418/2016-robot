@@ -43,6 +43,9 @@ class Arm:
         
         self.motor = motor
         self.followMotor = followMotor
+        self.followMotor.changeControlMode(wpilib.CANTalon.ControlMode.Follower)
+        self.followMotor.reverseOutput(True)
+        self.followMotorReverse = False
         self.leftBallMotor = leftBallMotor
         self.rightBallMotor = rightBallMotor
         
@@ -196,9 +199,12 @@ class Arm:
         
         self.on_calibrate()
 
-                
+    def reverse(self):
+        self.followMotorReverse = not self.followMotorReverse
+     
     def doit(self):
         '''Actually does stuff'''
+        #self.followMotor.reverseOutput(self.followMotorReverse)
         if self.want_manual:
             self.mode = ArmMode.MANUAL
         elif self.want_auto:
@@ -223,7 +229,6 @@ class Arm:
             self.target_index = -1
         
         elif self.mode == ArmMode.AUTO:
-            
             self._calibrate()
             
             if self.isCalibrated:
@@ -236,7 +241,7 @@ class Arm:
                 
         else:
             self.motor.set(0)
-        
+        self.followMotor.set(self.motor.getDeviceID())
         self.leftBallMotor.set(self.leftBallSpeed)
         self.rightBallMotor.set(self.rightBallSpeed)
         
