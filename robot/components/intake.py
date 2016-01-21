@@ -44,8 +44,7 @@ class Arm:
         self.motor = motor
         self.followMotor = followMotor
         self.followMotor.changeControlMode(wpilib.CANTalon.ControlMode.Follower)
-        #self.followMotor.reverseOutput(True)
-        self.followMotorReverse = False
+        self.followMotor.reverseOutput(True)
         self.leftBallMotor = leftBallMotor
         self.rightBallMotor = rightBallMotor
         
@@ -54,12 +53,12 @@ class Arm:
                 
         self.positions = [
             self.sd.getAutoUpdateValue('Arm | Bottom', 1440),
-            self.sd.getAutoUpdateValue('Arm | Middle', 800),
+            self.sd.getAutoUpdateValue('Arm | Middle', 922),
             self.sd.getAutoUpdateValue('Arm | Top', 0),
           ]
         
         self.wanted_pid = (
-            self.sd.getAutoUpdateValue('Arm |P', 10),
+            self.sd.getAutoUpdateValue('Arm |P', 2),
             self.sd.getAutoUpdateValue('Arm |I', 0), 
             self.sd.getAutoUpdateValue('Arm |D', 0)
         )
@@ -174,7 +173,7 @@ class Arm:
     def _calibrate(self):
         '''Moves the motor towards the limit switch to reset the encoder to 0'''
         if not self.isCalibrated:
-            if not self.motor.isFwdLimitSwitchClosed():
+            if not self.motor.isRevLimitSwitchClosed():
                 self.motor.set(self.init_down_speed)
             else:
                 self.motor.set(0)
