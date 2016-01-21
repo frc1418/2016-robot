@@ -43,6 +43,9 @@ class Arm:
         
         self.motor = motor
         self.followMotor = followMotor
+        self.followMotor.changeControlMode(wpilib.CANTalon.ControlMode.Follower)
+        self.followMotor.reverseOutput(True)
+        self.followMotorReverse = False
         self.leftBallMotor = leftBallMotor
         self.rightBallMotor = rightBallMotor
         
@@ -196,9 +199,12 @@ class Arm:
         
         self.on_calibrate()
 
-                
+    def reverse(self):
+        self.followMotorReverse = not self.followMotorReverse
+     
     def doit(self):
         '''Actually does stuff'''
+        #self.followMotor.reverseOutput(self.followMotorReverse)
         if self.want_manual:
             self.mode = ArmMode.MANUAL
         elif self.want_auto:
@@ -219,11 +225,9 @@ class Arm:
             
         if self.mode == ArmMode.MANUAL:
             self.motor.set(self.manual_value)
-            self.followMotor.set(self.manual_value)
             self.target_index = -1
         
         elif self.mode == ArmMode.AUTO:
-            
             self._calibrate()
             
             if self.isCalibrated:
@@ -236,7 +240,7 @@ class Arm:
                 
         else:
             self.motor.set(0)
-        
+        self.followMotor.set(self.motor.getDeviceID())
         self.leftBallMotor.set(self.leftBallSpeed)
         self.rightBallMotor.set(self.rightBallSpeed)
         
@@ -254,6 +258,7 @@ class Arm:
         self.sd.getAutoUpdateValue('%s|Encoder' % name, self.motor.getEncPosition())
         self.sd.getAutoUpdateValue('%s|Follow Encoder'% name, self.followMotor.getEncPosition())
         self.sd.getAutoUpdateValue("Arm|Reverse Limit Switch", self.motor.isRevLimitSwitchClosed())
+        self.sd.getAutoUpdateValue("Arm|Forward Limit Switch", self.motor.isFwdLimitSwitchClosed())
         self.sd.getAutoUpdateValue('%s|Calibrated' % name, self.isCalibrated)
         self.sd.getAutoUpdateValue('%s|Manual' % name, self.mode == ArmMode.MANUAL)
         

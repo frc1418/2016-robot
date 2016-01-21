@@ -21,10 +21,6 @@ class MyRobot(wpilib.SampleRobot):
         self.rf_motor = wpilib.CANTalon(15)
         self.rr_motor = wpilib.CANTalon(20)
         
-        self.lf_motor.reverseOutput(True)
-        self.lr_motor.reverseOutput(True)
-        self.rf_motor.reverseOutput(True)
-        self.rr_motor.reverseOutput(True)
         
         self.robot_drive = wpilib.RobotDrive(self.lf_motor, self.lr_motor, self.rf_motor, self.rr_motor)
         
@@ -62,11 +58,11 @@ class MyRobot(wpilib.SampleRobot):
         raiseButton = ButtonDebouncer(self.joystick2, 3)
         lowerButton = ButtonDebouncer(self.joystick2, 2)
         portcullis = ButtonDebouncer(self.joystick2, 10)
+        followReverse = ButtonDebouncer(self.joystick1, 10)
     
         shooting = False
         raise_portcullis = False
         
-        self.intake._calibrate()
         
         while self.isOperatorControl() and self.isEnabled():
             
@@ -83,14 +79,15 @@ class MyRobot(wpilib.SampleRobot):
                 self.intake.outtake()
                 shooting = False
                 
-                
-            #if raiseButton.get():
-            #    self.intake.raise_arm()
-            #    shooting = False
-            #elif lowerButton.get():
-            #    self.intake.lower_arm()
-            #    shooting = False
-            #    raise_portcullis = False
+            if followReverse.get():
+                self.intake.reverse()   
+            if raiseButton.get():
+                self.intake.raise_arm()
+                shooting = False
+            elif lowerButton.get():
+                self.intake.lower_arm()
+                shooting = False
+                raise_portcullis = False
              
                 
             if self.joystick1.getRawButton(3):                
@@ -100,20 +97,20 @@ class MyRobot(wpilib.SampleRobot):
                 self.intake.set_manual(1)
                 shooting = False
             
-            #if shoot.get():
-            #    shooting = not shooting
-            #    raise_portcullis = False
-            #if shooting:
-            #    raise_portcullis = False
-            #    self.shootBall.doit()
-            #    shooting = self.shootBall.get_running()  
+            if shoot.get():
+                shooting = not shooting
+                raise_portcullis = False
+            if shooting:
+                raise_portcullis = False
+                self.shootBall.doit()
+                shooting = self.shootBall.get_running()  
                 
             
-            #if portcullis.get():
-            #    raise_portcullis = not raise_portcullis
-            #if raise_portcullis:
-            #    self.auto_portcullis.doit()
-            #    raise_portcullis = self.auto_portcullis.get_running()  
+            if portcullis.get():
+                raise_portcullis = not raise_portcullis
+            if raise_portcullis:
+                self.auto_portcullis.doit()
+                raise_portcullis = self.auto_portcullis.get_running()  
                 
             self.update()            
             wpilib.Timer.delay(0.005)
