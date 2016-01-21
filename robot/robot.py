@@ -63,7 +63,6 @@ class MyRobot(wpilib.SampleRobot):
         shooting = False
         raise_portcullis = False
         
-        self.intake._calibrate()
         
         while self.isOperatorControl() and self.isEnabled():
             

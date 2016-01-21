@@ -225,7 +225,6 @@ class Arm:
             
         if self.mode == ArmMode.MANUAL:
             self.motor.set(self.manual_value)
-            self.followMotor.set(self.manual_value)
             self.target_index = -1
         
         elif self.mode == ArmMode.AUTO:
@@ -259,6 +258,7 @@ class Arm:
         self.sd.getAutoUpdateValue('%s|Encoder' % name, self.motor.getEncPosition())
         self.sd.getAutoUpdateValue('%s|Follow Encoder'% name, self.followMotor.getEncPosition())
         self.sd.getAutoUpdateValue("Arm|Reverse Limit Switch", self.motor.isRevLimitSwitchClosed())
+        self.sd.getAutoUpdateValue("Arm|Forward Limit Switch", self.motor.isFwdLimitSwitchClosed())
         self.sd.getAutoUpdateValue('%s|Calibrated' % name, self.isCalibrated)
         self.sd.getAutoUpdateValue('%s|Manual' % name, self.mode == ArmMode.MANUAL)
         
