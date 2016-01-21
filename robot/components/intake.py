@@ -235,6 +235,10 @@ class Arm:
                 
         else:
             self.motor.set(0)
+        
+        if(self.motor.isFwdLimitSwitchClosed()):
+            self.motor.setSensorPosition(0)
+        
         self.followMotor.set(self.motor.getDeviceID())
         self.leftBallMotor.set(self.leftBallSpeed)
         
