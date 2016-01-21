@@ -29,7 +29,7 @@ class MyRobot(wpilib.SampleRobot):
         self.leftBall = wpilib.Relay(0)
         self.rightBall = wpilib.Relay(1)
         
-        self.intake = intake.Arm(wpilib.CANTalon(25),wpilib.CANTalon(30), self.leftBall, self.rightBall, -1)
+        self.intake = intake.Arm(wpilib.CANTalon(25),wpilib.CANTalon(30), self.leftBall, self.rightBall, 1)
         
         # #SMART DASHBOARD
         

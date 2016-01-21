@@ -37,9 +37,9 @@ class PhysicsEngine:
                     self.armAct -=posVal
                     
             if self.armAct in range(-50, 50): # If the measured encoder value is within this range
-                armDict['limit_switch_closed_for'] = False # Fake closing the limit switch
+                armDict['limit_switch_closed_rev'] = False # Fake closing the limit switch
             if self.armAct in range(1390, 1400):
-                armDict['limit_switch_closed_rev'] = False
+                armDict['limit_switch_closed_for'] = False
                 
             #armDict['enc_position'] = max(min(armDict['enc_position'], 1440), 0) # Keep encoder between these values
             self.armAct = max(min(self.armAct, 1440), 0)
