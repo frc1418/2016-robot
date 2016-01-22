@@ -5,6 +5,9 @@ from robotpy_ext.control.button_debouncer import ButtonDebouncer
 from components import drive, intake
 from automations import shootBall
 from automations import portcullis
+#from robotpy_ext.common_drivers import navx
+
+from networktables.networktable import NetworkTable
 
 class MyRobot(wpilib.SampleRobot):
     
@@ -24,14 +27,11 @@ class MyRobot(wpilib.SampleRobot):
         
         self.robot_drive = wpilib.RobotDrive(self.lf_motor, self.lr_motor, self.rf_motor, self.rr_motor)
         
-        
         ##Intake Mechanism
         self.leftBall = wpilib.Talon(0)
         
         self.intake = intake.Arm(wpilib.CANTalon(25),wpilib.CANTalon(30), self.leftBall, 1)
 
-        
-        # #SMART DASHBOARD
         
         ##ROBOT DRIVE##
         self.drive = drive.Drive(self.robot_drive)
@@ -42,6 +42,23 @@ class MyRobot(wpilib.SampleRobot):
             'intake': self.intake
         }
         
+        ##SMART DASHBOARD##
+        self.sd = NetworkTable.getTable('SmartDashboard')
+        
+        ##NavX##
+        '''
+        self.navx = navx.AHRS.create_spi()
+        self.analog = wpilib.AnalogInput(navx.getNavxAnalogInChannel(0))
+        
+        self.sd.getAutoUpdateValue('NavX | SupportsDisplacement', self.navx._isDisplacementSupported())
+        self.sd.getAutoUpdateValue('NavX | IsCalibrating', self.navx.isCalibrating())
+        self.sd.getAutoUpdateValue('NavX | IsConnected', self.navx.isConnected())
+        self.sd.getAutoUpdateValue('NavX | Angle', self.navx.getAngle())
+        self.sd.getAutoUpdateValue('NavX | Pitch', self.navx.getPitch())
+        self.sd.getAutoUpdateValue('NavX | Yaw', self.navx.getYaw())
+        self.sd.getAutoUpdateValue('NavX | Roll', self.navx.getRoll())
+        self.sd.getAutoUpdateValue('NavX | Analog', self.analog.getVoltage())
+        '''
         ##AUTO FUNCTIONALITY##
         self.auto_portcullis = portcullis.PortcullisLift(self.drive, self.intake)
         self.shootBall = shootBall.shootBall(self.intake)
@@ -111,6 +128,7 @@ class MyRobot(wpilib.SampleRobot):
                 
             self.update()            
             wpilib.Timer.delay(0.005)
+    
     
     
     def update(self):
