@@ -3,14 +3,13 @@ import wpilib
 from networktables.networktable import NetworkTable
 import logging
 logger = logging.getLogger("arm")
-import enum
 
 forward = 1
 reverse = -1
 off = wpilib.Relay.Value.kOff
 
 
-class ArmMode(enum.Enum):
+class ArmMode:
     MANUAL = 1
     AUTO = 2
 
@@ -62,7 +61,7 @@ class Arm:
             self.sd.getAutoUpdateValue('Arm |D', 0)
         )
         
-        self.calibrate_timer = wpilib.Timer
+        self.calibrate_timer = wpilib.Timer()
         self.time_calibrating = 0
         self.start = 0
         self.calibrate_error = False
@@ -176,13 +175,13 @@ class Arm:
     
     def _calibrate(self):
         '''Moves the motor towards the limit switch to reset the encoder to 0'''
-        if not self.isCalibrated and not self.calibrate_error:
-            if self.isCalibrating == False:
-                self.start = self.calibrate_timer.getFPGATimestamp()
-                self.isCalibrating=True
+        if not self.isCalibrated:
+            if not self.isCalibrating:
+                self.calibrate_timer.start()
+                self.isCalibratingm = True
             
-            if((self.calibrate_timer.getFPGATimestamp() - self.start)>3):
-                self.calibrate_error = True
+            if self.calibrate_timer.hasPeriodPassed(3):
+                ArmMode.AUTO = ArmMode.MANUAL
                 self.set_manual(0)
                 self.mode = ArmMode.MANUAL
             
@@ -195,7 +194,7 @@ class Arm:
             
                 self.motor.changeControlMode(wpilib.CANTalon.ControlMode.Position)
                 self.isCalibrated = True
-                self.isCalibrating= False
+                self.isCalibrating = False
     
     def intake(self):
         self.leftBallSpeed = forward
