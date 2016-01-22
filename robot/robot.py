@@ -21,19 +21,15 @@ class MyRobot(wpilib.SampleRobot):
         self.rf_motor = wpilib.CANTalon(15)
         self.rr_motor = wpilib.CANTalon(20)
         
-        self.lf_motor.reverseOutput(True)
-        self.lr_motor.reverseOutput(True)
-        self.rf_motor.reverseOutput(True)
-        self.rr_motor.reverseOutput(True)
         
         self.robot_drive = wpilib.RobotDrive(self.lf_motor, self.lr_motor, self.rf_motor, self.rr_motor)
         
         
         ##Intake Mechanism
-        self.leftBall = wpilib.Relay(0)
-        self.rightBall = wpilib.Relay(1)
+        self.leftBall = wpilib.Talon(0)
         
-        self.intake = intake.Arm(wpilib.CANTalon(25),wpilib.CANTalon(30), self.leftBall, self.rightBall, -1)
+        self.intake = intake.Arm(wpilib.CANTalon(25),wpilib.CANTalon(30), self.leftBall, 1)
+
         
         # #SMART DASHBOARD
         
@@ -66,7 +62,6 @@ class MyRobot(wpilib.SampleRobot):
         shooting = False
         raise_portcullis = False
         
-        self.intake._calibrate()
         
         while self.isOperatorControl() and self.isEnabled():
             
@@ -83,7 +78,6 @@ class MyRobot(wpilib.SampleRobot):
                 self.intake.outtake()
                 shooting = False
                 
-                
             if raiseButton.get():
                 self.intake.raise_arm()
                 shooting = False
@@ -91,6 +85,7 @@ class MyRobot(wpilib.SampleRobot):
                 self.intake.lower_arm()
                 shooting = False
                 raise_portcullis = False
+             
                 
             if self.joystick1.getRawButton(3):                
                 self.intake.set_manual(-1)
