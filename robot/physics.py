@@ -17,8 +17,8 @@ class PhysicsEngine:
         # Simulate the arm
         try:
             armDict = hal_data['CAN'][25] # armDict is the dictionary of variables assigned to CANTalon 25
-            armPercentVal = int(armDict['value']*tm_diff*300/1023) # Encoder position increaser when in PercentVbus mode based on time and thrust value
-            posVal = int(tm_diff*300) # Encoder Position difference when in Position mode based on time
+            armPercentVal = int(armDict['value']*tm_diff*1023/1023) # Encoder position increaser when in PercentVbus mode based on time and thrust value
+            posVal = int(tm_diff*1023) # Encoder Position difference when in Position mode based on time
             armDict['limit_switch_closed_for'] = True
             armDict['limit_switch_closed_rev'] = True
         except:
