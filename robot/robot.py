@@ -5,7 +5,7 @@ from robotpy_ext.control.button_debouncer import ButtonDebouncer
 from components import drive, intake
 from automations import shootBall
 from automations import portcullis
-from robotpy_ext.common_drivers import navx
+#from robotpy_ext.common_drivers import navx
 
 from networktables.networktable import NetworkTable
 
@@ -50,6 +50,7 @@ class MyRobot(wpilib.SampleRobot):
         self.sd = NetworkTable.getTable('SmartDashboard')
         
         ##NavX##
+        '''
         self.navx = navx.AHRS.create_spi()
         self.analog = wpilib.AnalogInput(navx.getNavxAnalogInChannel(0))
         
@@ -61,7 +62,7 @@ class MyRobot(wpilib.SampleRobot):
         self.sd.getAutoUpdateValue('NavX | Yaw', self.navx.getYaw())
         self.sd.getAutoUpdateValue('NavX | Roll', self.navx.getRoll())
         self.sd.getAutoUpdateValue('NavX | Analog', self.analog.getVoltage())
-        
+        '''
         ##AUTO FUNCTIONALITY##
         self.auto_portcullis = portcullis.PortcullisLift(self.drive, self.intake)
         self.shootBall = shootBall.shootBall(self.intake)
