@@ -178,7 +178,7 @@ class Arm:
         if not self.isCalibrated:
             if not self.isCalibrating:
                 self.calibrate_timer.start()
-                self.isCalibratingm = True
+                self.isCalibrating = True
             
             if self.calibrate_timer.hasPeriodPassed(3):
                 ArmMode.AUTO = ArmMode.MANUAL
