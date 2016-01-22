@@ -5,8 +5,8 @@ import logging
 logger = logging.getLogger("arm")
 import enum
 
-forward = wpilib.Relay.Value.kForward
-reverse = wpilib.Relay.Value.kReverse
+forward = 1
+reverse = -1
 off = wpilib.Relay.Value.kOff
 
 
@@ -24,6 +24,7 @@ class Arm:
         
         self.init_down_speed = init_down_speed
         
+        self.isCalibrating = False
         self.isCalibrated = False
         
         self.want_manual = False
@@ -50,9 +51,9 @@ class Arm:
         self.leftBallSpeed = 0
                 
         self.positions = [
-            self.sd.getAutoUpdateValue('Arm | Bottom', 1440),
-            self.sd.getAutoUpdateValue('Arm | Middle', 922),
-            self.sd.getAutoUpdateValue('Arm | Top', 0),
+            self.sd.getAutoUpdateValue('Arm | Bottom', 100),
+            self.sd.getAutoUpdateValue('Arm | Middle', -200),
+            self.sd.getAutoUpdateValue('Arm | Top', -1200),
           ]
         
         self.wanted_pid = (
@@ -60,6 +61,11 @@ class Arm:
             self.sd.getAutoUpdateValue('Arm |I', 0), 
             self.sd.getAutoUpdateValue('Arm |D', 0)
         )
+        
+        self.calibrate_timer = wpilib.Timer
+        self.time_calibrating = 0
+        self.start = 0
+        self.calibrate_error = False
         
             
     
@@ -155,7 +161,7 @@ class Arm:
         :returns:  Is the encoder at the set target
         :rtype: Bool
         '''
-        if abs(self.get_position()-self.target_position)<170:
+        if abs(self.get_position()-self.target_position)<70:
             return True
         return False
     
@@ -170,15 +176,26 @@ class Arm:
     
     def _calibrate(self):
         '''Moves the motor towards the limit switch to reset the encoder to 0'''
-        if not self.isCalibrated:
-            if not self.motor.isRevLimitSwitchClosed():
-                self.motor.set(self.init_down_speed)
+        if not self.isCalibrated and not self.calibrate_error:
+            if self.isCalibrating == False:
+                self.start = self.calibrate_timer.getFPGATimestamp()
+                self.isCalibrating=True
+            
+            if((self.calibrate_timer.getFPGATimestamp() - self.start)>3):
+                self.calibrate_error = True
+                self.set_manual(0)
+                self.mode = ArmMode.MANUAL
+            
+            if not self.motor.isFwdLimitSwitchClosed():
+                self.motor.set(1)
+                
             else:
                 self.motor.set(0)
                 self.motor.setSensorPosition(0)
             
                 self.motor.changeControlMode(wpilib.CANTalon.ControlMode.Position)
                 self.isCalibrated = True
+                self.isCalibrating= False
     
     def intake(self):
         self.leftBallSpeed = forward
@@ -193,10 +210,7 @@ class Arm:
         self.isCalibrated = True
         
         self.on_calibrate()
-
-    def reverse(self):
-        self.followMotorReverse = not self.followMotorReverse
-     
+             
     def doit(self):
         '''Actually does stuff'''
         #self.followMotor.reverseOutput(self.followMotorReverse)
@@ -206,14 +220,14 @@ class Arm:
             self.mode = ArmMode.AUTO
             
         if self.last_mode != self.mode:
-            if self.mode == ArmMode.MANUAL:
-                self.motor.changeControlMode(wpilib.CANTalon.ControlMode.PercentVbus)
-            elif self.mode == ArmMode.AUTO:
+            if self.mode == ArmMode.AUTO:
                 self.new_pid = [e.value for e in self.wanted_pid]
                 if self.isCalibrated:
                     # Only switch the control mode if we're not calibrating!
                     self.motor.changeControlMode(wpilib.CANTalon.ControlMode.Position)
-            else:
+            if self.mode == ArmMode.MANUAL:
+                self.motor.changeControlMode(wpilib.CANTalon.ControlMode.PercentVbus)
+            if self.mode != ArmMode.MANUAL and self.mode != ArmMode.AUTO:
                 raise ValueError("INVALID MODE")
                 
             self.last_mode = self.mode
@@ -256,6 +270,8 @@ class Arm:
         self.sd.getAutoUpdateValue('%s|Follow Encoder'% name, self.followMotor.getEncPosition())
         self.sd.getAutoUpdateValue("Arm|Reverse Limit Switch", self.motor.isRevLimitSwitchClosed())
         self.sd.getAutoUpdateValue("Arm|Forward Limit Switch", self.motor.isFwdLimitSwitchClosed())
+        self.sd.getAutoUpdateValue("Arm| Follow Reverse Limit Switch", self.followMotor.isRevLimitSwitchClosed())
+        self.sd.getAutoUpdateValue("Arm| Follow Forward Limit Switch", self.followMotor.isFwdLimitSwitchClosed())
         self.sd.getAutoUpdateValue('%s|Calibrated' % name, self.isCalibrated)
         self.sd.getAutoUpdateValue('%s|Manual' % name, self.mode == ArmMode.MANUAL)
         

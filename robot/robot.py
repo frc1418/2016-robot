@@ -58,7 +58,6 @@ class MyRobot(wpilib.SampleRobot):
         raiseButton = ButtonDebouncer(self.joystick2, 3)
         lowerButton = ButtonDebouncer(self.joystick2, 2)
         portcullis = ButtonDebouncer(self.joystick2, 10)
-        followReverse = ButtonDebouncer(self.joystick1, 10)
     
         shooting = False
         raise_portcullis = False
@@ -79,8 +78,6 @@ class MyRobot(wpilib.SampleRobot):
                 self.intake.outtake()
                 shooting = False
                 
-            if followReverse.get():
-                self.intake.reverse()   
             if raiseButton.get():
                 self.intake.raise_arm()
                 shooting = False
@@ -91,10 +88,10 @@ class MyRobot(wpilib.SampleRobot):
              
                 
             if self.joystick1.getRawButton(3):                
-                self.intake.set_manual(-.25)
+                self.intake.set_manual(-1)
                 shooting = False
             if self.joystick1.getRawButton(2):
-                self.intake.set_manual(.25)
+                self.intake.set_manual(1)
                 shooting = False
             
             if shoot.get():
