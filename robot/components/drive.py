@@ -11,7 +11,7 @@ class Drive:
 		through this class.
 	'''
 
-	def __init__(self, robotDrive):
+	def __init__(self, robotDrive, navx):
 		'''
 			Constructor. 
 			
@@ -22,7 +22,7 @@ class Drive:
 		self.y = 0
 		self.rotation = 0
 		self.squaredInputs = False
-		#self.gyro = gyro
+		self.navx = navx
 		
 		self.angle_constant = .040
 		self.gyro_enabled = True
@@ -72,11 +72,11 @@ class Drive:
 	
 	def return_gyro_angle(self):
 		''' Returns the gyro angle'''
-		return self.gyro.getAngle()
+		return self.navx.getAngle()
 	
 	def reset_gyro_angle(self):
 		'''Resets the gyro angle'''
-		self.gyro.reset()
+		self.navx.reset()
 
 	
 	def set_angle_constant(self, constant):

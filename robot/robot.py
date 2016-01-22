@@ -24,8 +24,11 @@ class MyRobot(wpilib.SampleRobot):
         self.rf_motor = wpilib.CANTalon(15)
         self.rr_motor = wpilib.CANTalon(20)
         
-        
         self.robot_drive = wpilib.RobotDrive(self.lf_motor, self.lr_motor, self.rf_motor, self.rr_motor)
+        
+        ##NavX##
+        self.navx = navx.AHRS.create_spi()
+        self.analog = wpilib.AnalogInput(navx.getNavxAnalogInChannel(0))
         
         ##Intake Mechanism
         self.leftBall = wpilib.Talon(0)
@@ -34,7 +37,7 @@ class MyRobot(wpilib.SampleRobot):
 
         
         ##ROBOT DRIVE##
-        self.drive = drive.Drive(self.robot_drive)
+        self.drive = drive.Drive(self.robot_drive, self.navx)
         
         
         self.components = {
@@ -44,11 +47,6 @@ class MyRobot(wpilib.SampleRobot):
         
         ##SMART DASHBOARD##
         self.sd = NetworkTable.getTable('SmartDashboard')
-        
-        ##NavX##
-        
-        self.navx = navx.AHRS.create_spi()
-        self.analog = wpilib.AnalogInput(navx.getNavxAnalogInChannel(0))
         
         ##AUTO FUNCTIONALITY##
         self.auto_portcullis = portcullis.PortcullisLift(self.drive, self.intake)
