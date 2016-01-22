@@ -50,9 +50,9 @@ class Arm:
         self.leftBallSpeed = 0
                 
         self.positions = [
-            self.sd.getAutoUpdateValue('Arm | Bottom', 100),
-            self.sd.getAutoUpdateValue('Arm | Middle', -200),
-            self.sd.getAutoUpdateValue('Arm | Top', -1200),
+            self.sd.getAutoUpdateValue('Arm | Bottom', -100),
+            self.sd.getAutoUpdateValue('Arm | Middle', 200),
+            self.sd.getAutoUpdateValue('Arm | Top', 1200),
           ]
         
         self.wanted_pid = (
