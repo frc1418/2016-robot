@@ -50,15 +50,6 @@ class MyRobot(wpilib.SampleRobot):
         self.navx = navx.AHRS.create_spi()
         self.analog = wpilib.AnalogInput(navx.getNavxAnalogInChannel(0))
         
-        self.sd.getAutoUpdateValue('NavX | SupportsDisplacement', self.navx._isDisplacementSupported())
-        self.sd.getAutoUpdateValue('NavX | IsCalibrating', self.navx.isCalibrating())
-        self.sd.getAutoUpdateValue('NavX | IsConnected', self.navx.isConnected())
-        self.sd.getAutoUpdateValue('NavX | Angle', self.navx.getAngle())
-        self.sd.getAutoUpdateValue('NavX | Pitch', self.navx.getPitch())
-        self.sd.getAutoUpdateValue('NavX | Yaw', self.navx.getYaw())
-        self.sd.getAutoUpdateValue('NavX | Roll', self.navx.getRoll())
-        self.sd.getAutoUpdateValue('NavX | Analog', self.analog.getVoltage())
-        
         ##AUTO FUNCTIONALITY##
         self.auto_portcullis = portcullis.PortcullisLift(self.drive, self.intake)
         self.shootBall = shootBall.shootBall(self.intake)
@@ -128,6 +119,7 @@ class MyRobot(wpilib.SampleRobot):
                 raise_portcullis = self.auto_portcullis.get_running()  
                 
             self.update()            
+            self.updateSmartDashboard()
             wpilib.Timer.delay(0.005)
     
     
@@ -135,7 +127,16 @@ class MyRobot(wpilib.SampleRobot):
     def update(self):
         for component in self.components.values():
             component.doit()
-            
+    
+    def updateSmartDashboard(self):
+        self.sd.putBoolean('NavX | SupportsDisplacement', self.navx._isDisplacementSupported())
+        self.sd.putBoolean('NavX | IsCalibrating', self.navx.isCalibrating())
+        self.sd.putBoolean('NavX | IsConnected', self.navx.isConnected())
+        self.sd.putNumber('NavX | Angle', self.navx.getAngle())
+        self.sd.putNumber('NavX | Pitch', self.navx.getPitch())
+        self.sd.putNumber('NavX | Yaw', self.navx.getYaw())
+        self.sd.putNumber('NavX | Roll', self.navx.getRoll())
+        self.sd.putNumber('NavX | Analog', self.analog.getVoltage())        
             
 if __name__ == '__main__':
     wpilib.run(MyRobot)
