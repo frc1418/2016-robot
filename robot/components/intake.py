@@ -50,9 +50,9 @@ class Arm:
         self.leftBallSpeed = 0
                 
         self.positions = [
-            self.sd.getAutoUpdateValue('Arm | Bottom', -100),
-            self.sd.getAutoUpdateValue('Arm | Middle', 200),
-            self.sd.getAutoUpdateValue('Arm | Top', 1200),
+            self.sd.getAutoUpdateValue('Arm | Bottom', 100),
+            self.sd.getAutoUpdateValue('Arm | Middle', -200),
+            self.sd.getAutoUpdateValue('Arm | Top', -1000),
           ]
         
         self.wanted_pid = (
@@ -86,7 +86,6 @@ class Arm:
         :rtype: int
         '''
         return self.motor.getEncPosition()
-    
     def get_target_position(self):
         return self.target_position
     
@@ -119,7 +118,7 @@ class Arm:
     
     def raise_arm(self):
         '''Raises the arm by one position'''   
-        target_index = self._detect_position_index(-170, -1)
+        target_index = self._detect_position_index(30, -1)
         if target_index == -1:
             target_index = 0
         
@@ -137,7 +136,7 @@ class Arm:
     def lower_arm(self):
         '''Lowers the arm by one position'''
         
-        target_index = self._detect_position_index(170, 0)
+        target_index = self._detect_position_index(-30, 0)
         
         if target_index is None:
             index = 0
@@ -160,7 +159,7 @@ class Arm:
         :returns:  Is the encoder at the set target
         :rtype: Bool
         '''
-        if abs(self.get_position()-self.target_position)<70:
+        if abs(self.get_position()-self.target_position)<self.sd.getAutoUpdateValue("Arm|On Target Threshold", 25):
             return True
         return False
     
@@ -249,8 +248,8 @@ class Arm:
         else:
             self.motor.set(0)
         
-        if(self.motor.isFwdLimitSwitchClosed()):
-            self.motor.setSensorPosition(0)
+        #if(self.motor.isFwdLimitSwitchClosed()):
+        #    self.motor.setSensorPosition(0)
         
         self.followMotor.set(self.motor.getDeviceID())
         self.leftBallMotor.set(self.leftBallSpeed)
