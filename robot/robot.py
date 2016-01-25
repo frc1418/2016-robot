@@ -27,6 +27,17 @@ class MyRobot(wpilib.SampleRobot):
         
         self.robot_drive = wpilib.RobotDrive(self.lf_motor, self.lr_motor, self.rf_motor, self.rr_motor)
         
+        ##SMART DASHBOARD##
+        self.sd = NetworkTable.getTable('SmartDashboard')
+        
+       
+       
+        ##NavX##
+        
+        self.navx = navx.AHRS.create_spi()
+        self.analog = wpilib.AnalogInput(navx.getNavxAnalogInChannel(0))
+        
+        
         ##Intake Mechanism
         self.leftBall = wpilib.Talon(0)
         
@@ -34,7 +45,7 @@ class MyRobot(wpilib.SampleRobot):
 
         
         ##ROBOT DRIVE##
-        self.drive = drive.Drive(self.robot_drive)
+        self.drive = drive.Drive(self.robot_drive, self.navx)
         
         
         self.components = {
@@ -42,23 +53,7 @@ class MyRobot(wpilib.SampleRobot):
             'intake': self.intake
         }
         
-        ##SMART DASHBOARD##
-        self.sd = NetworkTable.getTable('SmartDashboard')
-        
-        ##NavX##
-        
-        self.navx = navx.AHRS.create_spi()
-        self.analog = wpilib.AnalogInput(navx.getNavxAnalogInChannel(0))
-        
-        self.sd.getAutoUpdateValue('NavX | SupportsDisplacement', self.navx._isDisplacementSupported())
-        self.sd.getAutoUpdateValue('NavX | IsCalibrating', self.navx.isCalibrating())
-        self.sd.getAutoUpdateValue('NavX | IsConnected', self.navx.isConnected())
-        self.sd.getAutoUpdateValue('NavX | Angle', self.navx.getAngle())
-        self.sd.getAutoUpdateValue('NavX | Pitch', self.navx.getPitch())
-        self.sd.getAutoUpdateValue('NavX | Yaw', self.navx.getYaw())
-        self.sd.getAutoUpdateValue('NavX | Roll', self.navx.getRoll())
-        self.sd.getAutoUpdateValue('NavX | Analog', self.analog.getVoltage())
-        
+       
         ##AUTO FUNCTIONALITY##
         self.auto_portcullis = portcullis.PortcullisLift(self.drive, self.intake)
         self.shootBall = shootBall.shootBall(self.intake)
@@ -103,7 +98,9 @@ class MyRobot(wpilib.SampleRobot):
                 self.intake.lower_arm()
                 shooting = False
                 raise_portcullis = False
-             
+            
+            if self.joystick1.getRawButton(6):
+                self.drive.angle_rotation(180)
                 
             if self.joystick1.getRawButton(3):                
                 self.intake.set_manual(-1)
@@ -129,7 +126,6 @@ class MyRobot(wpilib.SampleRobot):
                 
             self.update()            
             wpilib.Timer.delay(0.005)
-    
     
     
     def update(self):
