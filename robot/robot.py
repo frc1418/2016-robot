@@ -24,8 +24,11 @@ class MyRobot(wpilib.SampleRobot):
         self.rf_motor = wpilib.CANTalon(15)
         self.rr_motor = wpilib.CANTalon(20)
         
-        
         self.robot_drive = wpilib.RobotDrive(self.lf_motor, self.lr_motor, self.rf_motor, self.rr_motor)
+        
+        ##NavX##
+        self.navx = navx.AHRS.create_spi()
+        self.analog = wpilib.AnalogInput(navx.getNavxAnalogInChannel(0))
         
         ##Intake Mechanism
         self.leftBall = wpilib.Talon(0)
@@ -34,7 +37,7 @@ class MyRobot(wpilib.SampleRobot):
 
         
         ##ROBOT DRIVE##
-        self.drive = drive.Drive(self.robot_drive)
+        self.drive = drive.Drive(self.robot_drive, self.navx)
         
         
         self.components = {
@@ -44,20 +47,6 @@ class MyRobot(wpilib.SampleRobot):
         
         ##SMART DASHBOARD##
         self.sd = NetworkTable.getTable('SmartDashboard')
-        
-        ##NavX##
-        
-        self.navx = navx.AHRS.create_spi()
-        self.analog = wpilib.AnalogInput(navx.getNavxAnalogInChannel(0))
-        
-        self.sd.getAutoUpdateValue('NavX | SupportsDisplacement', self.navx._isDisplacementSupported())
-        self.sd.getAutoUpdateValue('NavX | IsCalibrating', self.navx.isCalibrating())
-        self.sd.getAutoUpdateValue('NavX | IsConnected', self.navx.isConnected())
-        self.sd.getAutoUpdateValue('NavX | Angle', self.navx.getAngle())
-        self.sd.getAutoUpdateValue('NavX | Pitch', self.navx.getPitch())
-        self.sd.getAutoUpdateValue('NavX | Yaw', self.navx.getYaw())
-        self.sd.getAutoUpdateValue('NavX | Roll', self.navx.getRoll())
-        self.sd.getAutoUpdateValue('NavX | Analog', self.analog.getVoltage())
         
         ##AUTO FUNCTIONALITY##
         self.auto_portcullis = portcullis.PortcullisLift(self.drive, self.intake)
@@ -128,6 +117,7 @@ class MyRobot(wpilib.SampleRobot):
                 raise_portcullis = self.auto_portcullis.get_running()  
                 
             self.update()            
+            self.updateSmartDashboard()
             wpilib.Timer.delay(0.005)
     
     
@@ -135,7 +125,16 @@ class MyRobot(wpilib.SampleRobot):
     def update(self):
         for component in self.components.values():
             component.doit()
-            
+    
+    def updateSmartDashboard(self):
+        self.sd.putBoolean('NavX | SupportsDisplacement', self.navx._isDisplacementSupported())
+        self.sd.putBoolean('NavX | IsCalibrating', self.navx.isCalibrating())
+        self.sd.putBoolean('NavX | IsConnected', self.navx.isConnected())
+        self.sd.putNumber('NavX | Angle', self.navx.getAngle())
+        self.sd.putNumber('NavX | Pitch', self.navx.getPitch())
+        self.sd.putNumber('NavX | Yaw', self.navx.getYaw())
+        self.sd.putNumber('NavX | Roll', self.navx.getRoll())
+        self.sd.putNumber('NavX | Analog', self.analog.getVoltage())        
             
 if __name__ == '__main__':
     wpilib.run(MyRobot)
