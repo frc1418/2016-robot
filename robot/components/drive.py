@@ -29,19 +29,24 @@ class Drive:
 		
 		self.robotDrive = robotDrive
 		
-		sd = NetworkTable.getTable('SmartDashboard')
-		
+		self.sd = NetworkTable.getTable('SmartDashboard')
 		#Auto / Manual
 		
 		self.want_manual = False
 		self.want_auto = False
+		self.navx = navx
+		turnController = wpilib.PIDController(.03, 0, 0, 0, navx, output=self)
+		turnController.setInputRange(-180.0,  180.0)
+		turnController.setOutputRange(-1.0, 1.0)
+		turnController.setAbsoluteTolerance(2)
+		turnController.setContinuous(True)
 		
-		#Drive Straight
-		self.drive_timer = wpilib.Timer
-		self.drive_start_time = 0
-		self.drive_want_time = 0
-		self.drive_want_speed = 0
+		self.turnController = turnController
+		self.rotateToAngle = False
+
 		
+		
+				
 	#
 	# Verb functions -- these functions do NOT talk to motors directly. This
 	# allows multiple callers in the loop to call our functions without 
@@ -92,20 +97,10 @@ class Drive:
 		    
 		    :returns: True if near angle, False otherwise
 		'''
-		
-		if not self.gyro_enabled:
-			return False
-		
-		angleOffset = target_angle - self.return_gyro_angle()
-		
-		if angleOffset < -1 or angleOffset > 1:
-			self.rotation = angleOffset * self.angle_constant
-			self.rotation = max(min(0.3, self.rotation), -0.3)
-			
-			return False
-		
-		return True
-		
+		self.rotateToAngle = True
+		self.turnController.enable()
+		self.turnController.setSetpoint(target_angle)
+		self.rotation = self.output
 	def set_direction(self, direction):
 		'''Used to reverse direction'''
 		self.isTheRobotBackwards = bool(direction)
@@ -114,6 +109,9 @@ class Drive:
 		'''when called the robot will reverse front/back'''
 		self.isTheRobotBackwards = not self.isTheRobotBackwards
 	
+	def pidWrite(self, output):
+		self.output = output
+		
 	def doit(self):
 		''' actually makes the robot drive'''
 		if(self.isTheRobotBackwards):
@@ -126,5 +124,19 @@ class Drive:
 		self.x = 0
 		self.y = 0
 		self.rotation = 0
+		if not self.rotateToAngle:
+			self.turnController.disable()
+		self.update_sd()
 		
-				
+	def update_sd(self):
+		self.sd.putValue('NavX | SupportsDisplacement', self.navx._isDisplacementSupported())
+		self.sd.putValue('NavX | IsCalibrating', self.navx.isCalibrating())
+		self.sd.putValue('NavX | IsConnected', self.navx.isConnected())
+		self.sd.putValue('NavX | Angle', self.navx.getAngle())
+		self.sd.putValue('NavX | Pitch', self.navx.getPitch())
+		self.sd.putValue('NavX | Yaw', self.navx.getYaw())
+		self.sd.putValue('NavX | Roll', self.navx.getRoll())
+		self.sd.putValue('NavX | Y-Velocity', self.navx.getVelocityY())
+		self.sd.putValue('NavX | X-Velocity', self.navx.getVelocityX())
+		self.sd.putValue('NavX | Y-Position', self.navx.getDisplacementY())
+		self.sd.putValue('NavX | X-Position', self.navx.getDisplacementX())		

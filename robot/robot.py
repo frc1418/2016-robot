@@ -30,11 +30,20 @@ class MyRobot(wpilib.SampleRobot):
         self.navx = navx.AHRS.create_spi()
         self.analog = wpilib.AnalogInput(navx.getNavxAnalogInChannel(0))
         
+        ##SMART DASHBOARD##
+        self.sd = NetworkTable.getTable('SmartDashboard')
+        
+       
+       
+        ##NavX##
+        
+        self.navx = navx.AHRS.create_spi()
+        self.analog = wpilib.AnalogInput(navx.getNavxAnalogInChannel(0))
+        
         ##Intake Mechanism
         self.leftBall = wpilib.Talon(0)
         
         self.intake = intake.Arm(wpilib.CANTalon(25),wpilib.CANTalon(30), self.leftBall, 1)
-
         
         ##ROBOT DRIVE##
         self.drive = drive.Drive(self.robot_drive, self.navx)
@@ -44,9 +53,6 @@ class MyRobot(wpilib.SampleRobot):
             'drive': self.drive,
             'intake': self.intake
         }
-        
-        ##SMART DASHBOARD##
-        self.sd = NetworkTable.getTable('SmartDashboard')
         
         ##AUTO FUNCTIONALITY##
         self.auto_portcullis = portcullis.PortcullisLift(self.drive, self.intake)
@@ -92,7 +98,9 @@ class MyRobot(wpilib.SampleRobot):
                 self.intake.lower_arm()
                 shooting = False
                 raise_portcullis = False
-             
+            
+            if self.joystick1.getRawButton(6):
+                self.drive.angle_rotation(180)
                 
             if self.joystick1.getRawButton(3):                
                 self.intake.set_manual(-1)
@@ -119,7 +127,6 @@ class MyRobot(wpilib.SampleRobot):
             self.update()            
             self.updateSmartDashboard()
             wpilib.Timer.delay(0.005)
-    
     
     
     def update(self):

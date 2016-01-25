@@ -50,9 +50,9 @@ class Arm:
         self.leftBallSpeed = 0
                 
         self.positions = [
-            self.sd.getAutoUpdateValue('Arm | Bottom', 100),
-            self.sd.getAutoUpdateValue('Arm | Middle', -200),
-            self.sd.getAutoUpdateValue('Arm | Top', -1000),
+            self.sd.getAutoUpdateValue('Arm | Bottom', 50),
+            self.sd.getAutoUpdateValue('Arm | Middle', -230),
+            self.sd.getAutoUpdateValue('Arm | Top', -1200),
           ]
         
         self.wanted_pid = (
@@ -65,8 +65,6 @@ class Arm:
         self.time_calibrating = 0
         self.start = 0
         self.calibrate_error = False
-        
-            
     
     def set_arm_top(self):
         self._set_position(2)
@@ -233,6 +231,7 @@ class Arm:
         if self.mode == ArmMode.MANUAL:
             self.motor.set(self.manual_value)
             self.target_index = -1
+            
         
         elif self.mode == ArmMode.AUTO:
             self._calibrate()
@@ -248,9 +247,12 @@ class Arm:
         else:
             self.motor.set(0)
         
-        #if(self.motor.isFwdLimitSwitchClosed()):
-        #    self.motor.setSensorPosition(0)
-        
+        if self.motor.isFwdLimitSwitchClosed():
+            self.motor.setSensorPosition(0)
+            
+        if self.motor.isRevLimitSwitchClosed():
+            self.motor.setSensorPosition(-1140)
+            
         self.followMotor.set(self.motor.getDeviceID())
         self.leftBallMotor.set(self.leftBallSpeed)
         
@@ -258,20 +260,22 @@ class Arm:
             
         self.want_auto = False
         self.want_manual = False
-        self.manual_value = 0
+        
+        self.manual_value = .01
         
         self.update_sd("Arm")
         
     def update_sd(self, name):
         '''Puts refreshed values to SmartDashboard'''
-        self.sd.getAutoUpdateValue('%s|Encoder' % name, self.motor.getEncPosition())
-        self.sd.getAutoUpdateValue('%s|Follow Encoder'% name, self.followMotor.getEncPosition())
-        self.sd.getAutoUpdateValue("Arm|Reverse Limit Switch", self.motor.isRevLimitSwitchClosed())
-        self.sd.getAutoUpdateValue("Arm|Forward Limit Switch", self.motor.isFwdLimitSwitchClosed())
-        self.sd.getAutoUpdateValue("Arm| Follow Reverse Limit Switch", self.followMotor.isRevLimitSwitchClosed())
-        self.sd.getAutoUpdateValue("Arm| Follow Forward Limit Switch", self.followMotor.isFwdLimitSwitchClosed())
-        self.sd.getAutoUpdateValue('%s|Calibrated' % name, self.isCalibrated)
-        self.sd.getAutoUpdateValue('%s|Manual' % name, self.mode == ArmMode.MANUAL)
+        self.sd.putValue('Arm|Manual Value', self.manual_value)
+        self.sd.putValue('%s|Encoder' % name, self.motor.getEncPosition())
+        self.sd.putValue('%s|Follow Encoder'% name, self.followMotor.getEncPosition())
+        self.sd.putValue("Arm|Reverse Limit Switch", self.motor.isRevLimitSwitchClosed())
+        self.sd.putValue("Arm|Forward Limit Switch", self.motor.isFwdLimitSwitchClosed())
+        self.sd.putValue("Arm| Follow Reverse Limit Switch", self.followMotor.isRevLimitSwitchClosed())
+        self.sd.putValue("Arm| Follow Forward Limit Switch", self.followMotor.isFwdLimitSwitchClosed())
+        self.sd.putValue('%s|Calibrated' % name, self.isCalibrated)
+        self.sd.putValue('%s|Manual' % name, self.mode == ArmMode.MANUAL)
         
         if self.target_position is None:
             self.sd.getAutoUpdateValue('%s|Target Position' % name, -1)
