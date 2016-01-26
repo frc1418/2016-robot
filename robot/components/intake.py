@@ -34,6 +34,8 @@ class Arm:
         self.mode = ArmMode.MANUAL
         self.last_mode = ArmMode.MANUAL
         
+        #self.manual_value = -.25
+        self.manual_value = 0
         # These need to be set by subclasses
         self.wanted_pid = None
         self.current_pid = (0, 0, 0)
@@ -46,6 +48,8 @@ class Arm:
         self.followMotor.changeControlMode(wpilib.CANTalon.ControlMode.Follower)
         self.followMotor.reverseOutput(True)
         self.leftBallMotor = leftBallMotor
+        
+        self.now_enc = 0
         
         self.leftBallSpeed = 0
                 
@@ -65,6 +69,7 @@ class Arm:
         self.time_calibrating = 0
         self.start = 0
         self.calibrate_error = False
+        self.enc_avg = []
     
     def set_arm_top(self):
         self._set_position(2)
@@ -157,7 +162,7 @@ class Arm:
         :returns:  Is the encoder at the set target
         :rtype: Bool
         '''
-        if abs(self.get_position()-self.target_position)<self.sd.getAutoUpdateValue("Arm|On Target Threshold", 25):
+        if abs(self.get_position()-self.target_position)<self.sd.getAutoUpdateValue("Arm|On Target Threshold", 25).value:
             return True
         return False
     
@@ -206,7 +211,12 @@ class Arm:
         self.isCalibrated = True
         
         self.on_calibrate()
-             
+        
+    def test_enc(self):
+        self.want_auto = True
+        self.target_position = self.motor.getEncPosition()-13    
+    
+        
     def doit(self):
         '''Actually does stuff'''
         #self.followMotor.reverseOutput(self.followMotorReverse)
@@ -231,7 +241,9 @@ class Arm:
         if self.mode == ArmMode.MANUAL:
             self.motor.set(self.manual_value)
             self.target_index = -1
-            
+            self.enc_avg.append(self.motor.getEncPosition() - self.now_enc)
+            self.sd.putValue("Arm | Enc_Avg", sum(self.enc_avg)/len(self.enc_avg))
+            self.now_enc = self.motor.getEncPosition()
         
         elif self.mode == ArmMode.AUTO:
             self._calibrate()
@@ -261,7 +273,6 @@ class Arm:
         self.want_auto = False
         self.want_manual = False
         
-        self.manual_value = .01
         
         self.update_sd("Arm")
         
