@@ -1,7 +1,1 @@
-{
-  "pyfrc_test.py::test_autonomous": true,
-  "pyfrc_test.py::test_disabled": true,
-  "pyfrc_test.py::test_fuzz": true,
-  "pyfrc_test.py::test_operator_control": true,
-  "pyfrc_test.py::test_practice": true
-}
+{}
