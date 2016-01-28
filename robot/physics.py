@@ -10,7 +10,7 @@ class PhysicsEngine:
         # keep track of the tote encoder position
         
         # keep track of the can encoder position
-        self.armAct = 500
+        self.armAct = -500
         
         
         self.controller.add_device_gyro_channel('navxmxp_spi_4_angle')
@@ -27,6 +27,7 @@ class PhysicsEngine:
             pass
         
         else:
+            
             if armDict['mode_select'] == wpilib.CANTalon.ControlMode.PercentVbus: # If manual operation
                 self.armAct += armPercentVal # Add the calculated encoder change value to the 'actual value'
                 armDict['enc_position'] += armPercentVal # Add the calculated encoder change value to the recorded encoder value
@@ -37,14 +38,16 @@ class PhysicsEngine:
                 else: # If the current position is more than the target position
                     armDict['enc_position'] -= posVal # Subtract calculated encoder position
                     self.armAct -=posVal
-                    
+            
             if self.armAct in range(-50, 50): # If the measured encoder value is within this range
-                armDict['limit_switch_closed_rev'] = False # Fake closing the limit switch
-            if self.armAct in range(1390, 1400):
-                armDict['limit_switch_closed_for'] = False
+                armDict['limit_switch_closed_for'] = False # Fake closing the limit switch
+                armDict['enc_position'] = 0
+            if self.armAct in range(-1200, -1225):
+                armDict['limit_switch_closed_rev'] = False
+                armDict['enc_position'] = 1140
                 
             #armDict['enc_position'] = max(min(armDict['enc_position'], 1440), 0) # Keep encoder between these values
-            self.armAct = max(min(self.armAct, 1440), 0)
+            self.armAct = max(min(self.armAct, 0), -1225)
         # Simulate the drivetrain
         lf_motor = hal_data['CAN'][5]['value']/1023
         lr_motor = hal_data['CAN'][10]['value']/1023
