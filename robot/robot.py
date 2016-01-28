@@ -26,22 +26,11 @@ class MyRobot(wpilib.SampleRobot):
         
         self.robot_drive = wpilib.RobotDrive(self.lf_motor, self.lr_motor, self.rf_motor, self.rr_motor)
         
-        ##NavX##
-        self.navx = navx.AHRS.create_spi()
-        self.analog = wpilib.AnalogInput(navx.getNavxAnalogInChannel(0))
-        
         ##SMART DASHBOARD##
         self.sd = NetworkTable.getTable('SmartDashboard')
-        
-       
-       
-        ##NavX##
-        
-        self.navx = navx.AHRS.create_spi()
-        self.analog = wpilib.AnalogInput(navx.getNavxAnalogInChannel(0))
-        
+                
         ##Intake Mechanism
-        self.leftBall = wpilib.Talon(0)
+        self.leftBall = wpilib.Talon(9)
         
         self.intake = intake.Arm(wpilib.CANTalon(25),wpilib.CANTalon(30), self.leftBall, 1)
         
@@ -79,35 +68,37 @@ class MyRobot(wpilib.SampleRobot):
         while self.isOperatorControl() and self.isEnabled():
             
                 
-            self.drive.move(self.joystick1.getY(), -self.joystick2.getX())
+            self.drive.move(self.joystick1.getY(), self.joystick2.getX())
             
             if reverseButton.get():
                 self.drive.switch_direction()
                 
-            if self.joystick2.getRawButton(4):
+            if self.joystick2.getRawButton(5):
                 self.intake.intake()
                 shooting = False
-            elif self.joystick2.getRawButton(5):
+                raise_portcullis = False
+            elif self.joystick2.getRawButton(4):
                 self.intake.outtake()
                 shooting = False
+                raise_portcullis = False
                 
             if raiseButton.get():
                 self.intake.raise_arm()
                 shooting = False
+                raise_portcullis = False
             elif lowerButton.get():
                 self.intake.lower_arm()
                 shooting = False
                 raise_portcullis = False
-            
-            if self.joystick1.getRawButton(6):
-                self.drive.angle_rotation(180)
                 
             if self.joystick1.getRawButton(3):                
                 self.intake.set_manual(-1)
                 shooting = False
+                raise_portcullis = False
             if self.joystick1.getRawButton(2):
                 self.intake.set_manual(1)
                 shooting = False
+                raise_portcullis = False
             
             if shoot.get():
                 shooting = not shooting
