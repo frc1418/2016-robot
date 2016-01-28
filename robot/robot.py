@@ -28,14 +28,7 @@ class MyRobot(wpilib.SampleRobot):
         
         ##SMART DASHBOARD##
         self.sd = NetworkTable.getTable('SmartDashboard')
-        
-       
-       
-        ##NavX##
-        
-        self.navx = navx.AHRS.create_spi()
-        self.analog = wpilib.AnalogInput(navx.getNavxAnalogInChannel(0))
-        
+                
         ##Intake Mechanism
         self.leftBall = wpilib.Talon(9)
         
