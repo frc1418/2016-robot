@@ -34,6 +34,11 @@ class MyRobot(wpilib.SampleRobot):
         
         self.intake = intake.Arm(wpilib.CANTalon(25),wpilib.CANTalon(30), self.leftBall, 1)
         
+        ##NavX##
+        self.navx = navx.AHRS.create_spi()
+        self.analog = wpilib.AnalogInput(navx.getNavxAnalogInChannel(0))
+        
+        
         ##ROBOT DRIVE##
         self.drive = drive.Drive(self.robot_drive, self.navx)
         
