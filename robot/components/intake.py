@@ -54,7 +54,7 @@ class Arm:
         self.leftBallSpeed = 0
                 
         self.positions = [
-            self.sd.getAutoUpdateValue('Arm | Bottom', 50),
+            self.sd.getAutoUpdateValue('Arm | Bottom', 25),
             self.sd.getAutoUpdateValue('Arm | Middle', -230),
             self.sd.getAutoUpdateValue('Arm | Top', -1200),
           ]
@@ -241,9 +241,9 @@ class Arm:
         if self.mode == ArmMode.MANUAL:
             self.motor.set(self.manual_value)
             self.target_index = -1
-            self.enc_avg.append(self.motor.getEncPosition() - self.now_enc)
-            self.sd.putValue("Arm | Enc_Avg", sum(self.enc_avg)/len(self.enc_avg))
-            self.now_enc = self.motor.getEncPosition()
+            if self.isCalibrated:
+                self.mode = ArmMode.AUTO
+                self.target_position = self.motor.getEncPosition()
         
         elif self.mode == ArmMode.AUTO:
             self._calibrate()
@@ -266,6 +266,7 @@ class Arm:
             self.motor.setSensorPosition(-1140)
             
         self.followMotor.set(self.motor.getDeviceID())
+        
         self.leftBallMotor.set(self.leftBallSpeed)
         
         self.leftBallSpeed = off
@@ -273,6 +274,7 @@ class Arm:
         self.want_auto = False
         self.want_manual = False
         
+        self.manual_value = 0
         
         self.update_sd("Arm")
         
@@ -280,13 +282,9 @@ class Arm:
         '''Puts refreshed values to SmartDashboard'''
         self.sd.putValue('Arm|Manual Value', self.manual_value)
         self.sd.putValue('%s|Encoder' % name, self.motor.getEncPosition())
-        self.sd.putValue('%s|Follow Encoder'% name, self.followMotor.getEncPosition())
         self.sd.putValue("Arm|Reverse Limit Switch", self.motor.isRevLimitSwitchClosed())
         self.sd.putValue("Arm|Forward Limit Switch", self.motor.isFwdLimitSwitchClosed())
-        self.sd.putValue("Arm| Follow Reverse Limit Switch", self.followMotor.isRevLimitSwitchClosed())
-        self.sd.putValue("Arm| Follow Forward Limit Switch", self.followMotor.isFwdLimitSwitchClosed())
         self.sd.putValue('%s|Calibrated' % name, self.isCalibrated)
-        self.sd.putValue('%s|Manual' % name, self.mode == ArmMode.MANUAL)
         
         if self.target_position is None:
             self.sd.getAutoUpdateValue('%s|Target Position' % name, -1)

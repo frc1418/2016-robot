@@ -14,6 +14,7 @@ class PortcullisLift:
         self.state = ARM_DOWN
         
         self.timer = wpilib.Timer()
+        self.timer.start()
     def get_running(self):
         return self.is_running
     
@@ -31,6 +32,7 @@ class PortcullisLift:
             if self.timer.hasPeriodPassed(1):
                 self.state = ARM_UP
         if self.state == ARM_UP:
+            self.drive.move(self.drive_speed, 0)
             self.intake.set_arm_top()
             if self.intake.on_target():
                 self.is_running = False
