@@ -23,10 +23,14 @@ class MyRobot(wpilib.SampleRobot):
         self.lr_motor = wpilib.CANTalon(10)
         self.rf_motor = wpilib.CANTalon(15)
         self.rr_motor = wpilib.CANTalon(20)
-        self.winch_motor_1 = wpilib.CANTalon(25)
-        self.winch_motor_2 = wpilib.CANTalon(30)
+        self.winch_motor_1 = wpilib.Talon(0)
+        self.winch_motor_2 = wpilib.Talon(1)
 
         self.robot_drive = wpilib.RobotDrive(self.lf_motor, self.lr_motor, self.rf_motor, self.rr_motor)
+
+        ##NavX##
+        self.navx = navx.AHRS.create_spi()
+        self.analog = wpilib.AnalogInput(navx.getNavxAnalogInChannel(0))
 
         ##SMART DASHBOARD##
         self.sd = NetworkTable.getTable('SmartDashboard')
@@ -118,11 +122,11 @@ class MyRobot(wpilib.SampleRobot):
                 raise_portcullis = self.auto_portcullis.get_running()
 
             if self.joystick1.getRawButton(6):
-                self.winch_motor_1.set_manual(1)
-                self.winch_motor_2.set_manual(1)
+                self.winch_motor_1.set(1)
+                self.winch_motor_2.set(1)
             else:
-                self.winch_motor_1.set_manual(0)
-                self.winch_motor_2.set_manual(0)
+                self.winch_motor_1.set(0)
+                self.winch_motor_2.set(0)
 
             self.update()
             self.updateSmartDashboard()
