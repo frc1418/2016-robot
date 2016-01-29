@@ -26,6 +26,10 @@ class MyRobot(wpilib.SampleRobot):
         
         self.robot_drive = wpilib.RobotDrive(self.lf_motor, self.lr_motor, self.rf_motor, self.rr_motor)
         
+        ##NavX##
+        self.navx = navx.AHRS.create_spi()
+        self.analog = wpilib.AnalogInput(navx.getNavxAnalogInChannel(0))
+        
         ##SMART DASHBOARD##
         self.sd = NetworkTable.getTable('SmartDashboard')
                 
