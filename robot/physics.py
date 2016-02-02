@@ -11,6 +11,7 @@ class PhysicsEngine:
         
         # keep track of the can encoder position
         self.armAct = -500
+        self.prev_armAct = -500
         
         
         self.controller.add_device_gyro_channel('navxmxp_spi_4_angle')
@@ -19,10 +20,17 @@ class PhysicsEngine:
         # Simulate the arm
         try:
             armDict = hal_data['CAN'][25] # armDict is the dictionary of variables assigned to CANTalon 25
+            lfDict = hal_data['CAN'][5]
+            rfDict = hal_data['CAN'][15]
+            
             armPercentVal = int(armDict['value']*tm_diff*1023/1023) # Encoder position increaser when in PercentVbus mode based on time and thrust value
             posVal = int(tm_diff*1023) # Encoder Position difference when in Position mode based on time
             armDict['limit_switch_closed_for'] = True
             armDict['limit_switch_closed_rev'] = True
+            
+            lWheelPercentVal = int(-lfDict['value']*tm_diff*750/1023)
+            rWheelPercentVal = int(rfDict['value']*tm_diff*750/1023)
+            
         except:
             pass
         
@@ -45,9 +53,15 @@ class PhysicsEngine:
             if self.armAct in range(-1200, -1225):
                 armDict['limit_switch_closed_rev'] = False
                 armDict['enc_position'] = 1140
-                
+            
+            lfDict['enc_position']+=lWheelPercentVal
+            rfDict['enc_position']+=rWheelPercentVal
+              
             #armDict['enc_position'] = max(min(armDict['enc_position'], 1440), 0) # Keep encoder between these values
             self.armAct = max(min(self.armAct, 0), -1225)
+            armDict['enc_velocity'] = ((self.armAct - self.prev_armAct) / tm_diff)/1440
+            self.prev_armAct = self.armAct
+            
         # Simulate the drivetrain
         lf_motor = hal_data['CAN'][5]['value']/1023
         lr_motor = hal_data['CAN'][10]['value']/1023
