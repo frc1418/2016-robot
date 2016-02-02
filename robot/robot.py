@@ -23,8 +23,6 @@ class MyRobot(wpilib.SampleRobot):
         self.lr_motor = wpilib.CANTalon(10)
         self.rf_motor = wpilib.CANTalon(15)
         self.rr_motor = wpilib.CANTalon(20)
-        self.winch_motor_1 = wpilib.Talon(0)
-        self.winch_motor_2 = wpilib.Talon(1)
 
         self.robot_drive = wpilib.RobotDrive(self.lf_motor, self.lr_motor, self.rf_motor, self.rr_motor)
 
