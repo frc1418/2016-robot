@@ -1,8 +1,8 @@
 #!/usr/local/bin/python3 
 
-import wpilib
+import wpilib, sys
 from robotpy_ext.control.button_debouncer import ButtonDebouncer
-from components import drive, intake
+from components import drive, intake, winch
 from automations import shootBall
 from automations import portcullis
 from robotpy_ext.common_drivers import navx
@@ -11,12 +11,11 @@ from networktables.networktable import NetworkTable
 
 class MyRobot(wpilib.SampleRobot):
     
-    def robotInit(self):
-        
+    def robotInit(self):    
+    
         # #INITIALIZE JOYSTICKS##
         self.joystick1 = wpilib.Joystick(0)
         self.joystick2 = wpilib.Joystick(1)
-
         
         # #INITIALIZE MOTORS##
         self.lf_motor = wpilib.CANTalon(5)
@@ -31,6 +30,7 @@ class MyRobot(wpilib.SampleRobot):
                 
         ##Intake Mechanism
         self.leftBall = wpilib.Talon(9)
+        self.leftBall.label = "Intake Motor"
         
         self.intake = intake.Arm(wpilib.CANTalon(25),wpilib.CANTalon(30), self.leftBall, 1)
         
@@ -38,18 +38,20 @@ class MyRobot(wpilib.SampleRobot):
         self.navx = navx.AHRS.create_spi()
         self.analog = wpilib.AnalogInput(navx.getNavxAnalogInChannel(0))
         
-        
         ##ROBOT DRIVE##
         self.drive = drive.Drive(self.robot_drive, self.navx)
         
+        ##WINCH##
+        self.winch = winch.Winch(wpilib.Talon(0), wpilib.Talon(1))
         
         self.components = {
             'drive': self.drive,
-            'intake': self.intake
+            'intake': self.intake,
+            'winch': self.winch
         }
         
         ##AUTO FUNCTIONALITY##
-        self.auto_portcullis = portcullis.PortcullisLift(self.drive, self.intake)
+        self.auto_portcullis = portcullis.PortcullisLift(self.sd, self.drive, self.intake)
         self.shootBall = shootBall.shootBall(self.intake)
         
     def disabled(self):
@@ -97,11 +99,11 @@ class MyRobot(wpilib.SampleRobot):
                 raise_portcullis = False
                 
             if self.joystick1.getRawButton(3):                
-                self.intake.set_manual(-1)
+                self.intake.set_manual(-.25)
                 shooting = False
                 raise_portcullis = False
             if self.joystick1.getRawButton(2):
-                self.intake.set_manual(1)
+                self.intake.set_manual(.25)
                 shooting = False
                 raise_portcullis = False
             
@@ -119,7 +121,12 @@ class MyRobot(wpilib.SampleRobot):
             if raise_portcullis:
                 self.auto_portcullis.doit()
                 raise_portcullis = self.auto_portcullis.get_running()  
-                
+            
+            if self.joystick1.getRawButton(7):
+                self.winch.deploy_winch()
+            if self.joystick1.getRawButton(8):
+                self.winch.winch()
+                   
             self.update()            
             self.updateSmartDashboard()
             wpilib.Timer.delay(0.005)
@@ -137,7 +144,9 @@ class MyRobot(wpilib.SampleRobot):
         self.sd.putNumber('NavX | Pitch', self.navx.getPitch())
         self.sd.putNumber('NavX | Yaw', self.navx.getYaw())
         self.sd.putNumber('NavX | Roll', self.navx.getRoll())
-        self.sd.putNumber('NavX | Analog', self.analog.getVoltage())        
-            
+        self.sd.putNumber('NavX | Analog', self.analog.getVoltage())   
+             
+
+     
 if __name__ == '__main__':
     wpilib.run(MyRobot)

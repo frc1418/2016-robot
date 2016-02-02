@@ -54,7 +54,7 @@ class Arm:
         self.leftBallSpeed = 0
                 
         self.positions = [
-            self.sd.getAutoUpdateValue('Arm | Bottom', 25),
+            self.sd.getAutoUpdateValue('Arm | Bottom', 50),
             self.sd.getAutoUpdateValue('Arm | Middle', -230),
             self.sd.getAutoUpdateValue('Arm | Top', -1200),
           ]
@@ -164,6 +164,11 @@ class Arm:
         '''
         if abs(self.get_position()-self.target_position)<self.sd.getAutoUpdateValue("Arm|On Target Threshold", 25).value:
             return True
+        elif self.target_index == 0 and self.motor.isFwdLimitSwitchClosed():
+            return True
+        elif self.target_index == 2 and self.motor.isRevLimitSwitchClosed():
+            return True
+        
         return False
     
     def overide_calibrate(self):
@@ -285,6 +290,7 @@ class Arm:
         self.sd.putValue("Arm|Reverse Limit Switch", self.motor.isRevLimitSwitchClosed())
         self.sd.putValue("Arm|Forward Limit Switch", self.motor.isFwdLimitSwitchClosed())
         self.sd.putValue('%s|Calibrated' % name, self.isCalibrated)
+        self.sd.putValue('Arm|Encoder Velocity', self.motor.getEncVelocity())
         
         if self.target_position is None:
             self.sd.getAutoUpdateValue('%s|Target Position' % name, -1)
