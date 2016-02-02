@@ -54,7 +54,7 @@ class Arm:
         self.leftBallSpeed = 0
                 
         self.positions = [
-            self.sd.getAutoUpdateValue('Arm | Bottom', 50),
+            self.sd.getAutoUpdateValue('Arm | Bottom', 25),
             self.sd.getAutoUpdateValue('Arm | Middle', -230),
             self.sd.getAutoUpdateValue('Arm | Top', -1200),
           ]
