@@ -1,6 +1,6 @@
 #!/usr/local/bin/python3
 
-import wpilib, sys
+import wpilib
 from robotpy_ext.control.button_debouncer import ButtonDebouncer
 from components import drive, intake, winch
 from automations import shootBall
