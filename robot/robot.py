@@ -77,10 +77,13 @@ class MyRobot(wpilib.SampleRobot):
 
 
             self.drive.move(self.joystick1.getY(), self.joystick2.getX())
-
+            if self.joystick1.getZ() > .75:
+                self.drive.move(self.joystick2.getX(), self.joystick2.getX())
+                
             if reverseButton.get():
                 self.drive.switch_direction()
-
+            
+            ##BALL INTAKE##
             if self.joystick2.getRawButton(5):
                 self.intake.intake()
                 shooting = False
@@ -89,7 +92,8 @@ class MyRobot(wpilib.SampleRobot):
                 self.intake.outtake()
                 shooting = False
                 raise_portcullis = False
-
+            
+            ##AUTO ARM##
             if raiseButton.get():
                 self.intake.raise_arm()
                 shooting = False
@@ -98,16 +102,18 @@ class MyRobot(wpilib.SampleRobot):
                 self.intake.lower_arm()
                 shooting = False
                 raise_portcullis = False
-
+                
+            ##MANUAL ARM##
             if self.joystick1.getRawButton(3):
-                self.intake.set_manual(-1)
+                self.intake.set_manual(-.25)
                 shooting = False
                 raise_portcullis = False
             if self.joystick1.getRawButton(2):
                 self.intake.set_manual(.25)
                 shooting = False
                 raise_portcullis = False
-
+                
+            ##AUTO SHOOT##
             if shoot.get():
                 shooting = not shooting
                 raise_portcullis = False
@@ -116,13 +122,14 @@ class MyRobot(wpilib.SampleRobot):
                 self.shootBall.doit()
                 shooting = self.shootBall.get_running()
 
-
+            ##AUTO PORTCULLIS##
             if portcullis.get():
                 raise_portcullis = not raise_portcullis
             if raise_portcullis:
                 self.auto_portcullis.doit()
                 raise_portcullis = self.auto_portcullis.get_running()  
             
+            ##WINCH##
             if self.joystick1.getRawButton(7):
                 self.winch.deploy_winch()
             if self.joystick1.getRawButton(8):
