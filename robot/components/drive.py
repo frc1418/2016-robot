@@ -1,6 +1,8 @@
 import wpilib
 
 from networktables import NetworkTable
+from common.driveEncoders import DriveEncoders
+import math
 
 ENCODER_ROTATION = 1000
 WHEEL_DIAMETER = 7.5625
@@ -9,13 +11,16 @@ class Drive:
 		The sole interaction between the robot and its driving system
 		occurs here. Anything that wants to drive the robot must go
 		through this class.
-	'''
+	'''	
 
-	def __init__(self, robotDrive, navx):
+	def __init__(self, robotDrive, navx, rf_encoder, lf_encoder):
 		'''
 			Constructor. 
 			
 			:param robotDrive: a `wpilib.RobotDrive` object
+			:type rf_encoder: DriveEncoders()
+			:type lf_encoder: DriveEncoders()
+			
 		'''
 		self.isTheRobotBackwards = False
 		# set defaults here
@@ -30,6 +35,9 @@ class Drive:
 		self.gyro_enabled = True
 		
 		self.robotDrive = robotDrive
+		
+		self.rf_encoder = rf_encoder
+		self.lf_encoder = lf_encoder
 		
 		self.sd = NetworkTable.getTable('SmartDashboard')
 		
@@ -68,11 +76,7 @@ class Drive:
 	
 	def return_gyro_angle(self):
 		''' Returns the gyro angle'''
-		angle =  self.navx.getAngle()
-		if angle > 180:
-			print(angle-360)
-			return angle-360
-		return angle
+		return self.navx.getYaw()
 	
 	def reset_gyro_angle(self):
 		'''Resets the gyro angle'''
@@ -84,16 +88,16 @@ class Drive:
 		self.angle_constant = constant
 		
 	def reset_drive_encoders(self):
-		self.robotDrive.frontLeftMotor.setSensorPosition(0)	
-		self.robotDrive.frontRightMotor.setSensorPosition(0)
+		self.lf_encoder.zero()
+		self.rf_encoder.zero()
 		
 		
 	def return_drive_encoder_position(self):
-		return (self.robotDrive.frontLeftMotor.getEncPosition()+self.robotDrive.frontRightMotor.getEncPosition())/2
+		return (self.lf_encoder.get() + self.rf_encoder.get())/2
 	
 	def drive_distance(self, inches):
 		gear_ratio = 50 / 12
-		target_position = (gear_ratio * ENCODER_ROTATION * inches) / WHEEL_DIAMETER
+		target_position = (gear_ratio * ENCODER_ROTATION * inches) / (math.pi*WHEEL_DIAMETER)
 		return self.encoder_drive(target_position)
 		
 	def encoder_drive(self, target_position):
@@ -101,7 +105,7 @@ class Drive:
 		
 		if abs(target_offset)> 50:
 			self.y = target_offset * self.drive_constant
-			self.y = max(min(1, self.y), -.1)
+			self.y = max(min(.5, self.y), -.5)
 			
 			return False
 		return True
@@ -141,9 +145,9 @@ class Drive:
 		
 
 		if(self.isTheRobotBackwards):
-			self.robotDrive.arcadeDrive(self.y, -self.rotation, self.squaredInputs)
-		else:
 			self.robotDrive.arcadeDrive(-self.y, -self.rotation, self.squaredInputs)
+		else:
+			self.robotDrive.arcadeDrive(self.y, -self.rotation, self.squaredInputs)
 			
 		
 		# by default, the robot shouldn't move
@@ -155,4 +159,5 @@ class Drive:
 		self.sd.putValue('NavX | Angle', self.navx.getAngle())
 		self.sd.putValue('NavX | Pitch', self.navx.getPitch())
 		self.sd.putValue('NavX | Yaw', self.navx.getYaw())
-		self.sd.putValue('NavX | Roll', self.navx.getRoll())	
+		self.sd.putValue('NavX | Roll', self.navx.getRoll())
+		self.sd.putValue('Drive | Encoder', self.return_drive_encoder_position())	

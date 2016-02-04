@@ -28,10 +28,10 @@ class MyRobot(wpilib.SampleRobot):
         self.rr_motor = wpilib.CANTalon(20)        
         
         self.robot_drive = wpilib.RobotDrive(self.lf_motor, self.lr_motor, self.rf_motor, self.rr_motor)
-        
         ##DRIVE ENCODERS##
-        self.rf_encoder = driveEncoders.DriveEncoders(self.rf_motor, True)
-        self.lf_encoder = driveEncoders.DriveEncoders(self.lf_motor)
+        self.rf_encoder = driveEncoders.DriveEncoders(self.robot_drive.frontRightMotor, True)
+        self.lf_encoder = driveEncoders.DriveEncoders(self.robot_drive.frontLeftMotor)
+        self.rf_encoder.motor.setFeedbackDevice(wpilib.CANTalon.FeedbackDevice.AnalogEncoder)
         
         ##NavX##
         self.navx = navx.AHRS.create_spi()
@@ -47,11 +47,10 @@ class MyRobot(wpilib.SampleRobot):
         self.intake = intake.Arm(wpilib.CANTalon(25),wpilib.CANTalon(30), self.leftBall, 1)
 
         ##ROBOT DRIVE##
-        self.drive = drive.Drive(self.robot_drive, self.navx)
+        self.drive = drive.Drive(self.robot_drive, self.navx, self.rf_encoder, self.lf_encoder)
         
         ##WINCH##
         self.winch = winch.Winch(wpilib.Talon(0), wpilib.Talon(1))
-        
         self.components = {
             'drive': self.drive,
             'intake': self.intake,
@@ -65,6 +64,8 @@ class MyRobot(wpilib.SampleRobot):
         self.control_loop_wait_time = 0.025
         self.automodes = AutonomousModeSelector('autonomous', self.components)
     def autonomous(self):
+        self.lf_encoder.zero()
+        self.rf_encoder.zero()
         self.automodes.run(self.control_loop_wait_time, self.update)    
         
     def disabled(self):
@@ -90,9 +91,10 @@ class MyRobot(wpilib.SampleRobot):
         while self.isOperatorControl() and self.isEnabled():
 
 
-            self.drive.move(self.joystick1.getY(), self.joystick2.getX())
             if self.joystick1.getZ() > .75:
                 self.robot_drive.tankDrive(self.joystick1, self.joystick2)
+            else:
+                self.drive.move(-self.joystick1.getY(), self.joystick2.getX())   
                 
             if reverseButton.get():
                 self.drive.switch_direction()
@@ -150,15 +152,12 @@ class MyRobot(wpilib.SampleRobot):
                 self.winch.winch()
                    
             self.update()            
-            self.updateSmartDashboard()
+            #self.updateSmartDashboard()
             wpilib.Timer.delay(0.005)
 
     def update(self):
         for component in self.components.values():
             component.doit()
 
-    def updateSmartDashboard(self):
-        self.sd.putValue('Drive | Left Wheel Encoder', self.lf_encoder.get())
-        self.sd.putValue('Drive | Right Wheel Encoder', self.rf_encoder.get())
 if __name__ == '__main__':
     wpilib.run(MyRobot)

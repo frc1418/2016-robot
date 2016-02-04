@@ -285,12 +285,12 @@ class Arm:
         
     def update_sd(self, name):
         '''Puts refreshed values to SmartDashboard'''
-        self.sd.putValue('Arm|Manual Value', self.manual_value)
-        self.sd.putValue('%s|Encoder' % name, self.motor.getEncPosition())
-        self.sd.putValue("Arm|Reverse Limit Switch", self.motor.isRevLimitSwitchClosed())
-        self.sd.putValue("Arm|Forward Limit Switch", self.motor.isFwdLimitSwitchClosed())
-        self.sd.putValue('%s|Calibrated' % name, self.isCalibrated)
-        self.sd.putValue('Arm|Encoder Velocity', self.motor.getEncVelocity())
+        self.sd.putValue('Arm | Manual Value', self.manual_value)
+        self.sd.putValue('%s | Encoder' % name, self.motor.getEncPosition())
+        self.sd.putValue("Arm | Reverse Limit Switch", self.motor.isRevLimitSwitchClosed())
+        self.sd.putValue("Arm | Forward Limit Switch", self.motor.isFwdLimitSwitchClosed())
+        self.sd.putValue('%s | Calibrated' % name, self.isCalibrated)
+        self.sd.putValue('Arm | Encoder Velocity', self.motor.getEncVelocity())
         
         if self.target_position is None:
             self.sd.getAutoUpdateValue('%s|Target Position' % name, -1)

@@ -9,7 +9,7 @@ class LowGoal(StatefulAutonomous):
     
     @timed_state(duration = 10, next_state='rotate', first = True)
     def drive_forward(self):
-        self.intake.set_arm_bottom()
+        self.intake.set_arm_middle()
         if self.drive.drive_distance(60):
             pass
             #self.next_state('rotate')
