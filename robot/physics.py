@@ -13,7 +13,6 @@ class PhysicsEngine:
         self.armAct = -500
         self.prev_armAct = -500
         
-        
         self.controller.add_device_gyro_channel('navxmxp_spi_4_angle')
     
     def update_sim(self, hal_data, now, tm_diff):
