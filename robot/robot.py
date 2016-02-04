@@ -90,7 +90,7 @@ class MyRobot(wpilib.SampleRobot):
 
             self.drive.move(self.joystick1.getY(), self.joystick2.getX())
             if self.joystick1.getZ() > .75:
-                self.drive.move(self.joystick2.getX(), self.joystick2.getX())
+                self.robot_drive.tankDrive(self.joystick1, self.joystick2)
                 
             if reverseButton.get():
                 self.drive.switch_direction()
