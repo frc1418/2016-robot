@@ -2,7 +2,7 @@
 
 import wpilib
 from robotpy_ext.control.button_debouncer import ButtonDebouncer
-from components import drive, intake, winch
+from components import drive, intake, winch, driveEncoders
 from automations import shootBall
 from automations import portcullis
 
@@ -24,14 +24,13 @@ class MyRobot(wpilib.SampleRobot):
         self.lf_motor = wpilib.CANTalon(5)
         self.lr_motor = wpilib.CANTalon(10)
         self.rf_motor = wpilib.CANTalon(15)
-        self.rr_motor = wpilib.CANTalon(20)
-        
-        self.rf_motor.reverseSensor(True)
-        
+        self.rr_motor = wpilib.CANTalon(20)        
         
         self.robot_drive = wpilib.RobotDrive(self.lf_motor, self.lr_motor, self.rf_motor, self.rr_motor)
         
-        
+        ##DRIVE ENCODERS##
+        self.rf_encoder = driveEncoders.DriveEncoders(self.rf_motor, True)
+        self.lf_encoder = driveEncoders.DriveEncoders(self.lf_motor)
         
         ##NavX##
         self.navx = navx.AHRS.create_spi()
@@ -84,6 +83,8 @@ class MyRobot(wpilib.SampleRobot):
         shooting = False
         raise_portcullis = False
 
+        self.lf_encoder.zero()
+        self.rf_encoder.zero()
 
         while self.isOperatorControl() and self.isEnabled():
 
@@ -156,7 +157,7 @@ class MyRobot(wpilib.SampleRobot):
             component.doit()
 
     def updateSmartDashboard(self):
-        self.sd.putValue('Left Wheel Encoder', self.lf_motor.getAnalogInPosition())
-        self.sd.putValue('Right Wheel Encoder', self.rf_motor.getAnalogInPosition())
+        self.sd.putValue('Left Wheel Encoder', self.lf_encoder.get())
+        self.sd.putValue('Right Wheel Encoder', self.rf_encoder.get())
 if __name__ == '__main__':
     wpilib.run(MyRobot)
