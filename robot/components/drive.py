@@ -2,7 +2,7 @@ import wpilib
 
 from networktables import NetworkTable
 
-ENCODER_ROTATION = 962
+ENCODER_ROTATION = 1000
 WHEEL_DIAMETER = 7.5625
 class Drive:
 	'''
@@ -24,7 +24,7 @@ class Drive:
 		self.squaredInputs = False
 		self.navx = navx
 		
-		self.angle_constant = .040
+		self.angle_constant = -.040
 		self.drive_constant = .0009
 		
 		self.gyro_enabled = True
@@ -68,7 +68,11 @@ class Drive:
 	
 	def return_gyro_angle(self):
 		''' Returns the gyro angle'''
-		return self.navx.getAngle()
+		angle =  self.navx.getAngle()
+		if angle > 180:
+			print(angle-360)
+			return angle-360
+		return angle
 	
 	def reset_gyro_angle(self):
 		'''Resets the gyro angle'''
@@ -90,7 +94,7 @@ class Drive:
 	def drive_distance(self, inches):
 		gear_ratio = 50 / 12
 		target_position = (gear_ratio * ENCODER_ROTATION * inches) / WHEEL_DIAMETER
-		self.drive.encoderDrive(target_position)
+		return self.encoder_drive(target_position)
 		
 	def encoder_drive(self, target_position):
 		target_offset = target_position - self.return_drive_encoder_position()
@@ -148,14 +152,7 @@ class Drive:
 		self.update_sd()
 		
 	def update_sd(self):
-		self.sd.putValue('NavX | SupportsDisplacement', self.navx._isDisplacementSupported())
-		self.sd.putValue('NavX | IsCalibrating', self.navx.isCalibrating())
-		self.sd.putValue('NavX | IsConnected', self.navx.isConnected())
 		self.sd.putValue('NavX | Angle', self.navx.getAngle())
 		self.sd.putValue('NavX | Pitch', self.navx.getPitch())
 		self.sd.putValue('NavX | Yaw', self.navx.getYaw())
-		self.sd.putValue('NavX | Roll', self.navx.getRoll())
-		self.sd.putValue('NavX | Y-Velocity', self.navx.getVelocityY())
-		self.sd.putValue('NavX | X-Velocity', self.navx.getVelocityX())
-		self.sd.putValue('NavX | Y-Position', self.navx.getDisplacementY())
-		self.sd.putValue('NavX | X-Position', self.navx.getDisplacementX())		
+		self.sd.putValue('NavX | Roll', self.navx.getRoll())	

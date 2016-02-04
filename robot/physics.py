@@ -28,8 +28,8 @@ class PhysicsEngine:
             armDict['limit_switch_closed_for'] = True
             armDict['limit_switch_closed_rev'] = True
             
-            lWheelPercentVal = int(-lfDict['value']*tm_diff*750/1023)
-            rWheelPercentVal = int(rfDict['value']*tm_diff*750/1023)
+            lWheelPercentVal = int(-lfDict['value']*tm_diff*10)
+            rWheelPercentVal = int(rfDict['value']*tm_diff*10)
             
         except:
             pass
