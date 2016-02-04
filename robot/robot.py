@@ -5,7 +5,9 @@ from robotpy_ext.control.button_debouncer import ButtonDebouncer
 from components import drive, intake, winch
 from automations import shootBall
 from automations import portcullis
+
 from robotpy_ext.common_drivers import navx
+from robotpy_ext.autonomous import AutonomousModeSelector
 
 from networktables.networktable import NetworkTable
 
@@ -23,9 +25,14 @@ class MyRobot(wpilib.SampleRobot):
         self.lr_motor = wpilib.CANTalon(10)
         self.rf_motor = wpilib.CANTalon(15)
         self.rr_motor = wpilib.CANTalon(20)
-
+        
+        self.rf_motor.reverseSensor(True)
+        
+        
         self.robot_drive = wpilib.RobotDrive(self.lf_motor, self.lr_motor, self.rf_motor, self.rr_motor)
-
+        
+        
+        
         ##NavX##
         self.navx = navx.AHRS.create_spi()
         self.analog = wpilib.AnalogInput(navx.getNavxAnalogInChannel(0))
@@ -54,7 +61,12 @@ class MyRobot(wpilib.SampleRobot):
         ##AUTO FUNCTIONALITY##
         self.auto_portcullis = portcullis.PortcullisLift(self.sd, self.drive, self.intake)
         self.shootBall = shootBall.shootBall(self.intake)
-
+        
+        self.control_loop_wait_time = 0.025
+        self.automodes = AutonomousModeSelector('autonomous', self.components)
+    def autonomous(self):
+        self.automodes.run(self.control_loop_wait_time, self.update)    
+        
     def disabled(self):
         # self.talon.setSensorPosition(0)
         wpilib.Timer.delay(.01)
@@ -85,11 +97,11 @@ class MyRobot(wpilib.SampleRobot):
             
             ##BALL INTAKE##
             if self.joystick2.getRawButton(5):
-                self.intake.intake()
+                self.intake.outtake()
                 shooting = False
                 raise_portcullis = False
             elif self.joystick2.getRawButton(4):
-                self.intake.outtake()
+                self.intake.intake()
                 shooting = False
                 raise_portcullis = False
             
@@ -144,14 +156,7 @@ class MyRobot(wpilib.SampleRobot):
             component.doit()
 
     def updateSmartDashboard(self):
-        self.sd.putBoolean('NavX | SupportsDisplacement', self.navx._isDisplacementSupported())
-        self.sd.putBoolean('NavX | IsCalibrating', self.navx.isCalibrating())
-        self.sd.putBoolean('NavX | IsConnected', self.navx.isConnected())
-        self.sd.putNumber('NavX | Angle', self.navx.getAngle())
-        self.sd.putNumber('NavX | Pitch', self.navx.getPitch())
-        self.sd.putNumber('NavX | Yaw', self.navx.getYaw())
-        self.sd.putNumber('NavX | Roll', self.navx.getRoll())
-        self.sd.putNumber('NavX | Analog', self.analog.getVoltage())
-
+        self.sd.putValue('Left Wheel Encoder', self.lf_motor.getAnalogInPosition())
+        self.sd.putValue('Right Wheel Encoder', self.rf_motor.getAnalogInPosition())
 if __name__ == '__main__':
     wpilib.run(MyRobot)

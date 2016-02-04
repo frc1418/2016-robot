@@ -34,4 +34,4 @@ class Winch:
         self.kickMotor.set(self.kickValue)
         
         self.winchValue = 0
-        self.kickValue = -.05
+        self.kickValue = 0

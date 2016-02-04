@@ -58,7 +58,7 @@ class Arm:
             self.sd.getAutoUpdateValue('Arm | Middle', -230),
             self.sd.getAutoUpdateValue('Arm | Top', -1200),
           ]
-        
+        self.position_threshold = self.sd.getAutoUpdateValue("Arm|On Target Threshold", 170)
         self.wanted_pid = (
             self.sd.getAutoUpdateValue('Arm |P', 2),
             self.sd.getAutoUpdateValue('Arm |I', 0), 
@@ -162,7 +162,7 @@ class Arm:
         :returns:  Is the encoder at the set target
         :rtype: Bool
         '''
-        if abs(self.get_position()-self.target_position)<self.sd.getAutoUpdateValue("Arm|On Target Threshold", 25).value:
+        if abs(self.get_position()-self.target_position)< self.position_threshold.value:
             return True
         elif self.target_index == 0 and self.motor.isFwdLimitSwitchClosed():
             return True
@@ -204,10 +204,10 @@ class Arm:
                 self.isCalibrating = False
     
     def intake(self):
-        self.leftBallSpeed = forward
+        self.leftBallSpeed = reverse
     
     def outtake(self):
-        self.leftBallSpeed = reverse
+        self.leftBallSpeed = forward
 
     def manualZero(self):
         self.motor.set(0)
