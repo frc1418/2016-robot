@@ -2,7 +2,8 @@
 
 import wpilib
 from robotpy_ext.control.button_debouncer import ButtonDebouncer
-from components import drive, intake, winch, driveEncoders
+from components import drive, intake, winch
+from common import driveEncoders
 from automations import shootBall
 from automations import portcullis
 
@@ -157,7 +158,7 @@ class MyRobot(wpilib.SampleRobot):
             component.doit()
 
     def updateSmartDashboard(self):
-        self.sd.putValue('Left Wheel Encoder', self.lf_encoder.get())
-        self.sd.putValue('Right Wheel Encoder', self.rf_encoder.get())
+        self.sd.putValue('Drive | Left Wheel Encoder', self.lf_encoder.get())
+        self.sd.putValue('Drive | Right Wheel Encoder', self.rf_encoder.get())
 if __name__ == '__main__':
     wpilib.run(MyRobot)
