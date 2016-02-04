@@ -117,11 +117,11 @@ class MyRobot(wpilib.SampleRobot):
                 
             ##MANUAL ARM##
             if self.joystick1.getRawButton(3):
-                self.intake.set_manual(-.25)
+                self.intake.set_manual(-1)
                 shooting = False
                 raise_portcullis = False
             if self.joystick1.getRawButton(2):
-                self.intake.set_manual(.25)
+                self.intake.set_manual(1)
                 shooting = False
                 raise_portcullis = False
                 
