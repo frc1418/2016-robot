@@ -27,8 +27,8 @@ class PhysicsEngine:
             armDict['limit_switch_closed_for'] = True
             armDict['limit_switch_closed_rev'] = True
             
-            lWheelPercentVal = int(-lfDict['value']*tm_diff*10)
-            rWheelPercentVal = int(rfDict['value']*tm_diff*10)
+            lWheelPercentVal = int(lfDict['value']*tm_diff*10)
+            rWheelPercentVal = int(-rfDict['value']*tm_diff*10)
             
         except:
             pass
@@ -53,19 +53,20 @@ class PhysicsEngine:
                 armDict['limit_switch_closed_rev'] = False
                 armDict['enc_position'] = 1140
             
-            lfDict['enc_position']+=lWheelPercentVal
-            rfDict['enc_position']+=rWheelPercentVal
+            lfDict['analog_in_with_ov']=500
+            rfDict['analog_in_with_ov']+=rWheelPercentVal
               
             #armDict['enc_position'] = max(min(armDict['enc_position'], 1440), 0) # Keep encoder between these values
             self.armAct = max(min(self.armAct, 0), -1225)
             armDict['enc_velocity'] = ((self.armAct - self.prev_armAct) / tm_diff)/1440
             self.prev_armAct = self.armAct
-            
+        
+        
         # Simulate the drivetrain
-        lf_motor = hal_data['CAN'][5]['value']/1023
-        lr_motor = hal_data['CAN'][10]['value']/1023
-        rf_motor = hal_data['CAN'][15]['value']/1023
-        rr_motor = hal_data['CAN'][20]['value']/1023
+        lf_motor = -hal_data['CAN'][5]['value']/1023
+        lr_motor = -hal_data['CAN'][10]['value']/1023
+        rf_motor = -hal_data['CAN'][15]['value']/1023
+        rr_motor = -hal_data['CAN'][20]['value']/1023
         
         fwd, rcw = four_motor_drivetrain(lr_motor, rr_motor, lf_motor, rf_motor)
         self.controller.drive(fwd, rcw, tm_diff)

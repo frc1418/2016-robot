@@ -4,8 +4,8 @@ from networktables import NetworkTable
 from common.driveEncoders import DriveEncoders
 import math
 
-ENCODER_ROTATION = 1000
-WHEEL_DIAMETER = 7.5625
+ENCODER_ROTATION = 1023
+WHEEL_DIAMETER = 7.639
 class Drive:
 	'''
 		The sole interaction between the robot and its driving system
@@ -22,6 +22,7 @@ class Drive:
 			:type lf_encoder: DriveEncoders()
 			
 		'''
+		self.sd = NetworkTable.getTable('SmartDashboard')
 		self.isTheRobotBackwards = False
 		# set defaults here
 		self.y = 0
@@ -30,8 +31,8 @@ class Drive:
 		self.navx = navx
 		
 		self.angle_constant = -.040
-		self.drive_constant = .0009
-		
+		self.drive_constant = self.sd.getAutoUpdateValue('Drive | Drive_Constant', .000065)
+		self.drive_max = self.sd.getAutoUpdateValue('Drive | Max Enc Speed', .5)
 		self.gyro_enabled = True
 		
 		self.robotDrive = robotDrive
@@ -39,7 +40,6 @@ class Drive:
 		self.rf_encoder = rf_encoder
 		self.lf_encoder = lf_encoder
 		
-		self.sd = NetworkTable.getTable('SmartDashboard')
 		
 		self.navx = navx
 		
@@ -93,6 +93,7 @@ class Drive:
 		
 		
 	def return_drive_encoder_position(self):
+		#print((self.lf_encoder.get() + self.rf_encoder.get())/2)
 		return (self.lf_encoder.get() + self.rf_encoder.get())/2
 	
 	def drive_distance(self, inches):
@@ -103,9 +104,9 @@ class Drive:
 	def encoder_drive(self, target_position):
 		target_offset = target_position - self.return_drive_encoder_position()
 		
-		if abs(target_offset)> 50:
-			self.y = target_offset * self.drive_constant
-			self.y = max(min(.5, self.y), -.5)
+		if abs(target_offset)> 1000:
+			self.y = target_offset * self.drive_constant.value
+			self.y = max(min(self.drive_max.value, self.y), -self.drive_max.value)
 			
 			return False
 		return True
@@ -160,4 +161,5 @@ class Drive:
 		self.sd.putValue('NavX | Pitch', self.navx.getPitch())
 		self.sd.putValue('NavX | Yaw', self.navx.getYaw())
 		self.sd.putValue('NavX | Roll', self.navx.getRoll())
-		self.sd.putValue('Drive | Encoder', self.return_drive_encoder_position())	
+		self.sd.putValue('Drive | Encoder', self.return_drive_encoder_position())
+		self.sd.putValue('Drive | Y', self.y)

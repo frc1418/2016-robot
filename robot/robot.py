@@ -61,8 +61,16 @@ class MyRobot(wpilib.SampleRobot):
         self.auto_portcullis = portcullis.PortcullisLift(self.sd, self.drive, self.intake)
         self.shootBall = shootBall.shootBall(self.intake)
         
+        self.auto_components = {
+            'drive': self.drive,
+            'intake': self.intake,
+            'winch': self.winch,                 
+            'portcullis': self.auto_portcullis,
+            'shooter': self.shootBall
+        }
+        
         self.control_loop_wait_time = 0.025
-        self.automodes = AutonomousModeSelector('autonomous', self.components)
+        self.automodes = AutonomousModeSelector('autonomous', self.auto_components)
     def autonomous(self):
         self.lf_encoder.zero()
         self.rf_encoder.zero()
@@ -143,7 +151,9 @@ class MyRobot(wpilib.SampleRobot):
                 raise_portcullis = not raise_portcullis
             if raise_portcullis:
                 self.auto_portcullis.doit()
-                raise_portcullis = self.auto_portcullis.get_running()  
+                raise_portcullis = self.auto_portcullis.get_running()
+            else:
+                self.auto_portcullis.state = 1
             
             ##WINCH##
             if self.joystick1.getRawButton(7):
