@@ -1,4 +1,5 @@
 from robotpy_ext.autonomous import state, timed_state, StatefulAutonomous
+import wpilib
 
 class LowGoal(StatefulAutonomous):
     MODE_NAME='Low Goal'
@@ -21,29 +22,54 @@ class LowGoal(StatefulAutonomous):
     #def rotate(self):
     #    self.drive.angle_rotation(0)
 
-class Portcullis(StatefulAutonomous):
-    MODE_NAME = 'Portcullis'
+class DirectPortcullis(StatefulAutonomous):
+    MODE_NAME = "DirectPorcullis"
     DEFAULT = True
     
     def initialize(self):
-        self.register_sd_var('Drive_Distance', (54))
+        self.register_sd_var("Drive_Encoder_Distance", 2.45)
+        self.register_sd_var("DriveThru_Encoder_Distance", 5)
+        self.register_sd_var("Drive_Encoder_Thresh", 100)
+        self.register_sd_var("P", 2)
+        self.register_sd_var("I", 0)
+        self.register_sd_var("D", 0)
+        
+        
+        
+    #self.lf_motor.setPID(self.P, self.I, self.D)
+    #self.lr_motor.changeControlMode(wpilib.CANTalon.ControlMode.Follower)
+    #self.rf_motor.setPID(self.P, self.I, self.D)
+    #self.rr_motor.changeControlMode(wpilib.CANTalon.ControlMode.Follower)
     
     @state(first = True)
-    def drive_forward(self):
-        if self.drive.drive_distance(self.Drive_Distance):
-            self.next_state('raise_portcullis')
-    
+    def lower_arm(self, initial_call):
+        self.intake.set_arm_bottom()
+            
+        if self.intake.on_target():
+            self.next_state('drive_forward')
     @state
-    def raise_portcullis(self, initial_call):
-        if not initial_call and not self.portcullis.get_running():
-            self.next_state('drive_forward_2')
-        self.portcullis.doit()
-            
-            
-    @timed_state(duration = 5)
-    def drive_forward_2(self, initial_call):
+    def drive_forward(self, initial_call):
         if initial_call:
             self.drive.reset_drive_encoders()
-        self.drive.drive_distance(60)
+        
+        if self.drive.drive_distance(self.Drive_Encoder_Distance*12):
+            self.next_state('drive_thru')
+   
+    @state
+    def drive_thru(self, initial_call):
+        if initial_call:
+            self.drive.reset_drive_encoders()
+        self.intake.set_arm_top()
+            
+        if self.drive.drive_distance(self.DriveThru_Encoder_Distance*12):
+            self.next_state('end')
+    
+    @timed_state(duration = 5)
+    def end(self):
+        pass
+        
+        
+            
+        
             
     
