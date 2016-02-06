@@ -2,44 +2,63 @@ from robotpy_ext.autonomous import state, timed_state, StatefulAutonomous
 import wpilib
 
 class LowGoal(StatefulAutonomous):
-    MODE_NAME='Low Goal'
-    DEFAULT = False
-    
-    def initialize(self):
-        self.register_sd_var('Drive_Distance', 15*12)
-    
-    @timed_state(duration = 10, next_state='rotate', first = True)
-    def drive_forward(self):
-        #self.intake.set_arm_middle()
-        if self.drive.drive_distance(15*12):
-            pass
-            #self.next_state('rotate')
-            #self.next_state('rotate')
-        #self.drive.move(1, 0)
-        #self.drive.angle_rotation(0)
-    
-    #@timed_state(duration = 2)
-    #def rotate(self):
-    #    self.drive.angle_rotation(0)
-
-class DirectPortcullis(StatefulAutonomous):
-    MODE_NAME = "DirectPorcullis"
+    MODE_NAME='LowGoal'
     DEFAULT = True
     
     def initialize(self):
-        self.register_sd_var("Drive_Encoder_Distance", 2.45)
-        self.register_sd_var("DriveThru_Encoder_Distance", 5)
-        self.register_sd_var("Drive_Encoder_Thresh", 100)
-        self.register_sd_var("P", 2)
-        self.register_sd_var("I", 0)
-        self.register_sd_var("D", 0)
+        self.register_sd_var('Drive_Distance', 9)
+        self.register_sd_var('Rotate_Angle', 60)
+        self.register_sd_var('Ramp_Distance', 4)
+    
+    @state(first = True)
+    def lower_arm(self, initial_call):
+        self.intake.set_arm_bottom()
+            
+        if self.intake.on_target():
+            self.next_state('drive_forward')
+    
+    @state
+    def drive_forward(self):
+        #self.intake.set_arm_middle()
+        if self.drive.drive_distance(self.Drive_Distance*12):
+            self.next_state('rotate')
+    @state
+    def rotate(self, initial_call):
+        if initial_call:
+            self.drive.reset_gyro_angle()
+            
+        self.intake.set_arm_top()
         
+        if self.drive.angle_rotation(self.Rotate_Angle):
+            self.next_state('drive_to_ramp')
+    @state
+    def drive_to_ramp(self, initial_call):
+        if initial_call:
+            self.drive.reset_drive_encoders()
         
+        if self.drive.drive_distance(self.Ramp_Distance*12):
+            self.next_state('shoot')
+    
+    @timed_state(duration = 5)
+    def shoot(self, initial_call):
+        if initial_call:
+            self.intake.outtake()
+        else:
+            self.intake.outtake()
+            self.intake.set_arm_middle()
+    
+'''   
+class ChevalDeFrise(StatefulAutonomous):
+    MODE_NAME = "ChevalDeFrise"
+    DEFAULT = False'''
         
-    #self.lf_motor.setPID(self.P, self.I, self.D)
-    #self.lr_motor.changeControlMode(wpilib.CANTalon.ControlMode.Follower)
-    #self.rf_motor.setPID(self.P, self.I, self.D)
-    #self.rr_motor.changeControlMode(wpilib.CANTalon.ControlMode.Follower)
+class DirectPortcullis(StatefulAutonomous):
+    MODE_NAME = "DirectPorcullis"
+    DEFAULT = False
+    
+    def initialize(self):
+        self.register_sd_var("Drive_Encoder_Distance", 2.5)
+        self.register_sd_var("DriveThru_Encoder_Speed", 0.4)
     
     @state(first = True)
     def lower_arm(self, initial_call):
@@ -54,19 +73,12 @@ class DirectPortcullis(StatefulAutonomous):
         
         if self.drive.drive_distance(self.Drive_Encoder_Distance*12):
             self.next_state('drive_thru')
-   
-    @state
-    def drive_thru(self, initial_call):
-        if initial_call:
-            self.drive.reset_drive_encoders()
-        self.intake.set_arm_top()
-            
-        if self.drive.drive_distance(self.DriveThru_Encoder_Distance*12):
-            self.next_state('end')
     
     @timed_state(duration = 5)
-    def end(self):
-        pass
+    def drive_thru(self):
+        self.intake.set_arm_top()
+        
+        self.drive.move(self.DriveThru_Encoder_Speed, 0)
         
         
             
