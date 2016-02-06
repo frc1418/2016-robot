@@ -16,7 +16,9 @@ class ArmMode:
 class Arm:
     
     def __init__ (self, motor, followMotor, leftBallMotor, init_down_speed):
-        
+        """
+        :type motor: wpilib.CANTalon()
+        """
         
         self.target_position = None
         self.target_index = None
@@ -193,7 +195,7 @@ class Arm:
                 self.mode = ArmMode.MANUAL
             
             if not self.motor.isFwdLimitSwitchClosed():
-                self.motor.set(1)
+                self.motor.set(.5)
                 
             else:
                 self.motor.set(0)
@@ -268,7 +270,7 @@ class Arm:
             self.motor.setSensorPosition(0)
             
         if self.motor.isRevLimitSwitchClosed():
-            self.motor.setSensorPosition(-1140)
+            self.motor.setSensorPosition(-1200)
             
         self.followMotor.set(self.motor.getDeviceID())
         
@@ -283,14 +285,15 @@ class Arm:
         
         self.update_sd("Arm")
         
+        #print(self.motor.getOutputVoltage())
     def update_sd(self, name):
         '''Puts refreshed values to SmartDashboard'''
-        self.sd.putValue('Arm|Manual Value', self.manual_value)
-        self.sd.putValue('%s|Encoder' % name, self.motor.getEncPosition())
-        self.sd.putValue("Arm|Reverse Limit Switch", self.motor.isRevLimitSwitchClosed())
-        self.sd.putValue("Arm|Forward Limit Switch", self.motor.isFwdLimitSwitchClosed())
-        self.sd.putValue('%s|Calibrated' % name, self.isCalibrated)
-        self.sd.putValue('Arm|Encoder Velocity', self.motor.getEncVelocity())
+        self.sd.putValue('Arm | Manual Value', self.manual_value)
+        self.sd.putValue('%s | Encoder' % name, self.motor.getEncPosition())
+        self.sd.putValue("Arm | Reverse Limit Switch", self.motor.isRevLimitSwitchClosed())
+        self.sd.putValue("Arm | Forward Limit Switch", self.motor.isFwdLimitSwitchClosed())
+        self.sd.putValue('%s | Calibrated' % name, self.isCalibrated)
+        self.sd.putValue('Arm | Encoder Velocity', self.motor.getEncVelocity())
         
         if self.target_position is None:
             self.sd.getAutoUpdateValue('%s|Target Position' % name, -1)
