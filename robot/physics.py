@@ -40,13 +40,18 @@ class PhysicsEngine:
                 armDict['enc_position'] += armPercentVal # Add the calculated encoder change value to the recorded encoder value
             elif armDict['mode_select'] == wpilib.CANTalon.ControlMode.Position: #If in auto mode
                 err = armDict['value'] - armDict['enc_position']
-                output = armDict['params'][1]*err*tm_diff*2048/1023
+                self.iErr +=err*tm_diff
+                self.iErr = max(min(self.iErr, 300), -300)
+                output = (armDict['params'][1]*err)+(armDict['params'][2]*self.iErr)*250/(1023)
+                if abs(output) < 300:
+                    output = 0
                 #if armDict['enc_position'] < armDict['value']: #If the current position is less than the target position
                 #    armDict['enc_position'] += posVal # Add calculated encoder value to recorded value
                 #    self.armAct += posVal
                 #else: # If the current position is more than the target position
                 #    armDict['enc_position'] -= posVal # Subtract calculated encoder position
                 #    self.armAct -=posVal
+                output*=tm_diff
                 armDict['enc_position'] += output
                 armDict['enc_position'] = int(armDict['enc_position'])
                 self.armAct += output
