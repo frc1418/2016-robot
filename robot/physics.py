@@ -14,7 +14,7 @@ class PhysicsEngine:
         self.prev_armAct = -500
         
         self.controller.add_device_gyro_channel('navxmxp_spi_4_angle')
-    
+        self.iErr = 0
     def update_sim(self, hal_data, now, tm_diff):
         # Simulate the arm
         try:
@@ -23,13 +23,13 @@ class PhysicsEngine:
             rfDict = hal_data['CAN'][15]
             
             armPercentVal = int(armDict['value']*tm_diff*1023/1023) # Encoder position increaser when in PercentVbus mode based on time and thrust value
-            posVal = int(tm_diff*1023) # Encoder Position difference when in Position mode based on time
+            #posVal = int(tm_diff*1023) # Encoder Position difference when in Position mode based on time
             armDict['limit_switch_closed_for'] = True
             armDict['limit_switch_closed_rev'] = True
             
             lWheelPercentVal = int(lfDict['value']*tm_diff*10)
             rWheelPercentVal = int(rfDict['value']*tm_diff*-10)
-            
+    
         except:
             pass
         
@@ -39,13 +39,22 @@ class PhysicsEngine:
                 self.armAct += armPercentVal # Add the calculated encoder change value to the 'actual value'
                 armDict['enc_position'] += armPercentVal # Add the calculated encoder change value to the recorded encoder value
             elif armDict['mode_select'] == wpilib.CANTalon.ControlMode.Position: #If in auto mode
-                if armDict['enc_position'] < armDict['value']: #If the current position is less than the target position
-                    armDict['enc_position'] += posVal # Add calculated encoder value to recorded value
-                    self.armAct += posVal
-                else: # If the current position is more than the target position
-                    armDict['enc_position'] -= posVal # Subtract calculated encoder position
-                    self.armAct -=posVal
-            
+                err = armDict['value'] - armDict['enc_position']
+                self.iErr +=err*tm_diff
+                self.iErr = max(min(self.iErr, 300), -300)
+                output = (armDict['params'][1]*err)+(armDict['params'][2]*self.iErr)*250/(1023)
+                if abs(output) < 300:
+                    output = 0
+                #if armDict['enc_position'] < armDict['value']: #If the current position is less than the target position
+                #    armDict['enc_position'] += posVal # Add calculated encoder value to recorded value
+                #    self.armAct += posVal
+                #else: # If the current position is more than the target position
+                #    armDict['enc_position'] -= posVal # Subtract calculated encoder position
+                #    self.armAct -=posVal
+                output*=tm_diff
+                armDict['enc_position'] += output
+                armDict['enc_position'] = int(armDict['enc_position'])
+                self.armAct += output
             if self.armAct in range(-50, 50): # If the measured encoder value is within this range
                 armDict['limit_switch_closed_for'] = False # Fake closing the limit switch
                 armDict['enc_position'] = 0
