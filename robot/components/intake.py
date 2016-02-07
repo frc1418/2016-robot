@@ -62,7 +62,7 @@ class Arm:
           ]
         self.position_threshold = self.sd.getAutoUpdateValue("Arm|On Target Threshold", 170)
         self.wanted_pid = (
-            self.sd.getAutoUpdateValue('Arm |P', 2),
+            self.sd.getAutoUpdateValue('Arm |P', 15),
             self.sd.getAutoUpdateValue('Arm |I', 0), 
             self.sd.getAutoUpdateValue('Arm |D', 0)
         )
