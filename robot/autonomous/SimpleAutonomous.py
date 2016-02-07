@@ -10,7 +10,7 @@ class LowGoal(StatefulAutonomous):
         self.register_sd_var('Rotate_Angle', 60)
         self.register_sd_var('Ramp_Distance', 4)
     
-    @state(first = True)
+    @timed_state(duration = 2, next_state='drive_forward', first = True)
     def lower_arm(self, initial_call):
         self.intake.set_arm_bottom()
             
