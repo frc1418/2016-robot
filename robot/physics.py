@@ -28,7 +28,7 @@ class PhysicsEngine:
             armDict['limit_switch_closed_rev'] = True
             
             lWheelPercentVal = int(lfDict['value']*tm_diff*10)
-            rWheelPercentVal = int(-rfDict['value']*tm_diff*10)
+            rWheelPercentVal = int(rfDict['value']*tm_diff*-10)
             
         except:
             pass
@@ -53,7 +53,7 @@ class PhysicsEngine:
                 armDict['limit_switch_closed_rev'] = False
                 armDict['enc_position'] = 1140
             
-            lfDict['analog_in_with_ov']=500
+            lfDict['analog_in_with_ov']+=lWheelPercentVal
             rfDict['analog_in_with_ov']+=rWheelPercentVal
               
             #armDict['enc_position'] = max(min(armDict['enc_position'], 1440), 0) # Keep encoder between these values

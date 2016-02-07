@@ -32,8 +32,6 @@ class MyRobot(wpilib.SampleRobot):
         ##DRIVE ENCODERS##
         self.rf_encoder = driveEncoders.DriveEncoders(self.robot_drive.frontRightMotor, True)
         self.lf_encoder = driveEncoders.DriveEncoders(self.robot_drive.frontLeftMotor)
-        self.rf_encoder.motor.setFeedbackDevice(wpilib.CANTalon.FeedbackDevice.AnalogEncoder)
-        
         ##NavX##
         self.navx = navx.AHRS.create_spi()
         self.analog = wpilib.AnalogInput(navx.getNavxAnalogInChannel(0))

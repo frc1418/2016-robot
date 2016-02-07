@@ -7,11 +7,14 @@ class DriveEncoders:
     '''
 
     def __init__(self, motor, isReversed = False):
+        ''':type motor: wpilib.CANTalon()'''
+        
         self.motor = motor
         if(isReversed):
-            self.mod = -1
-        else:
-            self.mod = 1
+            #self.mod = -1
+            self.motor.reverseSensor(True)
+        #else:
+        self.mod = 1
         self.initialValue = self.mod * self.motor.getAnalogInPosition()
             
     def get(self):

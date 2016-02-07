@@ -110,7 +110,6 @@ class Drive:
 		if abs(target_offset)> 1000:
 			self.y = target_offset * self.drive_constant.value
 			self.y = max(min(self.drive_max.value, self.y), -self.drive_max.value)
-			
 			return False
 		return True
 		
