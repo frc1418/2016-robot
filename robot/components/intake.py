@@ -56,9 +56,9 @@ class Arm:
         self.leftBallSpeed = 0
                 
         self.positions = [
-            self.sd.getAutoUpdateValue('Arm | Bottom', 25),
-            self.sd.getAutoUpdateValue('Arm | Middle', -230),
-            self.sd.getAutoUpdateValue('Arm | Top', -1200),
+            self.sd.getAutoUpdateValue('Arm | Bottom', 1200),
+            self.sd.getAutoUpdateValue('Arm | Middle', 970),
+            self.sd.getAutoUpdateValue('Arm | Top', 0),
           ]
         self.position_threshold = self.sd.getAutoUpdateValue("Arm|On Target Threshold", 25)
         self.wanted_pid = (
@@ -199,7 +199,7 @@ class Arm:
                 
             else:
                 self.motor.set(0)
-                self.motor.setSensorPosition(-1200)
+                self.motor.setSensorPosition(0)
             
                 self.motor.changeControlMode(wpilib.CANTalon.ControlMode.Position)
                 self.isCalibrated = True
@@ -267,10 +267,10 @@ class Arm:
             self.motor.set(0)
         
         if self.motor.isFwdLimitSwitchClosed():
-            self.motor.setSensorPosition(0)
+            self.motor.setSensorPosition(1200)
             
         if self.motor.isRevLimitSwitchClosed():
-            self.motor.setSensorPosition(-1200)
+            self.motor.setSensorPosition(0)
             
         self.followMotor.set(self.motor.getDeviceID())
         

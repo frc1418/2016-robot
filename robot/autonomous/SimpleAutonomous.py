@@ -53,7 +53,7 @@ class ChevalDeFrise(StatefulAutonomous):
     DEFAULT = True
     
     def initialize(self):
-        self.register_sd_var("Drive_to_distance", 2.5)
+        self.register_sd_var("Drive_to_distance", 2.2)
         self.register_sd_var("Drive_on_distance", 0.5)
         
     @timed_state(duration = 2, next_state='lower_arms', first = True)
@@ -64,14 +64,14 @@ class ChevalDeFrise(StatefulAutonomous):
         if self.drive.drive_distance(self.Drive_to_distance*12):
             self.next_state('lower_arms')
             
-    @timed_state(duration = 2, next_state='drive_on')
+    @timed_state(duration = 1, next_state='drive_on')
     def lower_arms(self, initial_call):
         self.intake.set_arm_bottom()
         
         if self.intake.on_target():
             self.next_state('drive_on')
         
-    @state
+    @timed_state(duration = 2, next_state='drive_over')
     def drive_on(self, initial_call):
         if initial_call:
             self.drive.reset_drive_encoders()
@@ -81,10 +81,9 @@ class ChevalDeFrise(StatefulAutonomous):
         
     @timed_state(duration = 2)
     def drive_over(self, initial_call):
-        if initial_call:
-            self.intake.set_arm_top()
+        self.intake.set_arm_top()
         
-        self.drive.move(1, 0)
+        self.drive.move(0.7, 0)
         
 class DirectPortcullis(StatefulAutonomous):
     MODE_NAME = "DirectPorcullis"
