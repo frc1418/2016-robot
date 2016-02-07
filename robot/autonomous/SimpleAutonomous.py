@@ -41,16 +41,14 @@ class LowGoal(StatefulAutonomous):
     
     @timed_state(duration = 5)
     def shoot(self, initial_call):
-        if initial_call:
-            self.intake.outtake()
-        else:
-            self.intake.outtake()
-            self.intake.set_arm_middle()
+
+        self.intake.outtake()
+        self.intake.set_arm_middle()
     
   
 class ChevalDeFrise(StatefulAutonomous):
     MODE_NAME = "ChevalDeFrise"
-    DEFAULT = True
+    DEFAULT = False
     
     def initialize(self):
         self.register_sd_var("Drive_to_distance", 2.2)
@@ -64,7 +62,7 @@ class ChevalDeFrise(StatefulAutonomous):
         if self.drive.drive_distance(self.Drive_to_distance*12):
             self.next_state('lower_arms')
             
-    @timed_state(duration = 1, next_state='drive_on')
+    @timed_state(duration = .4, next_state='drive_on')
     def lower_arms(self, initial_call):
         self.intake.set_arm_bottom()
         
@@ -87,7 +85,7 @@ class ChevalDeFrise(StatefulAutonomous):
         
 class DirectPortcullis(StatefulAutonomous):
     MODE_NAME = "DirectPorcullis"
-    DEFAULT = False
+    DEFAULT = True
     
     def initialize(self):
         self.register_sd_var("Drive_Encoder_Distance", 2.5)
