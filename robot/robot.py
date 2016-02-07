@@ -68,12 +68,6 @@ class MyRobot(wpilib.SampleRobot):
             'winch': self.winch,                 
             'portcullis': self.auto_portcullis,
             'shooter': self.shootBall,
-            'lf_motor': self.lf_motor,
-            'lf_encoder': self.lf_encoder,
-            'lr_motor': self.lr_motor,
-            'rf_motor': self.rf_motor,
-            'rf_encoder': self.rf_encoder,
-            'rr_motor': self.rr_motor,
             'sd': self.sd
         }
         

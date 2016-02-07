@@ -58,9 +58,9 @@ class DirectPortcullis(StatefulAutonomous):
     
     def initialize(self):
         self.register_sd_var("Drive_Encoder_Distance", 2.5)
-        self.register_sd_var("DriveThru_Encoder_Speed", 0.4)
+        self.register_sd_var("DriveThru_Speed", 0.4)
     
-    @state(first = True)
+    @timed_state(duration = 2, next_state='drive_forward', first = True)
     def lower_arm(self, initial_call):
         self.intake.set_arm_bottom()
             
@@ -78,7 +78,7 @@ class DirectPortcullis(StatefulAutonomous):
     def drive_thru(self):
         self.intake.set_arm_top()
         
-        self.drive.move(self.DriveThru_Encoder_Speed, 0)
+        self.drive.move(self.DriveThru_Speed, 0)
         
         
             

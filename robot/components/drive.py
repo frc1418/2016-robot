@@ -30,7 +30,7 @@ class Drive:
 		self.squaredInputs = False
 		self.navx = navx
 		
-		self.angle_constant = self.sd.getAutoUpdateValue('Drive | Drive_Angle', 0.2)
+		self.angle_constant = self.sd.getAutoUpdateValue('Drive | Angle_Constant', 0.2)
 		self.drive_constant = self.sd.getAutoUpdateValue('Drive | Drive_Constant', .000095)
 		self.drive_max = self.sd.getAutoUpdateValue('Drive | Max Enc Speed', .5)
 		self.gyro_enabled = True
@@ -96,13 +96,13 @@ class Drive:
 		#print((self.lf_encoder.get() + self.rf_encoder.get())/2)
 		return (self.lf_encoder.get() + self.rf_encoder.get())/2
 	
-	def get_inches_to_ticks(self, inches):
+	def _get_inches_to_ticks(self, inches):
 		gear_ratio = 50 / 12
 		target_position = (gear_ratio * ENCODER_ROTATION * inches) / (math.pi*WHEEL_DIAMETER)
 		return target_position
 	
 	def drive_distance(self, inches):
-		return self.encoder_drive(self.get_inches_to_ticks(inches))
+		return self.encoder_drive(self._get_inches_to_ticks(inches))
 		
 	def encoder_drive(self, target_position):
 		target_offset = target_position - self.return_drive_encoder_position()
