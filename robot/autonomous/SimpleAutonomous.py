@@ -3,7 +3,7 @@ import wpilib
 
 class LowGoal(StatefulAutonomous):
     MODE_NAME='LowGoal'
-    DEFAULT = True
+    DEFAULT = False
     
     def initialize(self):
         self.register_sd_var('Drive_Distance', 9)
@@ -41,20 +41,51 @@ class LowGoal(StatefulAutonomous):
     
     @timed_state(duration = 5)
     def shoot(self, initial_call):
-        if initial_call:
-            self.intake.outtake()
-        else:
-            self.intake.outtake()
-            self.intake.set_arm_middle()
+
+        self.intake.outtake()
+        self.intake.set_arm_middle()
     
-'''   
+  
 class ChevalDeFrise(StatefulAutonomous):
     MODE_NAME = "ChevalDeFrise"
-    DEFAULT = False'''
+    DEFAULT = False
+    
+    def initialize(self):
+        self.register_sd_var("Drive_to_distance", 2.2)
+        self.register_sd_var("Drive_on_distance", 0.5)
+        
+    @timed_state(duration = 2, next_state='lower_arms', first = True)
+    def drive_to(self, initial_call):
+        if initial_call:
+            self.drive.reset_drive_encoders()
+        
+        if self.drive.drive_distance(self.Drive_to_distance*12):
+            self.next_state('lower_arms')
+            
+    @timed_state(duration = .4, next_state='drive_on')
+    def lower_arms(self, initial_call):
+        self.intake.set_arm_bottom()
+        
+        if self.intake.on_target():
+            self.next_state('drive_on')
+        
+    @timed_state(duration = 2, next_state='drive_over')
+    def drive_on(self, initial_call):
+        if initial_call:
+            self.drive.reset_drive_encoders()
+            
+        if self.drive.drive_distance(self.Drive_on_distance*12):
+            self.next_state('drive_over')
+        
+    @timed_state(duration = 2)
+    def drive_over(self, initial_call):
+        self.intake.set_arm_top()
+        
+        self.drive.move(0.7, 0)
         
 class DirectPortcullis(StatefulAutonomous):
     MODE_NAME = "DirectPorcullis"
-    DEFAULT = False
+    DEFAULT = True
     
     def initialize(self):
         self.register_sd_var("Drive_Encoder_Distance", 2.5)

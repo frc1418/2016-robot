@@ -11,10 +11,10 @@ class DriveEncoders:
         
         self.motor = motor
         if(isReversed):
-            #self.mod = -1
-            self.motor.reverseSensor(True)
-        #else:
-        self.mod = 1
+            self.mod = -1
+            #self.motor.reverseSensor(True)
+        else:
+            self.mod = 1
         self.initialValue = self.mod * self.motor.getAnalogInPosition()
             
     def get(self):
