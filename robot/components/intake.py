@@ -294,6 +294,8 @@ class Arm:
         self.sd.putValue("Arm | Forward Limit Switch", self.motor.isFwdLimitSwitchClosed())
         self.sd.putValue('%s | Calibrated' % name, self.isCalibrated)
         self.sd.putValue('Arm | Encoder Velocity', self.motor.getEncVelocity())
+        self.sd.putValue("Arm | Analog Pos", self.motor.getAnalogInPosition())
+        self.sd.putValue("Arm | Analog V", self.motor.getAnalogInRaw())
         
         if self.target_position is None:
             self.sd.getAutoUpdateValue('%s|Target Position' % name, -1)

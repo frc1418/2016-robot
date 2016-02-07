@@ -28,6 +28,7 @@ class MyRobot(wpilib.SampleRobot):
         self.rr_motor = wpilib.CANTalon(20)        
         
         self.robot_drive = wpilib.RobotDrive(self.lf_motor, self.lr_motor, self.rf_motor, self.rr_motor)
+        
         ##DRIVE ENCODERS##
         self.rf_encoder = driveEncoders.DriveEncoders(self.robot_drive.frontRightMotor, True)
         self.lf_encoder = driveEncoders.DriveEncoders(self.robot_drive.frontLeftMotor)
@@ -66,11 +67,19 @@ class MyRobot(wpilib.SampleRobot):
             'intake': self.intake,
             'winch': self.winch,                 
             'portcullis': self.auto_portcullis,
-            'shooter': self.shootBall
+            'shooter': self.shootBall,
+            'lf_motor': self.lf_motor,
+            'lf_encoder': self.lf_encoder,
+            'lr_motor': self.lr_motor,
+            'rf_motor': self.rf_motor,
+            'rf_encoder': self.rf_encoder,
+            'rr_motor': self.rr_motor,
+            'sd': self.sd
         }
         
         self.control_loop_wait_time = 0.025
         self.automodes = AutonomousModeSelector('autonomous', self.auto_components)
+        
     def autonomous(self):
         self.lf_encoder.zero()
         self.rf_encoder.zero()
