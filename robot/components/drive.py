@@ -31,7 +31,7 @@ class Drive:
 		self.navx = navx
 		
 		self.angle_constant = self.sd.getAutoUpdateValue('Drive | Angle_Constant', 0.2)
-		self.drive_constant = self.sd.getAutoUpdateValue('Drive | Drive_Constant', .000095)
+		self.drive_constant = self.sd.getAutoUpdateValue('Drive | Drive_Constant', .0001)
 		self.drive_max = self.sd.getAutoUpdateValue('Drive | Max Enc Speed', .5)
 		self.gyro_enabled = True
 		

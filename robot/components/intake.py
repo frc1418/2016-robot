@@ -158,6 +158,10 @@ class Arm:
         self.want_auto = True
         self.target_index = index
         self.target_position = self.positions[index].value 
+    
+    def _set_target_position(self, position):
+        self.want_auto = True
+        self.target_position = position
         
     def on_target(self):
         '''
