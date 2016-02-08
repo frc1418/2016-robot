@@ -57,7 +57,7 @@ class Arm:
                 
         self.positions = [
             self.sd.getAutoUpdateValue('Arm | Bottom', 1200),
-            self.sd.getAutoUpdateValue('Arm | Middle', 970),
+            self.sd.getAutoUpdateValue('Arm | Middle', 770),
             self.sd.getAutoUpdateValue('Arm | Top', 0),
           ]
         self.position_threshold = self.sd.getAutoUpdateValue("Arm|On Target Threshold", 25)
