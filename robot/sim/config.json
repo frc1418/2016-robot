@@ -2,11 +2,11 @@
   "pyfrc": {
   
   	"robot": {
-  	  "w": 2,
-  	  "h": 3,
-      "starting_x": 2, 
+  	  "w": 3,
+  	  "h": 2,
+      "starting_x": 26, 
       "starting_y": 20,
-      "starting_angle": 0
+      "starting_angle": 180
   	},
   
     "analog": {
@@ -16,26 +16,50 @@
     },
     
     "pwm": {
-      "0": "Left Front",
-      "1": "Left Rear",
-      "2": "Right Front",
-      "3": "Right Rear"
+    "0":"Winch Motor",
+    "1": "Kicker Motor",
+    "9":"Intake"
     },
     
     "CAN": {
+      "5": "Left Front",
+      "10": "Left Rear",
+      "15": "Right Front",
+      "20": "Right Rear",
+      "25": "Left Arm",
+      "30": "Right Arm"
+      
     },
     
     "field": {
-      "w": 25,
+      "w": 27,
       "h": 27,
       "px_per_ft": 10,
       
       "objects": [
-      	{ "color": "grey",
-      	  "points": [ [7.25,11.21], [10.333,11.21], [10.333,27], [7.25,27] ] },
+      	{ "color": "blue",
+      	  "points": [ [0, 0], [0, 4.5], [24, 4.5], [24, 0] ] },
       	  
-      	{ "color": "grey",
-      	  "points": [ [16.83, 0], [19.90, 0], [19.90, 15.75], [16.83, 15.75] ] }
+      	{ "color": "black",
+      	  "points": [ [26.833, 0], [27.167, 0], [27.167, 27], [26.833, 27] ] },
+      	
+      	{ "color": "black",
+      	  "points": [ [25.666, 0], [25.833, 0], [25.833, 27], [25.666, 27] ] },
+      	  
+      	{ "color": "yellow",
+          "points": [ [20, 27], [20, 5], [16, 5], [16, 27] ] },
+          
+        { "color": "purple",
+      	  "points": [ [16, 22.6], [16, 18.2], [20, 18.2], [20, 22.6] ] }, 
+      	
+      	{ "color": "purple",
+      	  "points": [ [16, 13.8], [16, 9.4], [20, 9.4] , [20, 13.8] ] },
+      	
+      	{ "color": "red",
+      	  "points": [ [0, 10.5], [2, 10.5], [3.73, 11.5],  [5.73, 15], [5.73, 17], [3.73, 20.5], [2, 21.5], [0, 21.5] ] },
+      	  
+      	{ "color": "black", 
+      	  "points": [ [0, 14], [2, 15], [2, 17], [0, 18] ] }
       ]
     },
     
