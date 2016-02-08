@@ -58,7 +58,7 @@ class Arm:
         self.positions = [
             self.sd.getAutoUpdateValue('Arm | Bottom', 1200),
             self.sd.getAutoUpdateValue('Arm | Middle', 770),
-            self.sd.getAutoUpdateValue('Arm | Top', 0),
+            self.sd.getAutoUpdateValue('Arm | Top', -20),
           ]
         self.position_threshold = self.sd.getAutoUpdateValue("Arm|On Target Threshold", 25)
         self.wanted_pid = (
@@ -72,6 +72,7 @@ class Arm:
         self.start = 0
         self.calibrate_error = False
         self.enc_avg = []
+        self.requested_value = 770
     
     def set_arm_top(self):
         self._set_position(2)
@@ -227,10 +228,16 @@ class Arm:
         self.want_auto = True
         self.target_position = self.motor.getEncPosition()-13    
     
+    def check_gui(self):
+        get = self.sd.getAutoUpdateValue("Arm | Requested Value", self.positions[1], True).get()
+        if(get != self.requested_value):
+            self.requested_value = get 
+            self.positions[1] = self.requested_value
         
     def doit(self):
         '''Actually does stuff'''
         #self.followMotor.reverseOutput(self.followMotorReverse)
+        self.check_gui()
         if self.want_manual:
             self.mode = ArmMode.MANUAL
         elif self.want_auto:
@@ -271,7 +278,7 @@ class Arm:
             self.motor.set(0)
         
         if self.motor.isFwdLimitSwitchClosed():
-            self.motor.setSensorPosition(1200)
+            self.motor.setSensorPosition(1180)
             
         if self.motor.isRevLimitSwitchClosed():
             self.motor.setSensorPosition(0)
