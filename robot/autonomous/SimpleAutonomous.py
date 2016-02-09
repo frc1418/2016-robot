@@ -3,7 +3,7 @@ import wpilib
 
 class LowGoal(StatefulAutonomous):
     MODE_NAME='LowGoal'
-    DEFAULT = False
+    DEFAULT = True
     
     def initialize(self):
         self.register_sd_var('Drive_Distance', 8.6)
@@ -14,7 +14,7 @@ class LowGoal(StatefulAutonomous):
     def lower_arm(self, initial_call):
         self.intake.set_arm_bottom()
             
-        if self.intake.on_target():
+        if self.intake.on_target(): 
             self.next_state('drive_forward')
     
     @state
@@ -55,12 +55,13 @@ class LowGoal(StatefulAutonomous):
 class ChevalDeFrise(StatefulAutonomous):
     MODE_NAME = "ChevalDeFrise"
     DEFAULT = False
-    
+        
     def initialize(self):
         self.register_sd_var("Drive_to_distance", 2.1)
         self.register_sd_var("Drive_on_distance", 0.5)
+        self.isFinished = False
         
-    @timed_state(duration = 2, next_state='lower_arms', first = True)
+    @timed_state(duration = 2, next_state='lower_arms', first = False)
     def drive_to(self, initial_call):
         if initial_call:
             self.drive.reset_drive_encoders()
@@ -91,7 +92,7 @@ class ChevalDeFrise(StatefulAutonomous):
         
 class DirectPortcullis(StatefulAutonomous):
     MODE_NAME = "DirectPorcullis"
-    DEFAULT = True
+    DEFAULT = False
     
     def initialize(self):
         self.register_sd_var("Drive_Encoder_Distance", 2.55)
@@ -115,7 +116,7 @@ class DirectPortcullis(StatefulAutonomous):
     
     @timed_state(duration = 0.5, next_state='drive_thru')
     def raise_arm(self):
-        self.intake._set_target_position(self.Arm_To_Position)
+        self.intake.set_target_position(self.Arm_To_Position)
         
         if self.intake.on_target():
             self.next_state('drive_thru')

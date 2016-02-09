@@ -6,7 +6,7 @@ logger = logging.getLogger("arm")
 
 forward = 1
 reverse = -1
-off = wpilib.Relay.Value.kOff
+off = 0
 
 
 class ArmMode:
@@ -15,7 +15,11 @@ class ArmMode:
 
 class Arm:
     
-    def __init__ (self, motor, followMotor, leftBallMotor, init_down_speed):
+    leftArm = wpilib.CANTalon
+    rightArm = wpilib.CANTalon
+    leftBall = wpilib.Talon
+    
+    def on_enable (self):
         """
         :type motor: wpilib.CANTalon()
         """
@@ -23,7 +27,6 @@ class Arm:
         self.target_position = None
         self.target_index = None
         
-        self.init_down_speed = init_down_speed
         
         self.isCalibrating = False
         self.isCalibrated = False
@@ -45,11 +48,9 @@ class Arm:
         
         self.sd = NetworkTable.getTable('SmartDashboard')
         
-        self.motor = motor
-        self.followMotor = followMotor
-        self.followMotor.changeControlMode(wpilib.CANTalon.ControlMode.Follower)
-        self.followMotor.reverseOutput(True)
-        self.leftBallMotor = leftBallMotor
+    
+        self.rightArm.changeControlMode(wpilib.CANTalon.ControlMode.Follower)
+        self.rightArm.reverseOutput(True)
         
         self.now_enc = 0
         
@@ -68,11 +69,7 @@ class Arm:
         )
         
         self.calibrate_timer = wpilib.Timer()
-        self.time_calibrating = 0
         self.start = 0
-        self.calibrate_error = False
-        self.enc_avg = []
-        self.requested_value = 770
     
     def set_arm_top(self):
         self._set_position(2)
@@ -100,7 +97,7 @@ class Arm:
             :param value: Motor value between -1 and 1
         '''
         self.want_manual = True
-        self.manual_value = value
+        self.manual_value = max(min(value, 1), -1)
     
     
     def _detect_position_index(self, offset, pos_idx):
@@ -160,7 +157,7 @@ class Arm:
         self.target_index = index
         self.target_position = self.positions[index].value 
     
-    def _set_target_position(self, position):
+    def set_target_position(self, position):
         self.want_auto = True
         self.target_position = position
         
@@ -222,22 +219,10 @@ class Arm:
     
         self.isCalibrated = True
         
-        self.on_calibrate()
         
-    def test_enc(self):
-        self.want_auto = True
-        self.target_position = self.motor.getEncPosition()-13    
-    
-    def check_gui(self):
-        get = self.sd.getAutoUpdateValue("Arm | Requested Value", self.positions[1], True).get()
-        if(get != self.requested_value):
-            self.requested_value = get 
-            self.positions[1] = self.requested_value
-        
-    def doit(self):
+    def execute(self):
         '''Actually does stuff'''
         #self.followMotor.reverseOutput(self.followMotorReverse)
-        self.check_gui()
         if self.want_manual:
             self.mode = ArmMode.MANUAL
         elif self.want_auto:
