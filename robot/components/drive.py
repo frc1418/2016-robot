@@ -14,7 +14,7 @@ class Drive:
 		through this class.
 	'''	
 	robot_drive = wpilib.RobotDrive
-	navX = navx.AHRS.create_spi
+	navX = navx.AHRS
 	rf_encoder = driveEncoders.DriveEncoders
 	lf_encoder = driveEncoders.DriveEncoders
 	sd = NetworkTable

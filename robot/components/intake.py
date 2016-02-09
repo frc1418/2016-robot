@@ -88,7 +88,7 @@ class Arm:
         :returns: Tote lift encoder position
         :rtype: int
         '''
-        return self.motor.getEncPosition()
+        return self.leftArm.getEncPosition()
     def get_target_position(self):
         return self.target_position
     
@@ -168,19 +168,19 @@ class Arm:
         '''
         if abs(self.get_position()-self.target_position)< self.position_threshold.value:
             return True
-        elif self.target_index == 0 and self.motor.isFwdLimitSwitchClosed():
+        elif self.target_index == 0 and self.leftArm.isFwdLimitSwitchClosed():
             return True
-        elif self.target_index == 2 and self.motor.isRevLimitSwitchClosed():
+        elif self.target_index == 2 and self.leftArm.isRevLimitSwitchClosed():
             return True
         
         return False
     
     def overide_calibrate(self):
         '''in case of calibration faliure, this can be called to ignore it.'''
-        self.motor.set(0)
-        self.motor.setSensorPosition(0)
+        self.leftArm.set(0)
+        self.leftArm.setSensorPosition(0)
             
-        self.motor.changeControlMode(wpilib.CANTalon.ControlMode.Position)
+        self.leftArm.changeControlMode(wpilib.CANTalon.ControlMode.Position)
         self.isCalibrated = True
 
     
@@ -196,14 +196,14 @@ class Arm:
                 self.set_manual(0)
                 self.mode = ArmMode.MANUAL
             
-            if not self.motor.isRevLimitSwitchClosed():
-                self.motor.set(-0.5)
+            if not self.leftArm.isRevLimitSwitchClosed():
+                self.leftArm.set(-0.5)
                 
             else:
-                self.motor.set(0)
-                self.motor.setSensorPosition(0)
+                self.leftArm.set(0)
+                self.leftArm.setSensorPosition(0)
             
-                self.motor.changeControlMode(wpilib.CANTalon.ControlMode.Position)
+                self.leftArm.changeControlMode(wpilib.CANTalon.ControlMode.Position)
                 self.isCalibrated = True
                 self.isCalibrating = False
     
@@ -214,15 +214,15 @@ class Arm:
         self.leftBallSpeed = forward
 
     def manualZero(self):
-        self.motor.set(0)
-        self.motor.setSensorPosition(0)
+        self.leftArm.set(0)
+        self.leftArm.setSensorPosition(0)
     
         self.isCalibrated = True
         
         
     def execute(self):
         '''Actually does stuff'''
-        #self.followMotor.reverseOutput(self.followMotorReverse)
+        #self.rightArm.reverseOutput(self.rightArmReverse)
         if self.want_manual:
             self.mode = ArmMode.MANUAL
         elif self.want_auto:
@@ -233,20 +233,20 @@ class Arm:
                 self.new_pid = [e.value for e in self.wanted_pid]
                 if self.isCalibrated:
                     # Only switch the control mode if we're not calibrating!
-                    self.motor.changeControlMode(wpilib.CANTalon.ControlMode.Position)
+                    self.leftArm.changeControlMode(wpilib.CANTalon.ControlMode.Position)
             if self.mode == ArmMode.MANUAL:
-                self.motor.changeControlMode(wpilib.CANTalon.ControlMode.PercentVbus)
+                self.leftArm.changeControlMode(wpilib.CANTalon.ControlMode.PercentVbus)
             if self.mode != ArmMode.MANUAL and self.mode != ArmMode.AUTO:
                 raise ValueError("INVALID MODE")
                 
             self.last_mode = self.mode
             
         if self.mode == ArmMode.MANUAL:
-            self.motor.set(self.manual_value)
+            self.leftArm.set(self.manual_value)
             self.target_index = -1
             if self.isCalibrated:
                 self.mode = ArmMode.AUTO
-                self.target_position = self.motor.getEncPosition()
+                self.target_position = self.leftArm.getEncPosition()
         
         elif self.mode == ArmMode.AUTO:
             self._calibrate()
@@ -255,22 +255,22 @@ class Arm:
                 
                 # Update the PID values if necessary
                 if self.current_pid != self.new_pid:
-                    self.motor.setPID(*self.new_pid)
+                    self.leftArm.setPID(*self.new_pid)
                     self.current_pid = self.new_pid
-                self.motor.set(self.target_position)
+                self.leftArm.set(self.target_position)
                 
         else:
-            self.motor.set(0)
+            self.leftArm.set(0)
         
-        if self.motor.isFwdLimitSwitchClosed():
-            self.motor.setSensorPosition(1180)
+        if self.leftArm.isFwdLimitSwitchClosed():
+            self.leftArm.setSensorPosition(1180)
             
-        if self.motor.isRevLimitSwitchClosed():
-            self.motor.setSensorPosition(0)
+        if self.leftArm.isRevLimitSwitchClosed():
+            self.leftArm.setSensorPosition(0)
             
-        self.followMotor.set(self.motor.getDeviceID())
+        self.rightArm.set(self.leftArm.getDeviceID())
         
-        self.leftBallMotor.set(self.leftBallSpeed)
+        self.leftBall.set(self.leftBallSpeed)
         
         self.leftBallSpeed = off
             
@@ -281,15 +281,15 @@ class Arm:
         
         self.update_sd("Arm")
         
-        #print(self.motor.getOutputVoltage())
+        #print(self.leftArm.getOutputVoltage())
     def update_sd(self, name):
         '''Puts refreshed values to SmartDashboard'''
         self.sd.putValue('Arm | Manual Value', self.manual_value)
-        self.sd.putValue('%s | Encoder' % name, self.motor.getEncPosition())
-        self.sd.putValue("Arm | Reverse Limit Switch", self.motor.isRevLimitSwitchClosed())
-        self.sd.putValue("Arm | Forward Limit Switch", self.motor.isFwdLimitSwitchClosed())
+        self.sd.putValue('%s | Encoder' % name, self.leftArm.getEncPosition())
+        self.sd.putValue("Arm | Reverse Limit Switch", self.leftArm.isRevLimitSwitchClosed())
+        self.sd.putValue("Arm | Forward Limit Switch", self.leftArm.isFwdLimitSwitchClosed())
         self.sd.putValue('%s | Calibrated' % name, self.isCalibrated)
-        self.sd.putValue('%s | Arm Position' % name, self.motor.getAnalogInPosition())
+        self.sd.putValue('%s | Arm Position' % name, self.leftArm.getAnalogInPosition())
         
         if self.target_position is None:
             self.sd.getAutoUpdateValue('%s|Target Position' % name, -1)

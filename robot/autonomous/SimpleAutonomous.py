@@ -1,10 +1,13 @@
 from robotpy_ext.autonomous import state, timed_state, StatefulAutonomous
+from components import intake, drive
 import wpilib
 
 class LowGoal(StatefulAutonomous):
     MODE_NAME='LowGoal'
     DEFAULT = True
     
+    intake = intake.Arm
+    drive = drive.Drive
     def initialize(self):
         self.register_sd_var('Drive_Distance', 8.6)
         self.register_sd_var('Rotate_Angle', 60)
@@ -55,7 +58,9 @@ class LowGoal(StatefulAutonomous):
 class ChevalDeFrise(StatefulAutonomous):
     MODE_NAME = "ChevalDeFrise"
     DEFAULT = False
-        
+    
+    intake = intake.Arm
+    drive = drive.Drive
     def initialize(self):
         self.register_sd_var("Drive_to_distance", 2.1)
         self.register_sd_var("Drive_on_distance", 0.5)
@@ -94,6 +99,8 @@ class DirectPortcullis(StatefulAutonomous):
     MODE_NAME = "DirectPorcullis"
     DEFAULT = False
     
+    intake = intake.Arm
+    drive = drive.Drive
     def initialize(self):
         self.register_sd_var("Drive_Encoder_Distance", 2.55)
         self.register_sd_var("Arm_To_Position", 1000)
