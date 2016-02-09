@@ -18,7 +18,7 @@ class Winch:
             self.winchValue = 1
         
         
-    def doit(self):
+    def execute(self):
         self.winchMotor.set(self.winchValue)
         self.kickMotor.set(self.kickValue)
         

@@ -1,4 +1,4 @@
-#!/usr/local/bin/python3
+#!/usr/bin/env python3
 import magicbot
 import wpilib
 
@@ -8,7 +8,6 @@ from automations import shootBall, portcullis
 from common import driveEncoders
 
 from robotpy_ext.common_drivers import navx
-from robotpy_ext.autonomous import AutonomousModeSelector
 
 from networktables.networktable import NetworkTable
 
@@ -44,7 +43,7 @@ class MyRobot(magicbot.MagicRobot):
         self.rf_encoder = driveEncoders.DriveEncoders(self.robot_drive.frontRightMotor, True)
         self.lf_encoder = driveEncoders.DriveEncoders(self.robot_drive.frontLeftMotor)
         ##NavX##
-        self.navx = navx.AHRS.create_spi()
+        self.navX = navx.AHRS.create_spi()
 
         ##SMART DASHBOARD##
         self.sd = NetworkTable.getTable('SmartDashboard')
@@ -54,8 +53,6 @@ class MyRobot(magicbot.MagicRobot):
         self.shootBall = shootBall.shootBall(self.intake)
         
         self.control_loop_wait_time = 0.025
-        self.automodes = AutonomousModeSelector('autonomous', self.auto_components)
-    
         self.reverseButton = ButtonDebouncer(self.joystick1, 1)
 
         self.shoot = ButtonDebouncer(self.joystick2, 1)
@@ -112,7 +109,7 @@ class MyRobot(magicbot.MagicRobot):
         if self.shoot.get():
             self.shooting = not shooting
             self.raise_portcullis = False
-        if shooting:
+        if self.shooting:
             self.raise_portcullis = False
             self.shootBall.doit()
             self.shooting = self.shootBall.get_running()
@@ -133,12 +130,7 @@ class MyRobot(magicbot.MagicRobot):
             self.shooting = False
             self.raise_portcullis = False
             self.winch.winch()
-               
-        self.update()            
-        
-    def update(self):
-        for component in self.components.values():
-            component.exe()
+
 
 if __name__ == '__main__':
     wpilib.run(MyRobot)

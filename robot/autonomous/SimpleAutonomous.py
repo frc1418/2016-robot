@@ -61,7 +61,7 @@ class ChevalDeFrise(StatefulAutonomous):
         self.register_sd_var("Drive_on_distance", 0.5)
         self.isFinished = False
         
-    @timed_state(duration = 2, next_state='lower_arms', first = False)
+    @timed_state(duration = 2, next_state='lower_arms', first = True)
     def drive_to(self, initial_call):
         if initial_call:
             self.drive.reset_drive_encoders()

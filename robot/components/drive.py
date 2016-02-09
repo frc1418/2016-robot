@@ -14,7 +14,7 @@ class Drive:
 		through this class.
 	'''	
 	robot_drive = wpilib.RobotDrive
-	navx = navx.AHRS.create_spi
+	navX = navx.AHRS.create_spi
 	rf_encoder = driveEncoders.DriveEncoders
 	lf_encoder = driveEncoders.DriveEncoders
 	sd = NetworkTable
@@ -148,9 +148,9 @@ class Drive:
 		
 
 		if(self.isTheRobotBackwards):
-			self.robotDrive.arcadeDrive(-self.y, -self.rotation, self.squaredInputs)
+			self.robot_drive.arcadeDrive(-self.y, -self.rotation, self.squaredInputs)
 		else:
-			self.robotDrive.arcadeDrive(self.y, -self.rotation, self.squaredInputs)
+			self.robot_drive.arcadeDrive(self.y, -self.rotation, self.squaredInputs)
 			
 		
 		# by default, the robot shouldn't move
@@ -159,9 +159,8 @@ class Drive:
 		self.update_sd()
 		
 	def update_sd(self):
-		self.sd.putValue('NavX | Angle', self.navx.getAngle())
-		self.sd.putValue('NavX | Pitch', self.navx.getPitch())
-		self.sd.putValue('NavX | Yaw', self.navx.getYaw())
-		self.sd.putValue('NavX | Roll', self.navx.getRoll())
+		self.sd.putValue('NavX | Pitch', self.navX.getPitch())
+		self.sd.putValue('NavX | Yaw', self. navX.getYaw())
+		self.sd.putValue('NavX | Roll', self.navX.getRoll())
 		self.sd.putValue('Drive | Encoder', self.return_drive_encoder_position())
 		self.sd.putValue('Drive | Y', self.y)	
