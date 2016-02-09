@@ -1,7 +1,8 @@
 import wpilib
 
+from robotpy_ext.common_drivers import navx
 from networktables import NetworkTable
-from common.driveEncoders import DriveEncoders
+from common import driveEncoders
 import math
 
 ENCODER_ROTATION = 1023
@@ -12,8 +13,12 @@ class Drive:
 		occurs here. Anything that wants to drive the robot must go
 		through this class.
 	'''	
-
-	def __init__(self, robotDrive, navx, rf_encoder, lf_encoder):
+	robot_drive = wpilib.RobotDrive
+	navX = navx.AHRS
+	rf_encoder = driveEncoders.DriveEncoders
+	lf_encoder = driveEncoders.DriveEncoders
+	sd = NetworkTable
+	def on_enable(self):
 		'''
 			Constructor. 
 			
@@ -22,27 +27,18 @@ class Drive:
 			:type lf_encoder: DriveEncoders()
 			
 		'''
-		self.sd = NetworkTable.getTable('SmartDashboard')
 		self.isTheRobotBackwards = False
 		# set defaults here
 		self.y = 0
 		self.rotation = 0
 		self.squaredInputs = False
-		self.navx = navx
 		
 		self.angle_constant = self.sd.getAutoUpdateValue('Drive | Angle_Constant', 0.2)
 		self.drive_constant = self.sd.getAutoUpdateValue('Drive | Drive_Constant', .0001)
 		self.drive_max = self.sd.getAutoUpdateValue('Drive | Max Enc Speed', .5)
+		self.rotate_max = self.sd.getAutoUpdateValue('Drive | Max Gyro Rotate Speed', .3)
+		
 		self.gyro_enabled = True
-		
-		self.robotDrive = robotDrive
-		
-		self.rf_encoder = rf_encoder
-		self.lf_encoder = lf_encoder
-		
-		
-		self.navx = navx
-		
 		
 		
 		
@@ -62,7 +58,7 @@ class Drive:
 			:param rotation:  The rate of rotation for the robot that is completely independent of the translation. 1 is rotate to the right [-1.0..1.0]
 			:param squaredInputs: If True, the x and y values will be squared, allowing for more gradual speed. 
 		'''
-		self.y = y
+		self.y = max(min(y, 1), -1)
 		self.rotation = max(min(1.0, rotation), -1)
 		self.squaredInputs = squaredInputs
 
@@ -88,15 +84,19 @@ class Drive:
 		self.angle_constant = constant
 		
 	def reset_drive_encoders(self):
+		'''Resets drive encoders'''
 		self.lf_encoder.zero()
 		self.rf_encoder.zero()
 		
 		
 	def return_drive_encoder_position(self):
+		''':returns: Drive Encoder Position'''
 		#print((self.lf_encoder.get() + self.rf_encoder.get())/2)
 		return (self.lf_encoder.get() + self.rf_encoder.get())/2
 	
 	def _get_inches_to_ticks(self, inches):
+		'''Converts inches to encoder ticks'''
+		
 		gear_ratio = 50 / 12
 		target_position = (gear_ratio * ENCODER_ROTATION * inches) / (math.pi*WHEEL_DIAMETER)
 		return target_position
@@ -121,7 +121,7 @@ class Drive:
 		   
 		    :param target_angle: Angle to point at, in degrees
 		    
-		    :returns: True if near angle, False otherwise
+		    :returns: True if near angle, False if gyro is not enabled or not within 1º of target
 		'''
 		if not self.gyro_enabled:
 			return False
@@ -130,7 +130,7 @@ class Drive:
 		
 		if angleOffset < -1 or angleOffset > 1:
 			self.rotation = angleOffset * self.angle_constant.value
-			self.rotation = max(min(0.3, self.rotation), -0.3)
+			self.rotation = max(min(self.rotate_max.value, self.rotation), -self.rotate_max.value)
 			
 			return False
 		
@@ -143,14 +143,14 @@ class Drive:
 		'''when called the robot will reverse front/back'''
 		self.isTheRobotBackwards = not self.isTheRobotBackwards
 		
-	def doit(self):
+	def execute(self):
 		''' actually makes the robot drive'''
 		
 
 		if(self.isTheRobotBackwards):
-			self.robotDrive.arcadeDrive(-self.y, -self.rotation, self.squaredInputs)
+			self.robot_drive.arcadeDrive(-self.y, -self.rotation, self.squaredInputs)
 		else:
-			self.robotDrive.arcadeDrive(self.y, -self.rotation, self.squaredInputs)
+			self.robot_drive.arcadeDrive(self.y, -self.rotation, self.squaredInputs)
 			
 		
 		# by default, the robot shouldn't move
@@ -159,9 +159,8 @@ class Drive:
 		self.update_sd()
 		
 	def update_sd(self):
-		self.sd.putValue('NavX | Angle', self.navx.getAngle())
-		self.sd.putValue('NavX | Pitch', self.navx.getPitch())
-		self.sd.putValue('NavX | Yaw', self.navx.getYaw())
-		self.sd.putValue('NavX | Roll', self.navx.getRoll())
+		self.sd.putValue('NavX | Pitch', self.navX.getPitch())
+		self.sd.putValue('NavX | Yaw', self. navX.getYaw())
+		self.sd.putValue('NavX | Roll', self.navX.getRoll())
 		self.sd.putValue('Drive | Encoder', self.return_drive_encoder_position())
 		self.sd.putValue('Drive | Y', self.y)	
