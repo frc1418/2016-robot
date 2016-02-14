@@ -44,7 +44,7 @@ class MyRobot(magicbot.MagicRobot):
         self.lf_encoder = driveEncoders.DriveEncoders(self.robot_drive.frontLeftMotor)
         
         ##DISTANCE SENSORS##
-        self.backSensor = distance_sensors.SharpIRGP2Y0A41SK0F(6)
+        self.backSensor = distance_sensors.SharpIRGP2Y0A41SK0F(0)
         
         ##NavX##
         self.navX = navx.AHRS.create_spi()
