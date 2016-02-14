@@ -1,6 +1,6 @@
 import wpilib
 
-from robotpy_ext.common_drivers import navx
+from robotpy_ext.common_drivers import navx, distance_sensors
 from networktables import NetworkTable
 from common import driveEncoders
 import math
@@ -18,6 +18,7 @@ class Drive:
 	rf_encoder = driveEncoders.DriveEncoders
 	lf_encoder = driveEncoders.DriveEncoders
 	sd = NetworkTable
+	back_sensor = distance_sensors.SharpIRGP2Y0A41SK0F
 	def on_enable(self):
 		'''
 			Constructor. 
@@ -72,11 +73,11 @@ class Drive:
 	
 	def return_gyro_angle(self):
 		''' Returns the gyro angle'''
-		return self.navx.getYaw()
+		return self.navX.getYaw()
 	
 	def reset_gyro_angle(self):
 		'''Resets the gyro angle'''
-		self.navx.reset()
+		self.navX.reset()
 
 	
 	def set_angle_constant(self, constant):
@@ -135,6 +136,15 @@ class Drive:
 			return False
 		
 		return True
+	
+	def wall_goto(self):
+		'''back up until we are 16 cm away from the wall. Fake PID will move us closer and further to the wall'''
+		y = (self.backInfrared.getDistance() - 16.0)/self.strafe_adj.value
+		y = max(min(self.strafe_back_speed.value, y), self.strafe_fwd_speed.value)
+		
+		self.y = y
+		return y
+	
 	def set_direction(self, direction):
 		'''Used to reverse direction'''
 		self.isTheRobotBackwards = bool(direction)
