@@ -7,7 +7,7 @@ from components import drive, intake, winch
 from automations import shootBall, portcullis
 from common import driveEncoders
 
-from robotpy_ext.common_drivers import navx
+from robotpy_ext.common_drivers import navx, distance_sensors
 
 from networktables.networktable import NetworkTable
 
@@ -42,6 +42,10 @@ class MyRobot(magicbot.MagicRobot):
         ##DRIVE ENCODERS##
         self.rf_encoder = driveEncoders.DriveEncoders(self.robot_drive.frontRightMotor, True)
         self.lf_encoder = driveEncoders.DriveEncoders(self.robot_drive.frontLeftMotor)
+        
+        ##DISTANCE SENSORS##
+        self.backSensor = distance_sensors.SharpIRGP2Y0A41SK0F(6)
+        
         ##NavX##
         self.navX = navx.AHRS.create_spi()
 
@@ -64,6 +68,7 @@ class MyRobot(magicbot.MagicRobot):
         self.raise_portcullis = False
     def teleopInit(self):
         self.drive.reset_drive_encoders()
+        self.sd.putValue('startTheTimer', True)
 
     
     def teleopPeriodic(self):
