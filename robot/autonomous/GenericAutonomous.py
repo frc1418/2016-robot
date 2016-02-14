@@ -2,8 +2,7 @@ from robotpy_ext.autonomous import state, timed_state, StatefulAutonomous
 from components import intake, drive
 import wpilib
 
-class LowGoal(StatefulAutonomous):
-    MODE_NAME='LowGoal'
+class LowBar(StatefulAutonomous):
     DEFAULT = False
     
     intake = intake.Arm
@@ -13,7 +12,11 @@ class LowGoal(StatefulAutonomous):
         self.register_sd_var('Rotate_Angle', 60)
         self.register_sd_var('Ramp_Distance', 8.4)
     
-    @timed_state(duration = 1, next_state='drive_forward', first = True)
+    @state
+    def LowBarStart(self):
+        self.next_state('lower_arm')
+    
+    @timed_state(duration = 1, next_state='drive_forward')
     def lower_arm(self, initial_call):
         self.intake.set_arm_bottom()
             
@@ -24,39 +27,9 @@ class LowGoal(StatefulAutonomous):
     def drive_forward(self):
         #self.intake.set_arm_middle()
         if self.drive.drive_distance(self.Drive_Distance*12):
-            self.next_state('rotate')
-    @state
-    def rotate(self, initial_call):
-        if initial_call:
-            self.drive.reset_gyro_angle()
-            
-        self.intake.set_arm_top()
-        
-        if self.drive.angle_rotation(self.Rotate_Angle):
-            self.next_state('drive_to_ramp')
-    @state
-    def drive_to_ramp(self, initial_call):
-        if initial_call:
-            self.drive.reset_drive_encoders()
-        
-        if self.drive.drive_distance(self.Ramp_Distance*12):
-            self.next_state('lower_to_shoot')
-            
-    @state
-    def lower_to_shoot(self):
-        self.intake.set_arm_middle()
-        
-        if self.intake.on_target():
-            self.next_state('shoot')
-        
+            self.next_state('transition')
     
-    @timed_state(duration = 15)
-    def shoot(self, initial_call):
-        self.intake.outtake()
-    
-  
 class ChevalDeFrise(StatefulAutonomous):
-    MODE_NAME = "ChevalDeFrise"
     DEFAULT = False
     
     intake = intake.Arm
@@ -64,8 +37,12 @@ class ChevalDeFrise(StatefulAutonomous):
     def initialize(self):
         self.register_sd_var("Drive_to_distance", 4.2)
         self.register_sd_var("Drive_on_distance", 1)
-        
-    @timed_state(duration = 2, next_state='lower_arms', first = True)
+    
+    @state
+    def A1Start(self):
+        self.next_state('drive_to')
+    
+    @timed_state(duration = 2, next_state='lower_arms')
     def drive_to(self, initial_call):
         if initial_call:
             self.drive.reset_drive_encoders()
@@ -73,7 +50,7 @@ class ChevalDeFrise(StatefulAutonomous):
         if self.drive.drive_distance(self.Drive_to_distance*12):
             self.next_state('lower_arms')
             
-    @timed_state(duration = .4, next_state='drive_on')
+    @timed_state(duration = .2, next_state='drive_on')
     def lower_arms(self, initial_call):
         self.intake.set_arm_bottom()
         
@@ -88,24 +65,23 @@ class ChevalDeFrise(StatefulAutonomous):
         if self.drive.drive_distance(self.Drive_on_distance*12):
             self.next_state('drive_over')
         
-    @timed_state(duration = 2)
+    @timed_state(duration = 4, next_state='transition')
     def drive_over(self, initial_call):
         self.intake.set_arm_top()
         
-        self.drive.move(0.7, 0)
+        self.drive.move(0.3, 0)
         
-class DirectPortcullis(StatefulAutonomous):
-    MODE_NAME = "DirectPorcullis"
+class Portcullis(StatefulAutonomous):
     DEFAULT = False
     
     intake = intake.Arm
     drive = drive.Drive
     def initialize(self):
-        self.register_sd_var("Drive_Encoder_Distance", 2.55)
+        self.register_sd_var("Drive_Encoder_Distance", 5.10)
         self.register_sd_var("Arm_To_Position", 1000)
         self.register_sd_var("DriveThru_Speed", 0.4)
     
-    @timed_state(duration = 2, next_state='drive_forward', first = True)
+    @timed_state(duration = 2, next_state='drive_forward')
     def lower_arm(self, initial_call):
         self.intake.set_arm_bottom()
             
@@ -127,18 +103,9 @@ class DirectPortcullis(StatefulAutonomous):
         if self.intake.on_target():
             self.next_state('drive_thru')
     
-    @timed_state(duration = 5)
+    @timed_state(duration = 3, next_state = 'transition')
     def drive_thru(self):
         self.intake.set_arm_top()
         
         self.drive.move(self.DriveThru_Speed, 0)
 
-class Charge(StatefulAutonomous):
-    MODE_NAME = "Charge"
-    DEFAULT = False
-    
-    @timed_state(duration = 3, first = True)
-    def charge(self, initial_call):
-        self.drive.move(1,0)
-   
-    
