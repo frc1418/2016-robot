@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+
 import magicbot
 import wpilib
 
@@ -28,7 +29,7 @@ class MyRobot(magicbot.MagicRobot):
         self.lf_motor = wpilib.CANTalon(5)
         self.lr_motor = wpilib.CANTalon(10)
         self.rf_motor = wpilib.CANTalon(15)
-        self.rr_motor = wpilib.CANTalon(20)        
+        self.rr_motor = wpilib.CANTalon(20)   
         
         self.robot_drive = wpilib.RobotDrive(self.lf_motor, self.lr_motor, self.rf_motor, self.rr_motor)
         
@@ -44,7 +45,7 @@ class MyRobot(magicbot.MagicRobot):
         self.lf_encoder = driveEncoders.DriveEncoders(self.robot_drive.frontLeftMotor)
         
         ##DISTANCE SENSORS##
-        self.backSensor = distance_sensors.SharpIRGP2Y0A41SK0F(0)
+        self.back_sensor = distance_sensors.SharpIRGP2Y0A41SK0F(0)
         
         ##NavX##
         self.navX = navx.AHRS.create_spi()

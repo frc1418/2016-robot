@@ -139,8 +139,8 @@ class Drive:
 	
 	def wall_goto(self):
 		'''back up until we are 16 cm away from the wall. Fake PID will move us closer and further to the wall'''
-		y = (self.backInfrared.getDistance() - 16.0)/self.strafe_adj.value
-		y = max(min(self.strafe_back_speed.value, y), self.strafe_fwd_speed.value)
+		y = (self.back_sensor.getDistance() - 16.0)/35
+		y = max(min(.6, y), -.6)
 		
 		self.y = y
 		return y

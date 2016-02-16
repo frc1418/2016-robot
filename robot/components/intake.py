@@ -201,7 +201,7 @@ class Arm:
                 
             else:
                 self.leftArm.set(0)
-                self.leftArm.setSensorPosition(0)
+                self.leftArm.setPosition(0)
             
                 self.leftArm.changeControlMode(wpilib.CANTalon.ControlMode.Position)
                 self.isCalibrated = True
@@ -215,7 +215,7 @@ class Arm:
 
     def manualZero(self):
         self.leftArm.set(0)
-        self.leftArm.setSensorPosition(0)
+        self.leftArm.setPosition(0)
     
         self.isCalibrated = True
         
@@ -263,10 +263,10 @@ class Arm:
             self.leftArm.set(0)
         
         if self.leftArm.isFwdLimitSwitchClosed():
-            self.leftArm.setSensorPosition(1180)
+            self.leftArm.setPosition(1180)
             
         if self.leftArm.isRevLimitSwitchClosed():
-            self.leftArm.setSensorPosition(0)
+            self.leftArm.setPosition(0)
             
         self.rightArm.set(self.leftArm.getDeviceID())
         

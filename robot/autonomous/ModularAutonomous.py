@@ -40,5 +40,31 @@ class ModularAutonomous(LowBar, ChevalDeFrise, Portcullis):
     @state
     def rotate_back(self):
         if self.drive.angle_rotation(0):
-            #self.next_state('drive_to_line')
-            self.done()
+            self.next_state('drive_to_wall')
+    
+    @state
+    def drive_to_wall(self):
+        if self.drive.wall_goto() < .1:
+            self.next_state('reverse_to_angle')
+            
+    @state
+    def reverse_to_angle(self):
+        if self.drive.drive_distance(15):
+            self.next_state("rotate_to_goal")
+    
+    @state
+    def rotate_to_goal(self):
+        if self.drive.angle_rotation(-60*self.rotateConst):
+            self.next_state('drive_to_goal')
+            
+    @state
+    def drive_to_goal(self):
+        if self.drive.drive_distance(30):
+            self.next_state('shoot')
+    
+    @state
+    def shoot(self):
+        self.intake.set_arm_middle()
+        if self.intake.on_target():
+            self.intake.outtake()
+               
