@@ -1,9 +1,11 @@
 import wpilib
+from networktables.networktable import NetworkTable
 
 class Winch:
     
     winchMotor = wpilib.Talon
     kickMotor = wpilib.Talon
+    sd = NetworkTable
     def on_enable(self):
         
         self.winchValue = 0
@@ -13,6 +15,7 @@ class Winch:
     def deploy_winch(self):
         self.kickValue = 1
         self.isExtended = True
+        self.sd.putValue('ladderUp', True)
     def winch(self):
         if self.isExtended:
             self.winchValue = 1

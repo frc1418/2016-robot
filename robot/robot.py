@@ -69,7 +69,7 @@ class MyRobot(magicbot.MagicRobot):
         self.raise_portcullis = False
     def teleopInit(self):
         self.drive.reset_drive_encoders()
-        self.sd.putValue('startTheTimer', True)
+        self.sd.putValue('startTheTimer', False)
 
     
     def teleopPeriodic(self):
@@ -130,7 +130,7 @@ class MyRobot(magicbot.MagicRobot):
             self.auto_portcullis.state = 1
         
         ##WINCH##
-        if self.joystick1.getRawButton(7):
+        if self.joystick1.getRawButton(7) or self.sd.getValue('ladderButtonPressed'):
             self.winch.deploy_winch()
         if self.joystick1.getRawButton(8):
             self.shooting = False
