@@ -48,8 +48,10 @@ class ModularAutonomous(LowBar, ChevalDeFrise, Portcullis):
             self.next_state('reverse_to_angle')
             
     @state
-    def reverse_to_angle(self):
-        if self.drive.drive_distance(15):
+    def reverse_to_angle(self, initial_call):
+        if initial_call:
+            self.drive.reset_drive_encoders()
+        if self.drive.drive_distance(-15):
             self.next_state("rotate_to_goal")
     
     @state
