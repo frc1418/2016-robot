@@ -1,12 +1,13 @@
 import wpilib
+import components.intake as Intake
 
 ARM_UP = 0
 SPIN_WHEEL = 1
 ARM_DOWN = 2    
 
 class shootBall():
-    def __init__(self, intake):
-        self.intake = intake
+    intake = Intake.Arm
+    def on_enable(self):
         self.is_running = False
         self.state = ARM_UP
         self.timer = wpilib.Timer()
@@ -36,3 +37,5 @@ class shootBall():
         #    if self.intake.on_target():
         #        self.state = ARM_UP
         #        self.is_running = False
+    def execute(self):
+        pass
