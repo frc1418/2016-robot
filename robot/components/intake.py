@@ -187,19 +187,26 @@ class Arm:
     def _calibrate(self):
         '''Moves the motor towards the limit switch to reset the encoder to 0'''
         if not self.isCalibrated:
+            print('calibrating')
             if not self.isCalibrating:
                 self.calibrate_timer.start()
                 self.isCalibrating = True
             
-            if self.calibrate_timer.hasPeriodPassed(3):
+            if self.calibrate_timer.hasPeriodPassed(6):
+                print('Arm Safety Kicked In')
                 ArmMode.AUTO = ArmMode.MANUAL
                 self.set_manual(0)
                 self.mode = ArmMode.MANUAL
             
             if not self.leftArm.isRevLimitSwitchClosed():
+                print('Reversing Arm')
+                self.leftArm.changeControlMode(wpilib.CANTalon.ControlMode.PercentVbus)
                 self.leftArm.set(-1)
                 
             else:
+                print('Calibrated')
+                self.calibrate_timer.reset()
+                self.calibrate_timer.stop()
                 self.leftArm.set(0)
                 self.leftArm.setPosition(0)
             
@@ -290,6 +297,8 @@ class Arm:
         self.sd.putValue("Arm | Forward Limit Switch", self.leftArm.isFwdLimitSwitchClosed())
         self.sd.putValue('%s | Calibrated' % name, self.isCalibrated)
         self.sd.putValue('%s | Arm Position' % name, self.leftArm.getAnalogInPosition())
+        self.sd.putValue('%s | Burnout' % name, ArmMode.AUTO == ArmMode.MANUAL)
+        
         
         if self.target_position is None:
             self.sd.getAutoUpdateValue('%s|Target Position' % name, -1)

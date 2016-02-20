@@ -1,20 +1,22 @@
 from robotpy_ext.autonomous import state, timed_state, StatefulAutonomous
-from components import intake, drive
+from components import intake, drive as Drive
 import wpilib
 
 class LowGoal(StatefulAutonomous):
     MODE_NAME='LowGoal'
-    DEFAULT = False
+    DEFAULT = True
     
     intake = intake.Arm
-    drive = drive.Drive
+    drive = Drive.Drive
     def initialize(self):
-        self.register_sd_var('Drive_Distance', 17.2)
-        self.register_sd_var('Rotate_Angle', 60)
+        self.register_sd_var('Drive_Distance', 17.8)
+        self.register_sd_var('Rotate_Angle', 55)
         self.register_sd_var('Ramp_Distance', 8.4)
     
     @timed_state(duration = 1, next_state='drive_forward', first = True)
     def lower_arm(self, initial_call):
+        
+        self.drive.reset_drive_encoders()
         self.intake.set_arm_bottom()
             
         if self.intake.on_target(): 
@@ -42,7 +44,7 @@ class LowGoal(StatefulAutonomous):
         if self.drive.drive_distance(self.Ramp_Distance*12):
             self.next_state('lower_to_shoot')
             
-    @state
+    @timed_state(duration = 3)
     def lower_to_shoot(self):
         self.intake.set_arm_middle()
         
@@ -60,7 +62,7 @@ class ChevalDeFrise(StatefulAutonomous):
     DEFAULT = False
     
     intake = intake.Arm
-    drive = drive.Drive
+    drive = Drive.Drive
     def initialize(self):
         self.register_sd_var("Drive_to_distance", 4.2)
         self.register_sd_var("Drive_on_distance", 1)
@@ -99,9 +101,9 @@ class DirectPortcullis(StatefulAutonomous):
     DEFAULT = False
     
     intake = intake.Arm
-    drive = drive.Drive
+    drive = Drive.Drive
     def initialize(self):
-        self.register_sd_var("Drive_Encoder_Distance", 2.55)
+        self.register_sd_var("Drive_Encoder_Distance", 4.10)
         self.register_sd_var("Arm_To_Position", 1000)
         self.register_sd_var("DriveThru_Speed", 0.4)
     

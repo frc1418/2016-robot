@@ -6,7 +6,7 @@ import wpilib
 from robotpy_ext.control.button_debouncer import ButtonDebouncer
 from components import drive, intake, winch
 from automations import shootBall, portcullis
-from common import driveEncoders
+from common import driveEncoders, light
 
 from robotpy_ext.common_drivers import navx, distance_sensors
 
@@ -44,8 +44,10 @@ class MyRobot(magicbot.MagicRobot):
         self.winchMotor = wpilib.Talon(0)
         self.kickMotor = wpilib.Talon(1)
         
-        self.led = wpilib.Relay(0)
-        
+        self.light = light.Light(wpilib.Relay(0))
+        self.lightTimer = wpilib.Timer()
+        self.turningOffState = 0
+                
         ##DRIVE ENCODERS##
         self.rf_encoder = driveEncoders.DriveEncoders(self.robot_drive.frontRightMotor, True)
         self.lf_encoder = driveEncoders.DriveEncoders(self.robot_drive.frontLeftMotor)
@@ -66,12 +68,15 @@ class MyRobot(magicbot.MagicRobot):
         self.raiseButton = ButtonDebouncer(self.joystick2, 3)
         self.lowerButton = ButtonDebouncer(self.joystick2, 2)
         self.portcullis = ButtonDebouncer(self.joystick2, 10)
+        self.lightButton = ButtonDebouncer(self.joystick1, 6)
         
         self.shooting = False
         self.raise_portcullis = False
+
         
     def disabledPeriodic(self):
-        pass        
+        self.intake.target_index = -1
+        
     
     def teleopInit(self):
         self.drive.reset_drive_encoders()
@@ -126,10 +131,31 @@ class MyRobot(magicbot.MagicRobot):
             self.shootBall.doit()
             self.shooting = self.shootBall.get_running()
         
-        if self.joystick1.getRawButton(6):
-            self.led.set(wpilib.Relay.Value.kForward)
-        else:
-            self.led.set(wpilib.Relay.Value.kOff)
+        if self.lightButton.get():
+            if self.light.on:
+                self.light.turnOff()
+                self.turningOffState = 1
+                self.lightTimer.start()
+            else:
+                self.light.turnOn()
+                
+        if self.turningOffState == 1 and self.lightTimer.hasPeriodPassed(.25):
+            self.light.turnOn()
+            self.turningOffState = 2
+        elif self.turningOffState == 2 and self.lightTimer.hasPeriodPassed(.25):
+            self.light.turnOff()
+            self.turningOffState = 3
+        elif self.turningOffState == 3 and self.lightTimer.hasPeriodPassed(.25):
+            self.light.turnOn()
+            self.turningOffState = 4
+        elif self.turningOffState == 4 and self.lightTimer.hasPeriodPassed(.25):
+            self.light.turnOff()
+            self.turningOffState=0
+            self.lightTimer.reset()
+            self.lightTimer.stop()
+        if self.turningOffState is not 0:
+            print(self.turningOffState)
+            
         ##AUTO PORTCULLIS##
         #if self.portcullis.get():
         #    self.raise_portcullis = not self.raise_portcullis
