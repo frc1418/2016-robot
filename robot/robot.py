@@ -11,6 +11,7 @@ from common import driveEncoders
 from robotpy_ext.common_drivers import navx, distance_sensors
 
 from networktables.networktable import NetworkTable
+import automations
 
 
 class MyRobot(magicbot.MagicRobot):
@@ -18,7 +19,8 @@ class MyRobot(magicbot.MagicRobot):
     drive = drive.Drive
     intake = intake.Arm
     winch = winch.Winch
-    
+    shootBall = shootBall.shootBall
+    #auto_portcullis = portcullis.PortcullisLift
     def createObjects(self):
         # #INITIALIZE JOYSTICKS##
         self.joystick1 = wpilib.Joystick(0)
@@ -52,10 +54,6 @@ class MyRobot(magicbot.MagicRobot):
 
         ##SMART DASHBOARD##
         self.sd = NetworkTable.getTable('SmartDashboard')
-
-        ##AUTO FUNCTIONALITY##
-        self.auto_portcullis = portcullis.PortcullisLift(self.sd, self.drive, self.intake)
-        self.shootBall = shootBall.shootBall(self.intake)
         
         self.control_loop_wait_time = 0.025
         self.reverseButton = ButtonDebouncer(self.joystick1, 1)
@@ -67,6 +65,10 @@ class MyRobot(magicbot.MagicRobot):
         
         self.shooting = False
         self.raise_portcullis = False
+        
+    def disabledPeriodic(self):
+        pass        
+    
     def teleopInit(self):
         self.drive.reset_drive_encoders()
         self.sd.putValue('startTheTimer', False)
@@ -88,7 +90,7 @@ class MyRobot(magicbot.MagicRobot):
             self.raise_portcullis = False
         elif self.joystick2.getRawButton(4):
             self.intake.intake()
-            shooting = False
+            self.shooting = False
             self.raise_portcullis = False
         
         ##AUTO ARM##
@@ -113,7 +115,7 @@ class MyRobot(magicbot.MagicRobot):
             
         ##AUTO SHOOT##
         if self.shoot.get():
-            self.shooting = not shooting
+            self.shooting = not self.shooting
             self.raise_portcullis = False
         if self.shooting:
             self.raise_portcullis = False
@@ -121,16 +123,16 @@ class MyRobot(magicbot.MagicRobot):
             self.shooting = self.shootBall.get_running()
 
         ##AUTO PORTCULLIS##
-        if self.portcullis.get():
-            self.raise_portcullis = not self.raise_portcullis
-        if self.raise_portcullis:
-            self.auto_portcullis.doit()
-            self.raise_portcullis = self.auto_portcullis.get_running()
-        else:
-            self.auto_portcullis.state = 1
+        #if self.portcullis.get():
+        #    self.raise_portcullis = not self.raise_portcullis
+        #if self.raise_portcullis:
+        #    self.auto_portcullis.doit()
+        #    self.raise_portcullis = self.auto_portcullis.get_running()
+        #else:
+        #    self.auto_portcullis.state = 1
         
         ##WINCH##
-        if self.joystick1.getRawButton(7) or self.sd.getValue('ladderButtonPressed'):
+        if self.joystick1.getRawButton(7): #or self.sd.getValue('ladderButtonPressed'):
             self.winch.deploy_winch()
         if self.joystick1.getRawButton(8):
             self.shooting = False

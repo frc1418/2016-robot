@@ -1,58 +1,29 @@
 #! /usr/bin/env python3
 import wpilib
-import enum
+from robotpy_ext.control import xbox_controller
+import magicbot
 
-from networktables import NetworkTable
-from wpilib import cantalon
-
-class Swerve(enum.IntEnum):
-    DRIVE = 0
-    ROTATE = 1
+class MyRobot(magicbot.MagicRobot):
     
-class MyRobot(wpilib.SampleRobot):
-    
-    def robotInit(self):
-        self.sd = NetworkTable.getTable('SmartDashboard')
+    def createObjects(self):
         
-
-        # #INITIALIZE JOYSTICKS##
-        self.joystick1 = wpilib.Joystick(0)
+       self.driveStick = xbox_controller.XboxController(0)
+       
+       if MyRobot.isSimulation():
+           self.lf_motor = wpilib.Jaguar(1)
+           self.lr_motor = wpilib.Jaguar(2)
+           self.rf_motor = wpilib.Jaguar(3)
+           self.rr_motor = wpilib.Jaguar(4)
+       self.drive = wpilib.RobotDrive(self.lf_motor, self.lr_motor, self.rf_motor, self.rr_motor)
         
-        
-        
-        # #INITIALIZE MOTORS##
-        self.lf_wheel = wpilib.CANTalon(5)
-        self.lr_wheel = wpilib.CANTalon(10)
-        self.rf_wheel = wpilib.CANTalon(15)
-        self.rr_wheel = wpilib.CANTalon(20)
-        
-        self.armMotor = wpilib.CANTalon(25)
-        
-        self.leftBall = wpilib.Relay(0)
-        self.rightBall = wpilib.Relay(1)
-        
-        self.ballArm = wpilib.CANTalon(25)
-        
-    def disabled(self):
-        # self.talon.setSensorPosition(0)
+    def disabledPeriodic(self):
         wpilib.Timer.delay(.01)
     
-    def operatorControl(self):
-        # self.myRobot.setSafetyEnabled(True)
+    def teleopInit(self):
+        pass
+    
+    def teleopPeriodic(self):
         
-        while self.isOperatorControl() and self.isEnabled():
-        
-            self.lf_wheel.set(self.joystick1.getRawButton(1))
-            
-            #Make this wheel 5. So record the wheel this turns and which CANTalon is hooked up to this wheel. Swap
-            self.lr_wheel.set(self.joystick1.getRawButton(2))
-            self.rf_wheel.set(self.joystick1.getRawButton(3))
-            self.rr_wheel.set(self.joystick1.getRawButton(4))
-            
-            
-            self.leftBall.set(wpilib.Relay.Value.kForward*self.joystick1.getRawButton(5))
-            self.rightBall.set(wpilib.Relay.Value.kReverse*self.joystick1.getRawButton(5))
-            self.ballArm.set(self.joystick1.getRawButton(6))
-            wpilib.Timer.delay(0.005)
+        self.drive.tankDrive(self.driveStick.getLeftY(), self.driveStick.getRightY(), False)
 if __name__ == '__main__':
     wpilib.run(MyRobot)

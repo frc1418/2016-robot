@@ -4,8 +4,8 @@
   	"robot": {
   	  "w": 3,
   	  "h": 2,
-      "starting_x": 26, 
-      "starting_y": 20,
+      "starting_x": 25, 
+      "starting_y": 12.1,
       "starting_angle": 180
   	},
   

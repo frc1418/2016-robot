@@ -11,17 +11,25 @@ class ModularAutonomous(LowBar, ChevalDeFrise, Portcullis):
     intake = Intake.Arm
     drive = Drive.Drive
     
+    def initialize(self):
+        LowBar.initialize(self)
+        ChevalDeFrise.initialize(self)
+        Portcullis.initialize(self)
+        
     @state(first = True)
     def startModularAutonomous(self):
-        #self.next_state(self.sd.getValue('robotDefense')+'Start')
-        self.next_state('LowBarStart')
-    
+        print(self.sd.getValue('robotDefense')+'Start')
+        self.next_state(self.sd.getValue('robotDefense')+'Start')
+        #self.next_state('LowBarStart')
+        self.position = 4
     @state
     def transition(self):
         # if self.sd.getNumber('robotPosition') > 3:
-        if 2 > 3:
+        if self.position > 3:
             self.rotateConst = 1
+            self.drive_distance = (50*(5-self.position))
         else:
+            self.drive_distance = (50(self.position-1))
             self.rotateConst = -1
         self.next_state('rotate')
     
@@ -33,7 +41,7 @@ class ModularAutonomous(LowBar, ChevalDeFrise, Portcullis):
     
     @state
     def drive_to_position(self):
-        if self.drive.drive_distance(50):
+        if self.drive.drive_distance(self.drive_distance):
             self.next_state('rotate_back')
         self.drive.angle_rotation(90*self.rotateConst)
         
@@ -48,8 +56,10 @@ class ModularAutonomous(LowBar, ChevalDeFrise, Portcullis):
             self.next_state('reverse_to_angle')
             
     @state
-    def reverse_to_angle(self):
-        if self.drive.drive_distance(15):
+    def reverse_to_angle(self, initial_call):
+        if initial_call:
+            self.drive.reset_drive_encoders()
+        if self.drive.drive_distance(-30):
             self.next_state("rotate_to_goal")
     
     @state

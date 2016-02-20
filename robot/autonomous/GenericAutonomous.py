@@ -81,6 +81,10 @@ class Portcullis(StatefulAutonomous):
         self.register_sd_var("Arm_To_Position", 1000)
         self.register_sd_var("DriveThru_Speed", 0.4)
     
+    @state
+    def A0Start(self):
+        self.next_state('lower_arm')
+    
     @timed_state(duration = 2, next_state='drive_forward')
     def lower_arm(self, initial_call):
         self.intake.set_arm_bottom()
@@ -109,3 +113,9 @@ class Portcullis(StatefulAutonomous):
         
         self.drive.move(self.DriveThru_Speed, 0)
 
+class Charge(StatefulAutonomous):
+    DEFAULT = False
+    
+    @timed_state(duration = 3, first = True)
+    def E0Start(self, initial_call):
+        self.drive.move(1,0)
