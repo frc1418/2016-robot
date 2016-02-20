@@ -22,6 +22,7 @@ class MyRobot(magicbot.MagicRobot):
     shootBall = shootBall.shootBall
     #auto_portcullis = portcullis.PortcullisLift
     def createObjects(self):
+        
         # #INITIALIZE JOYSTICKS##
         self.joystick1 = wpilib.Joystick(0)
         self.joystick2 = wpilib.Joystick(1)
@@ -42,6 +43,9 @@ class MyRobot(magicbot.MagicRobot):
         
         self.winchMotor = wpilib.Talon(0)
         self.kickMotor = wpilib.Talon(1)
+        
+        self.led = wpilib.Relay(0)
+        
         ##DRIVE ENCODERS##
         self.rf_encoder = driveEncoders.DriveEncoders(self.robot_drive.frontRightMotor, True)
         self.lf_encoder = driveEncoders.DriveEncoders(self.robot_drive.frontLeftMotor)
@@ -121,7 +125,11 @@ class MyRobot(magicbot.MagicRobot):
             self.raise_portcullis = False
             self.shootBall.doit()
             self.shooting = self.shootBall.get_running()
-
+        
+        if self.joystick1.getRawButton(6):
+            self.led.set(wpilib.Relay.Value.kForward)
+        else:
+            self.led.set(wpilib.Relay.Value.kOff)
         ##AUTO PORTCULLIS##
         #if self.portcullis.get():
         #    self.raise_portcullis = not self.raise_portcullis
