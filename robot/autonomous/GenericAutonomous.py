@@ -18,7 +18,6 @@ class LowBar(StatefulAutonomous):
     
     @timed_state(duration = 1, next_state='drive_forward')
     def lower_arm(self, initial_call):
-        print('lower_arm')
         self.intake.set_arm_bottom()
             
         if self.intake.on_target(): 
@@ -41,30 +40,30 @@ class ChevalDeFrise(StatefulAutonomous):
     
     @state
     def A1Start(self):
-        self.next_state('drive_to')
+        self.next_state('A1_drive_to')
     
-    @timed_state(duration = 2, next_state='lower_arms')
+    @timed_state(duration = 2, next_state='A1_lower_arms')
     def A1_drive_to(self, initial_call):
         if initial_call:
             self.drive.reset_drive_encoders()
         
         if self.drive.drive_distance(self.Drive_to_distance*12):
-            self.next_state('lower_arms')
+            self.next_state('A1_lower_arms')
             
-    @timed_state(duration = .2, next_state='drive_on')
+    @timed_state(duration = .2, next_state='A1_drive_on')
     def A1_lower_arms(self, initial_call):
         self.intake.set_arm_bottom()
         
         if self.intake.on_target():
-            self.next_state('drive_on')
+            self.next_state('A1_drive_on')
         
-    @timed_state(duration = 2, next_state='drive_over')
+    @timed_state(duration = 2, next_state='A1_drive_over')
     def A1_drive_on(self, initial_call):
         if initial_call:
             self.drive.reset_drive_encoders()
             
         if self.drive.drive_distance(self.Drive_on_distance*12):
-            self.next_state('drive_over')
+            self.next_state('A1_drive_over')
         
     @timed_state(duration = 4, next_state='transition')
     def A1_drive_over(self, initial_call):
@@ -88,7 +87,6 @@ class Portcullis(StatefulAutonomous):
     
     @timed_state(duration = 1.5, next_state='A0_drive_forward')
     def A0_lower_arm(self, initial_call):
-        print('A0Lower_Arm')
         #self.intake.set_arm_bottom()
         self.intake.set_manual(1)
             
