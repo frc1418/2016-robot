@@ -34,10 +34,10 @@ class Drive:
 		self.rotation = 0
 		self.squaredInputs = False
 		
-		self.angle_constant = self.sd.getAutoUpdateValue('Drive | Angle_Constant', .004)
+		self.angle_constant = self.sd.getAutoUpdateValue('Drive | Angle_Constant', .055)
 		self.drive_constant = self.sd.getAutoUpdateValue('Drive | Drive_Constant', .0001)
-		self.drive_max = self.sd.getAutoUpdateValue('Drive | Max Enc Speed', .5)
-		self.rotate_max = self.sd.getAutoUpdateValue('Drive | Max Gyro Rotate Speed', .6)
+		self.drive_max = self.sd.getAutoUpdateValue('Drive | Max Enc Speed', .8)
+		self.rotate_max = self.sd.getAutoUpdateValue('Drive | Max Gyro Rotate Speed', .5)
 		
 		self.gyro_enabled = True
 		
@@ -128,8 +128,8 @@ class Drive:
 			return False
 		
 		angleOffset = target_angle - self.return_gyro_angle()
-		
-		if angleOffset < -1 or angleOffset > 1:
+		print(angleOffset)
+		if angleOffset < -5 or angleOffset > 5:
 			self.rotation = angleOffset * self.angle_constant.value
 			self.rotation = max(min(self.rotate_max.value, self.rotation), -self.rotate_max.value)
 			
