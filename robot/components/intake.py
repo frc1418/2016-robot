@@ -187,24 +187,20 @@ class Arm:
     def _calibrate(self):
         '''Moves the motor towards the limit switch to reset the encoder to 0'''
         if not self.isCalibrated:
-            print('calibrating')
             if not self.isCalibrating:
                 self.calibrate_timer.start()
                 self.isCalibrating = True
             
             if self.calibrate_timer.hasPeriodPassed(6):
-                print('Arm Safety Kicked In')
                 ArmMode.AUTO = ArmMode.MANUAL
                 self.set_manual(0)
                 self.mode = ArmMode.MANUAL
             
             if not self.leftArm.isRevLimitSwitchClosed():
-                print('Reversing Arm')
                 self.leftArm.changeControlMode(wpilib.CANTalon.ControlMode.PercentVbus)
                 self.leftArm.set(-1)
                 
             else:
-                print('Calibrated')
                 self.calibrate_timer.reset()
                 self.calibrate_timer.stop()
                 self.leftArm.set(0)

@@ -15,12 +15,12 @@ class ModularAutonomous(LowBar, ChevalDeFrise, Portcullis, Charge):
         LowBar.initialize(self)
         ChevalDeFrise.initialize(self)
         Portcullis.initialize(self)
-        self.position = 2
+        self.position = 4
     @state(first = True)
     def startModularAutonomous(self):
         print(self.sd.getValue('robotDefense')+'Start')
         self.drive.reset_gyro_angle()
-        self.next_state('A0Start')
+        self.next_state(self.sd.getValue('robotDefense')+'Start')
         #self.next_state('LowBarStart')
     @state
     def transition(self):
@@ -31,7 +31,10 @@ class ModularAutonomous(LowBar, ChevalDeFrise, Portcullis, Charge):
         else:
             self.drive_distance = (50*(self.position-1))
             self.rotateConst = -1
-        self.next_state('rotate')
+        if self.position == 2 or self.position == 4:
+            self.next_state('drive_to_wall')
+        else:
+            self.next_state('rotate')
     
     @state
     def rotate(self):
