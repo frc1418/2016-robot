@@ -92,6 +92,9 @@ class MyRobot(magicbot.MagicRobot):
         if self.reverseButton.get():
             self.drive.switch_direction()
         
+        #print(self.joystick1.getZ())
+        #self.drive.move(0, self.joystick1.getZ())
+        
         ##BALL INTAKE##
         if self.joystick2.getRawButton(5):
             self.intake.outtake()
@@ -153,8 +156,6 @@ class MyRobot(magicbot.MagicRobot):
             self.turningOffState=0
             self.lightTimer.reset()
             self.lightTimer.stop()
-        if self.turningOffState is not 0:
-            print(self.turningOffState)
             
         ##AUTO PORTCULLIS##
         #if self.portcullis.get():
