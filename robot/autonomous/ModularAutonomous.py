@@ -15,10 +15,12 @@ class ModularAutonomous(LowBar, ChevalDeFrise, Portcullis, Charge):
         LowBar.initialize(self)
         ChevalDeFrise.initialize(self)
         Portcullis.initialize(self)
-        self.position = 4
+        self.position = 2
     @state(first = True)
     def startModularAutonomous(self):
         print(self.sd.getValue('robotDefense')+'Start')
+        print("%s ROBOT POSITION" % self.position)
+        self.intake.manualZero()
         self.drive.reset_gyro_angle()
         self.next_state(self.sd.getValue('robotDefense')+'Start')
         #self.next_state('LowBarStart')
@@ -27,18 +29,18 @@ class ModularAutonomous(LowBar, ChevalDeFrise, Portcullis, Charge):
         #if self.sd.getNumber('robotPosition') > 2:
         if self.position > 3:
             self.rotateConst = 1
-            self.drive_distance = (50*(4-self.position))
+            self.drive_distance = (48*(4-self.position))
         else:
-            self.drive_distance = (50*(self.position-1))
+            self.drive_distance = (48*(self.position-1))
             self.rotateConst = -1
-        if self.position == 2 or self.position == 4:
+        if self.position == 1 or self.position == 4:
             self.next_state('drive_to_wall')
         else:
             self.next_state('rotate')
     
     @state
     def rotate(self):
-        if self.drive.angle_rotation(80*self.rotateConst):
+        if self.drive.angle_rotation(90*self.rotateConst):
             self.drive.reset_drive_encoders()
             self.next_state('drive_to_position')
     
@@ -52,7 +54,7 @@ class ModularAutonomous(LowBar, ChevalDeFrise, Portcullis, Charge):
         
     @state
     def rotate_back(self):
-        if self.drive.angle_rotation(-10):
+        if self.drive.angle_rotation(0):
             self.next_state('drive_to_wall')
     
     @state
@@ -81,6 +83,4 @@ class ModularAutonomous(LowBar, ChevalDeFrise, Portcullis, Charge):
     @state
     def shoot(self):
         self.intake.outtake()
-        if self.drive.drive_distance(30):
-            pass
                
