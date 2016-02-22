@@ -147,11 +147,11 @@ class MyRobot(magicbot.MagicRobot):
         if self.turningOffState%2 == 1 and self.lightTimer.hasPeriodPassed(.25):
             self.light.turnOn()
             self.turningOffState += 1
-            print('on')
+            
         elif self.lightTimer.hasPeriodPassed(.25):
             self.light.turnOff()
             self.turningOffState += 1
-            print('off')
+            
             if self.turningOffState > 3:
                 self.turningOffState=0
                 self.lightTimer.reset()
