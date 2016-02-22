@@ -4,14 +4,14 @@ import wpilib
 
 class LowGoal(StatefulAutonomous):
     MODE_NAME='LowGoal'
-    DEFAULT = True
+    DEFAULT = False
     
     intake = intake.Arm
     drive = Drive.Drive
     def initialize(self):
-        self.register_sd_var('Drive_Distance', 17.8)
-        self.register_sd_var('Rotate_Angle', 55)
-        self.register_sd_var('Ramp_Distance', 8.4)
+        self.register_sd_var('Drive_Distance', 17.9)
+        self.register_sd_var('Rotate_Angle', 38)
+        self.register_sd_var('Ramp_Distance', 6.4)
     
     @timed_state(duration = 1, next_state='drive_forward', first = True)
     def lower_arm(self, initial_call):
@@ -44,7 +44,7 @@ class LowGoal(StatefulAutonomous):
         if self.drive.drive_distance(self.Ramp_Distance*12):
             self.next_state('lower_to_shoot')
             
-    @timed_state(duration = 3)
+    @timed_state(duration = 1, next_state='shoot')
     def lower_to_shoot(self):
         self.intake.set_arm_middle()
         

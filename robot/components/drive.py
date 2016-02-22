@@ -3,6 +3,7 @@ import wpilib
 from robotpy_ext.common_drivers import navx, distance_sensors
 from networktables import NetworkTable
 from common import driveEncoders
+from . import winch
 import math
 
 ENCODER_ROTATION = 1023
@@ -19,6 +20,7 @@ class Drive:
 	lf_encoder = driveEncoders.DriveEncoders
 	sd = NetworkTable
 	back_sensor = distance_sensors.SharpIRGP2Y0A41SK0F
+	winch = winch.Winch
 	def on_enable(self):
 		'''
 			Constructor. 
@@ -36,8 +38,8 @@ class Drive:
 		
 		self.angle_constant = self.sd.getAutoUpdateValue('Drive | Angle_Constant', .055)
 		self.drive_constant = self.sd.getAutoUpdateValue('Drive | Drive_Constant', .0001)
-		self.drive_max = self.sd.getAutoUpdateValue('Drive | Max Enc Speed', .8)
-		self.rotate_max = self.sd.getAutoUpdateValue('Drive | Max Gyro Rotate Speed', .5)
+		self.drive_max = self.sd.getAutoUpdateValue('Drive | Max Enc Speed', .9)
+		self.rotate_max = self.sd.getAutoUpdateValue('Drive | Max Gyro Rotate Speed', .6)
 		
 		self.gyro_enabled = True
 		
@@ -128,7 +130,6 @@ class Drive:
 			return False
 		
 		angleOffset = target_angle - self.return_gyro_angle()
-		print(angleOffset)
 		if angleOffset < -5 or angleOffset > 5:
 			self.rotation = angleOffset * self.angle_constant.value
 			self.rotation = max(min(self.rotate_max.value, self.rotation), -self.rotate_max.value)
@@ -155,12 +156,14 @@ class Drive:
 		
 	def execute(self):
 		''' actually makes the robot drive'''
-		
-
+		backwards = 1
 		if(self.isTheRobotBackwards):
-			self.robot_drive.arcadeDrive(-self.y, -self.rotation, self.squaredInputs)
+			backwards = -1
+
+		if(self.winch.isExtended):
+			self.robot_drive.arcadeDrive(backwards*self.y, -self.rotation/4, self.squaredInputs)
 		else:
-			self.robot_drive.arcadeDrive(self.y, -self.rotation, self.squaredInputs)
+			self.robot_drive.arcadeDrive(backwards*self.y, -self.rotation, self.squaredInputs)
 			
 		
 		# by default, the robot shouldn't move
@@ -173,4 +176,6 @@ class Drive:
 		self.sd.putValue('NavX | Yaw', self. navX.getYaw())
 		self.sd.putValue('NavX | Roll', self.navX.getRoll())
 		self.sd.putValue('Drive | Encoder', self.return_drive_encoder_position())
-		self.sd.putValue('Drive | Y', self.y)	
+		self.sd.putValue('Drive | Y', self.y)
+		self.sd.putValue('Drive | backCamera', self.isTheRobotBackwards)
+		
