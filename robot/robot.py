@@ -20,6 +20,7 @@ class MyRobot(magicbot.MagicRobot):
     intake = intake.Arm
     winch = winch.Winch
     shootBall = shootBall.shootBall
+    #auto_portcullis = portcullis.PortcullisLift
     def createObjects(self):
         
         # #INITIALIZE JOYSTICKS##
