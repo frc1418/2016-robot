@@ -27,7 +27,6 @@ class MyRobot(magicbot.MagicRobot):
         self.joystick1 = wpilib.Joystick(0)
         self.joystick2 = wpilib.Joystick(1)
 
-
         # #INITIALIZE MOTORS##
         self.lf_motor = wpilib.CANTalon(5)
         self.lr_motor = wpilib.CANTalon(10)
@@ -73,7 +72,6 @@ class MyRobot(magicbot.MagicRobot):
         
         self.shooting = False
         self.raise_portcullis = False
-
         
     def disabledPeriodic(self):
         pass
@@ -82,7 +80,6 @@ class MyRobot(magicbot.MagicRobot):
         self.drive.reset_drive_encoders()
         self.sd.putValue('startTheTimer', True)
 
-    
     def teleopPeriodic(self):
         if self.joystick1.getZ() > .75:
                 self.robot_drive.tankDrive(self.joystick1, self.joystick2)
@@ -91,9 +88,6 @@ class MyRobot(magicbot.MagicRobot):
             
         if self.reverseButton.get():
             self.drive.switch_direction()
-        
-        #print(self.joystick1.getZ())
-        #self.drive.move(0, self.joystick1.getZ())
         
         ##BALL INTAKE##
         if self.joystick2.getRawButton(5):
@@ -137,7 +131,7 @@ class MyRobot(magicbot.MagicRobot):
                 self.lastPressed = now
                 lightButton = True
         '''
-        if (self.lightButton.get() or lightButton) and self.turningOffState ==0:
+        if (self.lightButton.get() or lightButton) and self.turningOffState == 0:
             if self.light.on:
                 self.light.turnOff()
                 self.turningOffState = 1
@@ -145,20 +139,18 @@ class MyRobot(magicbot.MagicRobot):
             else:
                 self.light.turnOn()
                 
-        if self.turningOffState == 1 and self.lightTimer.hasPeriodPassed(.25):
+        if self.turningOffState%2 == 1 and self.lightTimer.hasPeriodPassed(.25):
             self.light.turnOn()
-            self.turningOffState = 2
-        elif self.turningOffState == 2 and self.lightTimer.hasPeriodPassed(.25):
+            self.turningOffState += 1
+            
+        elif self.lightTimer.hasPeriodPassed(.25):
             self.light.turnOff()
-            self.turningOffState = 3
-        elif self.turningOffState == 3 and self.lightTimer.hasPeriodPassed(.25):
-            self.light.turnOn()
-            self.turningOffState = 4
-        elif self.turningOffState == 4 and self.lightTimer.hasPeriodPassed(.25):
-            self.light.turnOff()
-            self.turningOffState=0
-            self.lightTimer.reset()
-            self.lightTimer.stop()
+            self.turningOffState += 1
+            
+            if self.turningOffState > 3:
+                self.turningOffState=0
+                self.lightTimer.reset()
+                self.lightTimer.stop()
             
         ##AUTO PORTCULLIS##
         #if self.portcullis.get():
