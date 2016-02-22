@@ -77,8 +77,8 @@ class Portcullis(StatefulAutonomous):
     intake = intake.Arm
     drive = drive.Drive
     def initialize(self):
-        self.register_sd_var("A0_Drive_Encoder_Distance", 4.70)
-        self.register_sd_var("A0_Arm_To_Position", 1000)
+        self.register_sd_var("A0_Drive_Encoder_Distance", 4.90)
+        self.register_sd_var("A0_Arm_To_Position", 500)
         self.register_sd_var("A0_DriveThru_Speed", 0.4)
     
     @state
@@ -101,7 +101,7 @@ class Portcullis(StatefulAutonomous):
         if self.drive.drive_distance(self.A0_Drive_Encoder_Distance*12):
             self.next_state('A0_raise_arm')
     
-    @timed_state(duration = 0.5, next_state='A0_drive_thru')
+    @timed_state(duration = 0.8, next_state='A0_drive_thru')
     def A0_raise_arm(self):
         self.intake.set_target_position(self.A0_Arm_To_Position)
         

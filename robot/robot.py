@@ -47,6 +47,7 @@ class MyRobot(magicbot.MagicRobot):
         self.light = light.Light(wpilib.Relay(0))
         self.lightTimer = wpilib.Timer()
         self.turningOffState = 0
+        self.lastPressed = self.lightTimer.getFPGATimestamp()
                 
         ##DRIVE ENCODERS##
         self.rf_encoder = driveEncoders.DriveEncoders(self.robot_drive.frontRightMotor, True)
@@ -75,12 +76,11 @@ class MyRobot(magicbot.MagicRobot):
 
         
     def disabledPeriodic(self):
-        self.intake.target_index = -1
-        
+        pass
     
     def teleopInit(self):
         self.drive.reset_drive_encoders()
-        self.sd.putValue('startTheTimer', False)
+        self.sd.putValue('startTheTimer', True)
 
     
     def teleopPeriodic(self):
@@ -134,7 +134,16 @@ class MyRobot(magicbot.MagicRobot):
             self.shootBall.doit()
             self.shooting = self.shootBall.get_running()
         
-        if self.lightButton.get():
+        ##LIGHTBULB##
+        lightButton = False
+        '''
+        if self.sd.getValue("Light Bulb"):
+            now = self.lightTimer.getFPGATimestamp()
+            if (now-self.lastPressed) > .5: 
+                self.lastPressed = now
+                lightButton = True
+        '''
+        if (self.lightButton.get() or lightButton) and self.turningOffState ==0:
             if self.light.on:
                 self.light.turnOff()
                 self.turningOffState = 1
