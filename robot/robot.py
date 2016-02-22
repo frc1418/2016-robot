@@ -98,32 +98,26 @@ class MyRobot(magicbot.MagicRobot):
         ##BALL INTAKE##
         if self.joystick2.getRawButton(5):
             self.intake.outtake()
-            self.shooting = False
-            self.raise_portcullis = False
+            self.killAutoActions()
         elif self.joystick2.getRawButton(4):
             self.intake.intake()
-            self.shooting = False
-            self.raise_portcullis = False
+            self.killAutoActions()
         
         ##AUTO ARM##
         if self.raiseButton.get():
             self.intake.raise_arm()
-            self.shooting = False
-            self.raise_portcullis = False
+            self.killAutoActions()
         elif self.lowerButton.get():
             self.intake.lower_arm()
-            self.shooting = False
-            self.raise_portcullis = False
+            self.killAutoActions()
             
         ##MANUAL ARM##
         if self.joystick1.getRawButton(3):
             self.intake.set_manual(-1)
-            self.shooting = False
-            self.raise_portcullis = False
+            self.killAutoActions()
         if self.joystick1.getRawButton(2):
             self.intake.set_manual(1)
-            self.shooting = False
-            self.raise_portcullis = False
+            self.killAutoActions()
             
         ##AUTO SHOOT##
         if self.shoot.get():
@@ -179,10 +173,12 @@ class MyRobot(magicbot.MagicRobot):
         if self.joystick1.getRawButton(7): #or self.sd.getValue('ladderButtonPressed'):
             self.winch.deploy_winch()
         if self.joystick1.getRawButton(8):
-            self.shooting = False
-            self.raise_portcullis = False
+            self.killAutoActions()
             self.winch.winch()
 
+    def killAutoActions(self):
+        self.shooting = False
+        self.raise_portcullis = False
 
 if __name__ == '__main__':
     wpilib.run(MyRobot)
