@@ -31,15 +31,16 @@ class Drive:
 			
 		'''
 		self.isTheRobotBackwards = False
+		self.iErr = 0
 		# set defaults here
 		self.y = 0
 		self.rotation = 0
 		self.squaredInputs = False
 		
-		self.angle_constant = self.sd.getAutoUpdateValue('Drive | Angle_Constant', .055)
+		self.angle_P = self.sd.getAutoUpdateValue('Drive | Angle_P', .055)
+		self.angle_I = self.sd.getAutoUpdateValue('Drive | Angle_I', .004)
 		self.drive_constant = self.sd.getAutoUpdateValue('Drive | Drive_Constant', .0001)
-		self.drive_max = self.sd.getAutoUpdateValue('Drive | Max Enc Speed', .9)
-		self.rotate_max = self.sd.getAutoUpdateValue('Drive | Max Gyro Rotate Speed', .6)
+		self.rotate_max = self.sd.getAutoUpdateValue('Drive | Max Gyro Rotate Speed', .5)
 		
 		self.gyro_enabled = True
 		
@@ -104,15 +105,15 @@ class Drive:
 		target_position = (gear_ratio * ENCODER_ROTATION * inches) / (math.pi*WHEEL_DIAMETER)
 		return target_position
 	
-	def drive_distance(self, inches):
-		return self.encoder_drive(self._get_inches_to_ticks(inches))
+	def drive_distance(self, inches, max_speed=.9):
+		return self.encoder_drive(self._get_inches_to_ticks(inches), max_speed)
 		
-	def encoder_drive(self, target_position):
+	def encoder_drive(self, target_position, max_speed):
 		target_offset = target_position - self.return_drive_encoder_position()
 		
 		if abs(target_offset)> 1000:
 			self.y = target_offset * self.drive_constant.value
-			self.y = max(min(self.drive_max.value, self.y), -self.drive_max.value)
+			self.y = max(min(max_speed, self.y), -max_speed)
 			return False
 		return True
 		
@@ -130,12 +131,13 @@ class Drive:
 			return False
 		
 		angleOffset = target_angle - self.return_gyro_angle()
-		if angleOffset < -5 or angleOffset > 5:
-			self.rotation = angleOffset * self.angle_constant.value
+		if abs(angleOffset) > 3:
+			self.iErr += angleOffset
+			self.rotation = angleOffset * self.angle_P.value + self.angle_I.value * self.iErr
 			self.rotation = max(min(self.rotate_max.value, self.rotation), -self.rotate_max.value)
 			
 			return False
-		
+		self.iErr = 0
 		return True
 	
 	def wall_goto(self):
@@ -161,7 +163,7 @@ class Drive:
 			backwards = -1
 
 		if(self.winch.isExtended):
-			self.robot_drive.arcadeDrive(backwards*self.y, -self.rotation/4, self.squaredInputs)
+			self.robot_drive.arcadeDrive(-self.y, -self.rotation/2, self.squaredInputs)
 		else:
 			self.robot_drive.arcadeDrive(backwards*self.y, -self.rotation, self.squaredInputs)
 			

@@ -79,12 +79,11 @@ class MyRobot(magicbot.MagicRobot):
     def teleopInit(self):
         self.drive.reset_drive_encoders()
         self.sd.putValue('startTheTimer', True)
+        self.intake.target_position = None
+        self.intake.target_index = None
 
     def teleopPeriodic(self):
-        if self.joystick1.getZ() > .75:
-                self.robot_drive.tankDrive(self.joystick1, self.joystick2)
-        else:
-            self.drive.move(-self.joystick1.getY(), self.joystick2.getX())   
+        self.drive.move(-self.joystick1.getY(), self.joystick2.getX())   
             
         if self.reverseButton.get():
             self.drive.switch_direction()

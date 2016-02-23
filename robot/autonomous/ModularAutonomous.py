@@ -1,33 +1,35 @@
 from robotpy_ext.autonomous import state, timed_state, StatefulAutonomous
-from .GenericAutonomous import LowBar, ChevalDeFrise, Portcullis, Charge
+from .GenericAutonomous import LowBar, ChevalDeFrise, Portcullis, Charge, Default
 from components import intake as Intake, drive as Drive
 from networktables.networktable import NetworkTable
+from networktables.util import ntproperty
 
-class ModularAutonomous(LowBar, ChevalDeFrise, Portcullis, Charge):
+class ModularAutonomous(LowBar, ChevalDeFrise, Portcullis, Charge, Default):
     MODE_NAME = "Modular_Autonomous"
-    DEFAULT = False
+    DEFAULT = True
     
     sd = NetworkTable
     intake = Intake.Arm
     drive = Drive.Drive
+    #robotDefense = ntproperty('/SmartDashboard/robotDefense', 'Default')
+    #position = ntproperty('/SmartDashboard/robotPosition', 1)
     
     def initialize(self):
         LowBar.initialize(self)
         ChevalDeFrise.initialize(self)
         Portcullis.initialize(self)
-        self.position = 2
+        
     @state(first = True)
     def startModularAutonomous(self):
         print(self.sd.getValue('robotDefense')+'Start')
-        print("%s ROBOT POSITION" % self.position)
         self.intake.manualZero()
         self.drive.reset_gyro_angle()
         self.next_state(self.sd.getValue('robotDefense')+'Start')
-        #self.next_state('LowBarStart')
+        self.position = int(self.sd.getValue('robotPosition'))
     @state
     def transition(self):
         #if self.sd.getNumber('robotPosition') > 2:
-        if self.position > 3:
+        if self.position > 2:
             self.rotateConst = 1
             self.drive_distance = (48*(4-self.position))
         else:
@@ -71,16 +73,21 @@ class ModularAutonomous(LowBar, ChevalDeFrise, Portcullis, Charge):
     
     @state
     def rotate_to_goal(self):
-        self.intake.set_arm_middle()
-        if self.drive.angle_rotation(-60*self.rotateConst):
+        #self.intake.set_arm_middle()
+        self.intake.set_target_position(2300)
+        
+        if self.drive.angle_rotation(-55*self.rotateConst):
             self.next_state('drive_to_goal')
             
     @state
     def drive_to_goal(self):
-        if self.drive.drive_distance(5):
+        if self.drive.drive_distance(2):
             self.next_state('shoot')
     
     @state
-    def shoot(self):
+    def shoot(self, initial_call):
+        if initial_call:
+            self.drive.reset_drive_encoders()
+        self.drive.drive_distance(-2.5)
         self.intake.outtake()
                
