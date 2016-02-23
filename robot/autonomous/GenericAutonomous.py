@@ -35,8 +35,7 @@ class ChevalDeFrise(StatefulAutonomous):
     intake = intake.Arm
     drive = drive.Drive
     def initialize(self):
-        self.register_sd_var("Drive_to_distance", 4.2)
-        self.register_sd_var("Drive_on_distance", 1)
+        self.register_sd_var("Drive_to_distance", 3)
     
     @state
     def A1Start(self):
@@ -50,26 +49,23 @@ class ChevalDeFrise(StatefulAutonomous):
         if self.drive.drive_distance(self.Drive_to_distance*12):
             self.next_state('A1_lower_arms')
             
-    @timed_state(duration = .2, next_state='A1_drive_on')
+    @timed_state(duration = 1.2, next_state='A1_drive_on')
     def A1_lower_arms(self, initial_call):
         self.intake.set_arm_bottom()
         
         if self.intake.on_target():
+            print('on target')
             self.next_state('A1_drive_on')
         
-    @timed_state(duration = 2, next_state='A1_drive_over')
+    @timed_state(duration = 0.25, next_state='A1_drive_over')
     def A1_drive_on(self, initial_call):
-        if initial_call:
-            self.drive.reset_drive_encoders()
-            
-        if self.drive.drive_distance(self.Drive_on_distance*12):
-            self.next_state('A1_drive_over')
+        self.drive.move(0.7, 0)
         
-    @timed_state(duration = 4, next_state='transition')
+    @timed_state(duration = 1.7, next_state='transition')
     def A1_drive_over(self, initial_call):
         self.intake.set_arm_top()
         
-        self.drive.move(0.3, 0)
+        self.drive.move(0.7, 0)
         
 class Portcullis(StatefulAutonomous):
     DEFAULT = False
@@ -98,6 +94,7 @@ class Portcullis(StatefulAutonomous):
         if initial_call:
             self.drive.reset_drive_encoders()
         
+        self.drive.angle_rotation(0)
         if self.drive.drive_distance(self.A0_Drive_Encoder_Distance*12):
             self.next_state('A0_raise_arm')
     
@@ -111,12 +108,19 @@ class Portcullis(StatefulAutonomous):
     @timed_state(duration = 3, next_state = 'transition')
     def A0_drive_thru(self):
         self.intake.set_arm_top()
-        
+        self.drive.angle_rotation(0)
         self.drive.move(self.A0_DriveThru_Speed, 0)
-
+        #self.drive.angle_rotation(0)
 class Charge(StatefulAutonomous):
     DEFAULT = False
     
     @timed_state(duration = 3)
     def E0Start(self, initial_call):
         self.drive.move(1,0)
+
+class Default(StatefulAutonomous):
+    DEFAULT = False
+    
+    @state
+    def DefaultStart(self):
+        pass

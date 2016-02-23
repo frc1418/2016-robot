@@ -247,10 +247,7 @@ class Arm:
         if self.mode == ArmMode.MANUAL:
             self.leftArm.set(self.manual_value)
             self.target_index = -1
-            if self.isCalibrated:
-                self.mode = ArmMode.AUTO
-                self.target_position = self.leftArm.getEncPosition()
-        
+            
         elif self.mode == ArmMode.AUTO:
             self._calibrate()
             
