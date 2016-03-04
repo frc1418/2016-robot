@@ -21,11 +21,11 @@ class ModularAutonomous(LowBar, ChevalDeFrise, Portcullis, Charge, Default):
         
     @state(first = True)
     def startModularAutonomous(self):
-        print(self.sd.getValue('robotDefense')+'Start')
+        print(self.sd.getValue('robotDefense', 'LowBar')+'Start')
         self.intake.manualZero()
         self.drive.reset_gyro_angle()
-        self.next_state(self.sd.getValue('robotDefense')+'Start')
-        self.position = int(self.sd.getValue('robotPosition'))
+        self.next_state(self.sd.getValue('robotDefense', 'LowBar')+'Start')
+        self.position = int(self.sd.getValue('robotPosition', '1'))
     @state
     def transition(self):
         #if self.sd.getNumber('robotPosition') > 2:
