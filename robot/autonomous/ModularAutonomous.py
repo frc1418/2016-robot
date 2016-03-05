@@ -76,7 +76,7 @@ class ModularAutonomous(LowBar, ChevalDeFrise, Portcullis, Charge, Default):
         #self.intake.set_arm_middle()
         self.intake.set_target_position(2300)
         
-        if self.drive.angle_rotation(-55*self.rotateConst):
+        if self.drive.angle_rotation(-60*self.rotateConst):
             self.next_state('drive_to_goal')
             
     @state

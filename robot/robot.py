@@ -46,7 +46,7 @@ class MyRobot(magicbot.MagicRobot):
         self.light = light.Light(wpilib.Relay(0))
         self.lightTimer = wpilib.Timer()
         self.turningOffState = 0
-        self.lastPressed = self.lightTimer.getFPGATimestamp()
+        self.lastState = False
                 
         ##DRIVE ENCODERS##
         self.rf_encoder = driveEncoders.DriveEncoders(self.robot_drive.frontRightMotor, True)
@@ -123,13 +123,13 @@ class MyRobot(magicbot.MagicRobot):
         
         ##LIGHTBULB##
         lightButton = False
-        '''
-        if self.sd.getValue("Light Bulb"):
-            now = self.lightTimer.getFPGATimestamp()
-            if (now-self.lastPressed) > .5: 
-                self.lastPressed = now
-                lightButton = True
-        '''
+        guiButton = self.sd.getValue("LightBulb", False)
+        if guiButton != self.lastState:
+            self.lastState = guiButton
+            lightButton = True
+        
+        self.lastState = guiButton
+
         if (self.lightButton.get() or lightButton) and self.turningOffState == 0:
             if self.light.on:
                 self.light.turnOff()

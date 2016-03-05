@@ -114,7 +114,7 @@ class Portcullis(StatefulAutonomous):
 class Charge(StatefulAutonomous):
     DEFAULT = False
     
-    @timed_state(duration = 3)
+    @timed_state(duration = 1.75)
     def E0Start(self, initial_call):
         self.drive.move(1,0)
 

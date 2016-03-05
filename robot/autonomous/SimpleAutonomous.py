@@ -11,7 +11,7 @@ class LowGoal(StatefulAutonomous):
     drive = Drive.Drive
     sd = NetworkTable
     def initialize(self):
-        self.register_sd_var('Drive_Distance', 15.8)
+        self.register_sd_var('Drive_Distance', 16.4)
         self.register_sd_var('Rotate_Angle', 45)
         self.register_sd_var('Ramp_Distance', 6.9)
         self.register_sd_var('Max_Drive_Speed', .5)

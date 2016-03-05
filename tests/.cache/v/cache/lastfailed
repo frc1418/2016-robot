@@ -1,1 +1,5 @@
-{}
+{
+  "pyfrc_test.py::test_autonomous": true,
+  "pyfrc_test.py::test_fuzz": true,
+  "pyfrc_test.py::test_practice": true
+}
