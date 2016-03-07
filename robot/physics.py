@@ -72,10 +72,10 @@ class PhysicsEngine:
         
         
         # Simulate the drivetrain
-        lf_motor = -hal_data['CAN'][5]['value']/1023
-        lr_motor = -hal_data['CAN'][10]['value']/1023
-        rf_motor = -hal_data['CAN'][15]['value']/1023
-        rr_motor = -hal_data['CAN'][20]['value']/1023
+        #lf_motor = -hal_data['CAN'][5]['value']/1023
+        #lr_motor = -hal_data['CAN'][10]['value']/1023
+        #rf_motor = -hal_data['CAN'][15]['value']/1023
+        #rr_motor = -hal_data['CAN'][20]['value']/1023
         
-        fwd, rcw = four_motor_drivetrain(lr_motor, rr_motor, lf_motor, rf_motor)
-        self.controller.drive(fwd, rcw, tm_diff)
+        #fwd, rcw = four_motor_drivetrain(lr_motor, rr_motor, lf_motor, rf_motor)
+        #self.controller.drive(fwd, rcw, tm_diff)
