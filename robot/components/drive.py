@@ -162,7 +162,7 @@ class Drive:
 		if(self.isTheRobotBackwards):
 			backwards = -1
 
-		if(self.winch.isExtended):
+		if(self.winch.isExtended and self.isTheRobotBackwards):
 			self.robot_drive.arcadeDrive(-self.y, -self.rotation/2, self.squaredInputs)
 		else:
 			self.robot_drive.arcadeDrive(backwards*self.y, -self.rotation, self.squaredInputs)
