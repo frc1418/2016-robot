@@ -6,7 +6,7 @@ from networktables.util import ntproperty
 
 class ModularAutonomous(LowBar, ChevalDeFrise, Portcullis, Charge, Default):
     MODE_NAME = "Modular_Autonomous"
-    DEFAULT = True
+    DEFAULT = False
     
     sd = NetworkTable
     intake = Intake.Arm
@@ -21,7 +21,7 @@ class ModularAutonomous(LowBar, ChevalDeFrise, Portcullis, Charge, Default):
         
     @state(first = True)
     def startModularAutonomous(self):
-        print(self.sd.getValue('robotDefense', 'LowBar')+'Start')
+        print(self.sd.getValue('robotDefense', 'Default')+'Start')
         self.intake.manualZero()
         self.drive.reset_gyro_angle()
         self.next_state(self.sd.getValue('robotDefense', 'LowBar')+'Start')
@@ -76,7 +76,7 @@ class ModularAutonomous(LowBar, ChevalDeFrise, Portcullis, Charge, Default):
         #self.intake.set_arm_middle()
         self.intake.set_target_position(2300)
         
-        if self.drive.angle_rotation(-60*self.rotateConst):
+        if self.drive.angle_rotation(-55*self.rotateConst):
             self.next_state('drive_to_goal')
             
     @state
