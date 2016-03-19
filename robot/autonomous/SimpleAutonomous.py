@@ -11,9 +11,9 @@ class LowGoal(StatefulAutonomous):
     drive = Drive.Drive
     sd = NetworkTable
     def initialize(self):
-        self.register_sd_var('Drive_Distance', 18)
+        self.register_sd_var('Drive_Distance', 9.5)
         self.register_sd_var('Rotate_Angle', 45)
-        self.register_sd_var('Ramp_Distance', 6.9)
+        self.register_sd_var('Ramp_Distance', 3.5)
         self.register_sd_var('Max_Drive_Speed', .5)
     
     @timed_state(duration = 1, next_state='drive_forward', first = True)
@@ -67,7 +67,7 @@ class ChevalDeFrise(StatefulAutonomous):
     intake = intake.Arm
     drive = Drive.Drive
     def initialize(self):
-        self.register_sd_var("Drive_to_distance", 4.2)
+        self.register_sd_var("Drive_to_distance", 2.4)
         self.register_sd_var("Drive_on_distance", 1)
         
     @timed_state(duration = 2, next_state='lower_arms', first = True)
@@ -106,7 +106,7 @@ class DirectPortcullis(StatefulAutonomous):
     intake = intake.Arm
     drive = Drive.Drive
     def initialize(self):
-        self.register_sd_var("Drive_Encoder_Distance", 4.10)
+        self.register_sd_var("Drive_Encoder_Distance", 2.05)
         self.register_sd_var("Arm_To_Position", 1000)
         self.register_sd_var("DriveThru_Speed", 0.4)
     

@@ -8,9 +8,9 @@ class LowBar(StatefulAutonomous):
     intake = intake.Arm
     drive = drive.Drive
     def initialize(self):
-        self.register_sd_var('Drive_Distance', 17.8)
-        self.register_sd_var('Rotate_Angle', 55)
-        self.register_sd_var('Ramp_Distance', 8.4)
+        self.register_sd_var('Drive_Distance', 10)
+        self.register_sd_var('Rotate_Angle', 45)
+        self.register_sd_var('Ramp_Distance', 3.5)
     
     @state
     def LowBarStart(self):
@@ -35,7 +35,7 @@ class ChevalDeFrise(StatefulAutonomous):
     intake = intake.Arm
     drive = drive.Drive
     def initialize(self):
-        self.register_sd_var("Drive_to_distance", 3)
+        self.register_sd_var("Drive_to_distance", 1.5)
     
     @state
     def A1Start(self):
@@ -73,7 +73,7 @@ class Portcullis(StatefulAutonomous):
     intake = intake.Arm
     drive = drive.Drive
     def initialize(self):
-        self.register_sd_var("A0_Drive_Encoder_Distance", 4.90)
+        self.register_sd_var("A0_Drive_Encoder_Distance", 2.45)
         self.register_sd_var("A0_Arm_To_Position", 500)
         self.register_sd_var("A0_DriveThru_Speed", 0.4)
     
