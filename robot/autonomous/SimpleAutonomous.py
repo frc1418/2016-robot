@@ -113,7 +113,7 @@ class DriveCheval(StatefulAutonomous):
         
     @timed_state(duration = 0.1, next_state='lower_arms')
     def drive_back(self, initial_call):
-        self.drive.move(0.3,0)
+        self.drive.move(-0.3,0)
             
     @timed_state(duration = .4, next_state='drive_on')
     def lower_arms(self, initial_call):
