@@ -166,6 +166,9 @@ class MyRobot(magicbot.MagicRobot):
         if self.joystick1.getRawButton(8):
             self.killAutoActions()
             self.winch.winch()
+        
+        if self.joystick2.getRawButton(10):
+            self.drive.align_to_tower()
 
     def killAutoActions(self):
         self.shooting = False
