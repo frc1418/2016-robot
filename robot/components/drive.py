@@ -2,6 +2,7 @@ import wpilib
 
 from robotpy_ext.common_drivers import navx, distance_sensors
 from networktables import NetworkTable
+from networktables.util import ntproperty
 from common import driveEncoders
 from . import winch
 import math
@@ -21,6 +22,8 @@ class Drive:
 	sd = NetworkTable
 	back_sensor = distance_sensors.SharpIRGP2Y0A41SK0F
 	winch = winch.Winch
+	
+	target_angle = ntproperty('/components/autoaim/target_angle', 0)
 	
 	def on_enable(self):
 		'''
@@ -142,8 +145,7 @@ class Drive:
 		self.y = 0
 		self.rotation = 0
 		
-		target_angle = ntproperty('/components/autoaim/target_angle', 0)
-		self.angle_rotation(target_angle)
+		return self.angle_rotation(self.target_angle)
 	
 	def wall_goto(self):
 		'''back up until we are 16 cm away from the wall. Fake PID will move us closer and further to the wall'''
