@@ -21,6 +21,7 @@ class Drive:
 	sd = NetworkTable
 	back_sensor = distance_sensors.SharpIRGP2Y0A41SK0F
 	winch = winch.Winch
+	
 	def on_enable(self):
 		'''
 			Constructor. 
@@ -43,9 +44,6 @@ class Drive:
 		self.rotate_max = self.sd.getAutoUpdateValue('Drive | Max Gyro Rotate Speed', .5)
 		
 		self.gyro_enabled = True
-		
-		
-		
 				
 	#
 	# Verb functions -- these functions do NOT talk to motors directly. This
@@ -139,6 +137,13 @@ class Drive:
 			return False
 		self.iErr = 0
 		return True
+	
+	def align_to_tower(self):
+		self.y = 0
+		self.rotation = 0
+		
+		target_angle = ntproperty('/components/autoaim/target_angle', 0)
+		self.angle_rotation(target_angle)
 	
 	def wall_goto(self):
 		'''back up until we are 16 cm away from the wall. Fake PID will move us closer and further to the wall'''
