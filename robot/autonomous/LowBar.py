@@ -70,23 +70,28 @@ class CameraLowGoal(StatefulAutonomous):
     present = ntproperty('/components/autoaim/present', False)
     
     def initialize(self):
+        self.register_sd_var('Drive_Bar_Distance', 10)
         self.register_sd_var('Drive_Distance', 18)
         self.register_sd_var('Ramp_Distance', 6.9)
         self.register_sd_var('Max_Drive_Speed', .5)
-        self.register_sd_var('RotateSpeed', .7)
+        self.register_sd_var('RotateSpeed', .6)
     
-    @timed_state(duration = 1, next_state='drive_forward', first = True)
+    @timed_state(duration = 1, next_state='drive_under_bar', first = True)
     def lower_arm(self, initial_call):
         
         self.drive.reset_drive_encoders()
         self.intake.set_arm_bottom()
             
         if self.intake.on_target(): 
+            self.next_state('drive_under_bar')
+    @state
+    def drive_under_bar(self):
+        if self.drive.drive_distance(self.Drive_Bar_Distance*12, max_speed=self.Max_Drive_Speed):
             self.next_state('drive_forward')
     
     @state
     def drive_forward(self):
-        #self.intake.set_arm_middle()
+        self.intake.set_target_position(1000)
         if self.drive.drive_distance(self.Drive_Distance*12, max_speed=self.Max_Drive_Speed):
             self.next_state('find_tower')
     
@@ -94,9 +99,11 @@ class CameraLowGoal(StatefulAutonomous):
     def find_tower(self, initial_call):
         if initial_call:
             self.drive.enable_camera_tracking()
+            self.intake.set_arm_bottom()
             
         if not self.present:
-            self.drive.move(0, self.RotateSpeed)
+            if self.intake.on_target():
+                self.drive.move(0, self.RotateSpeed)
         else:
             self.next_state('rotate')
     

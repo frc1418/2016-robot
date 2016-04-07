@@ -58,6 +58,7 @@ class MyRobot(magicbot.MagicRobot):
         
         ##DISTANCE SENSORS##
         self.back_sensor = distance_sensors.SharpIRGP2Y0A41SK0F(0)
+        self.ultrasonic = wpilib.AnalogInput(1)
         
         ##NavX##
         self.navX = navx.AHRS.create_spi()

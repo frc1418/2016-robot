@@ -19,6 +19,7 @@ class Drive:
 	navX = navx.AHRS
 	rf_encoder = driveEncoders.DriveEncoders
 	lf_encoder = driveEncoders.DriveEncoders
+	ultrasonic = wpilib.AnalogInput
 	sd = NetworkTable
 	back_sensor = distance_sensors.SharpIRGP2Y0A41SK0F
 	winch = winch.Winch
@@ -107,7 +108,7 @@ class Drive:
 	def return_drive_encoder_position(self):
 		''':returns: Drive Encoder Position'''
 		#print((self.lf_encoder.get() + self.rf_encoder.get())/2)
-		return (self.lf_encoder.get() + self.rf_encoder.get())/2
+		return self.lf_encoder.get()
 	
 	def _get_inches_to_ticks(self, inches):
 		'''Converts inches to encoder ticks'''
@@ -215,4 +216,5 @@ class Drive:
 		self.sd.putValue('Drive | Encoder', self.return_drive_encoder_position())
 		self.sd.putValue('Drive | Y', self.y)
 		self.sd.putValue('Drive | backCamera', self.isTheRobotBackwards)
+		self.sd.putValue('Drive | Ultrasonic', self.ultrasonic.getVoltage())
 		
