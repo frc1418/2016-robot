@@ -93,10 +93,10 @@ class CameraLowGoal(StatefulAutonomous):
     def drive_forward(self):
         self.intake.set_target_position(1000)
         if self.drive.drive_distance(self.Drive_Distance*12, max_speed=self.Max_Drive_Speed):
-            self.next_state('lower_arm')
+            self.next_state('lower_arm2')
        
     @timed_state(duration=1, next_state='find_tower')     
-    def lower_arm(self):
+    def lower_arm2(self):
         self.intake.set_arm_middle()
     
     @state
