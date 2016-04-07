@@ -14,7 +14,7 @@ class LowGoal(StatefulAutonomous):
     def initialize(self):
         self.register_sd_var('Drive_Distance', 18)
         self.register_sd_var('Rotate_Angle', 45)
-        self.register_sd_var('Ramp_Distance', 6.9)
+        self.register_sd_var('Ramp_Distance', 6)
         self.register_sd_var('Max_Drive_Speed', .5)
     
     @timed_state(duration = 1, next_state='drive_forward', first = True)
@@ -72,7 +72,7 @@ class CameraLowGoal(StatefulAutonomous):
     def initialize(self):
         self.register_sd_var('Drive_Bar_Distance', 10)
         self.register_sd_var('Drive_Distance', 18)
-        self.register_sd_var('Ramp_Distance', 6.9)
+        self.register_sd_var('Ramp_Distance', 5)
         self.register_sd_var('Max_Drive_Speed', .5)
         self.register_sd_var('RotateSpeed', .6)
     
@@ -114,7 +114,12 @@ class CameraLowGoal(StatefulAutonomous):
         
         if self.drive.align_to_tower():
             self.drive.disable_camera_tracking()
-            self.next_state('drive_to_ramp')
+            self.next_state('stay_on_target')
+    
+    @timed_state(duration=2, next_state='drive_to_ramp')
+    def stay_on_target(self):
+        self.drive.align_to_tower()
+        
     @state
     def drive_to_ramp(self, initial_call):
         if initial_call:

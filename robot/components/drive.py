@@ -28,6 +28,16 @@ class Drive:
 	enable_camera = ntproperty('/camera/enabled', False)
 	
 	
+	def __init__(self):
+		self.sd = NetworkTable.getTable('/SmartDashboard')
+		self.angle_P = self.sd.getAutoUpdateValue('Drive | Angle_P', .055)
+		self.angle_I = self.sd.getAutoUpdateValue('Drive | Angle_I', .004)
+		self.drive_constant = self.sd.getAutoUpdateValue('Drive | Drive_Constant', .0001)
+		self.rotate_max = self.sd.getAutoUpdateValue('Drive | Max Gyro Rotate Speed', .4)
+		
+		nt = NetworkTable.getTable("components/autoaim")
+		nt.addTableListener(self._align_angle_updated, True, 'target_angle')
+	
 	def on_enable(self):
 		'''
 			Constructor. 
@@ -46,18 +56,9 @@ class Drive:
 		
 		self.halfRotation = 1
 		
-		self.angle_P = self.sd.getAutoUpdateValue('Drive | Angle_P', .055)
-		self.angle_I = self.sd.getAutoUpdateValue('Drive | Angle_I', .004)
-		self.drive_constant = self.sd.getAutoUpdateValue('Drive | Drive_Constant', .0001)
-		self.rotate_max = self.sd.getAutoUpdateValue('Drive | Max Gyro Rotate Speed', .5)
-		
 		self.gyro_enabled = True
 		
 		self.align_angle = None
-		
-		nt = NetworkTable.getTable("components/autoaim")
-		nt.addTableListener(self._align_angle_updated, True, 'target_angle')
-		
 				
 	#
 	# Verb functions -- these functions do NOT talk to motors directly. This

@@ -93,7 +93,7 @@ class PhysicsEngine:
         rf_motor = -hal_data['CAN'][15]['value']/1023
         rr_motor = -hal_data['CAN'][20]['value']/1023
         
-        fwd, rcw = four_motor_drivetrain(lr_motor, rr_motor, lf_motor, rf_motor)
+        fwd, rcw = four_motor_drivetrain(lr_motor, rr_motor, lf_motor, rf_motor, speed=6)
         self.controller.drive(fwd, rcw, tm_diff)
             
         # Simulate the camera approaching the tower

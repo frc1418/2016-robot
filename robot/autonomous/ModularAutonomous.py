@@ -74,14 +74,17 @@ class ModularAutonomous(LowBar, ChevalDeFrise, Portcullis, Charge, Default):
             self.next_state("find_tower")
     
     @state
-    def find_tower(self):
+    def find_tower(self, initial_call):
+        if initial_call:
+            self.drive.enable_camera_tracking()
+            
         if not self.present:
             self.drive.move(0, -.7 * self.rotateConst)
         else:
-            self.next_state('rotate')
+            self.next_state('rotate_to_target')
     
     @state
-    def rotate(self, initial_call):
+    def rotate_to_target(self, initial_call):
         if initial_call:
             self.drive.reset_gyro_angle()
         
