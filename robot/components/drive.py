@@ -47,6 +47,12 @@ class Drive:
 		self.rotate_max = self.sd.getAutoUpdateValue('Drive | Max Gyro Rotate Speed', .5)
 		
 		self.gyro_enabled = True
+		
+		self.align_angle = None
+		
+		nt = NetworkTable.getTable("components/autoaim")
+		nt.addTableListener(self._align_angle_updated, True, 'target_angle')
+		
 				
 	#
 	# Verb functions -- these functions do NOT talk to motors directly. This
@@ -144,9 +150,15 @@ class Drive:
 	def align_to_tower(self):
 		self.y = 0
 		self.rotation = 0
-		
-		return self.angle_rotation(self.target_angle)
+		if self.align_angle is not None:
+			return self.angle_rotation(self.align_angle+self.return_gyro_angle())
+		else:
+			return False
 	
+	def _align_angle_updated(self, source, key, value, isNew):
+		self.align_angle = value 
+		#print('update')
+		
 	def wall_goto(self):
 		'''back up until we are 16 cm away from the wall. Fake PID will move us closer and further to the wall'''
 		y = (self.back_sensor.getDistance() - 16.0)/35

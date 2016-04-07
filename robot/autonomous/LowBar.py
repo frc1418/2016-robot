@@ -1,6 +1,7 @@
 from robotpy_ext.autonomous import state, timed_state, StatefulAutonomous
 from components import intake, drive as Drive
 import wpilib
+from networktables.util import ntproperty
 from networktables import NetworkTable
 
 class LowGoal(StatefulAutonomous):
@@ -66,11 +67,13 @@ class CameraLowGoal(StatefulAutonomous):
     intake = intake.Arm
     drive = Drive.Drive
     sd = NetworkTable
+    present = ntproperty('/components/autoaim/present', False)
+    
     def initialize(self):
         self.register_sd_var('Drive_Distance', 18)
-        self.register_sd_var('Rotate_Angle', 45)
         self.register_sd_var('Ramp_Distance', 6.9)
         self.register_sd_var('Max_Drive_Speed', .5)
+        self.register_sd_var('RotateSpeed', .7)
     
     @timed_state(duration = 1, next_state='drive_forward', first = True)
     def lower_arm(self, initial_call):
@@ -85,7 +88,15 @@ class CameraLowGoal(StatefulAutonomous):
     def drive_forward(self):
         #self.intake.set_arm_middle()
         if self.drive.drive_distance(self.Drive_Distance*12, max_speed=self.Max_Drive_Speed):
+            self.next_state('find_tower')
+    
+    @state
+    def find_tower(self):
+        if not self.present:
+            self.drive.move(0, self.RotateSpeed)
+        else:
             self.next_state('rotate')
+    
     @state
     def rotate(self, initial_call):
         if initial_call:
