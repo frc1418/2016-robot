@@ -31,9 +31,9 @@ class Drive:
     def __init__(self):
         self.sd = NetworkTable.getTable('/SmartDashboard')
         self.angle_P = self.sd.getAutoUpdateValue('Drive | Angle_P', .055)
-        self.angle_I = self.sd.getAutoUpdateValue('Drive | Angle_I', .004)
+        self.angle_I = self.sd.getAutoUpdateValue('Drive | Angle_I', 0)
         self.drive_constant = self.sd.getAutoUpdateValue('Drive | Drive_Constant', .0001)
-        self.rotate_max = self.sd.getAutoUpdateValue('Drive | Max Gyro Rotate Speed', .4)
+        self.rotate_max = self.sd.getAutoUpdateValue('Drive | Max Gyro Rotate Speed', .35)
         
         nt = NetworkTable.getTable("components/autoaim")
         nt.addTableListener(self._align_angle_updated, True, 'target_angle')
@@ -147,7 +147,7 @@ class Drive:
             return False
         
         angleOffset = target_angle - self.return_gyro_angle()
-        if abs(angleOffset) > 3:
+        if abs(angleOffset) > 5:
             self.iErr += angleOffset
             self.rotation = angleOffset * self.angle_P.value + self.angle_I.value * self.iErr
             self.rotation = max(min(self.rotate_max.value, self.rotation), -self.rotate_max.value)

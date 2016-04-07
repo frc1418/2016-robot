@@ -10,6 +10,6 @@ class Charge(StatefulAutonomous):
     intake = intake.Arm
     drive = Drive.Drive
     
-    @timed_state(duration = 3, first = True)
+    @timed_state(duration = 4.5, first = True)
     def charge(self, initial_call):
         self.drive.move(1,0)
