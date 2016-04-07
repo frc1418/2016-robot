@@ -7,6 +7,8 @@ from robotpy_ext.control.button_debouncer import ButtonDebouncer
 from components import drive, intake, winch
 from automations import shootBall, portcullis
 from common import driveEncoders, light
+from networktables.util import ntproperty
+
 
 from robotpy_ext.common_drivers import navx, distance_sensors
 
@@ -21,6 +23,8 @@ class MyRobot(magicbot.MagicRobot):
     winch = winch.Winch
     shootBall = shootBall.shootBall
     #auto_portcullis = portcullis.PortcullisLift
+    
+    enable_camera_logging = ntproperty('/camera/logging_enabled', False)
     def createObjects(self):
         
         # #INITIALIZE JOYSTICKS##
@@ -76,6 +80,10 @@ class MyRobot(magicbot.MagicRobot):
     def disabledPeriodic(self):
         pass
     
+    def disabledInit(self):
+        self.enable_camera_logging = True
+        self.drive.disable_camera_tracking()
+    
     def teleopInit(self):
         self.drive.reset_drive_encoders()
         self.sd.putValue('startTheTimer', True)
@@ -83,6 +91,7 @@ class MyRobot(magicbot.MagicRobot):
         self.intake.target_index = None
         
         self.drive.disable_camera_tracking()
+        self.enable_camera_logging = False
 
     def teleopPeriodic(self):
         self.drive.move(-self.joystick1.getY(), self.joystick2.getX())   
