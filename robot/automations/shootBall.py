@@ -23,7 +23,7 @@ class shootBall():
         if self.state == ARM_UP:
             self.timer.reset()
             self.intake.set_arm_middle()
-            if self.intake.on_target():
+            if self.intake.get_position()>2000:
                 self.state = SPIN_WHEEL
         if self.state == SPIN_WHEEL:
             self.intake.outtake()
