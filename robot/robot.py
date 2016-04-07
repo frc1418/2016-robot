@@ -181,11 +181,17 @@ class MyRobot(magicbot.MagicRobot):
             self.killAutoActions()
             self.winch.winch()
         
-        if self.joystick2.getRawButton(10):
-            self.drive.enable_camera_tracking()
-            self.drive.align_to_tower()
-        else:
-            self.drive.disable_camera_tracking()
+        # Debug stuff
+        if not self.ds.isFMSAttached():
+            if self.joystick1.getRawButton(10):
+                self.drive.angle_rotation(35)
+            elif self.joystick1.getRawButton(9):
+                self.drive.angle_rotation(0)
+            elif self.joystick2.getRawButton(10):
+                self.drive.enable_camera_tracking()
+                self.drive.align_to_tower()
+            else:
+                self.drive.disable_camera_tracking()
 
     def killAutoActions(self):
         self.shooting = False

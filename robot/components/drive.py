@@ -165,8 +165,6 @@ class Drive:
     def align_to_tower(self):
         self.y = 0
         self.rotation = 0
-        if self.align_print_timer.hasPeriodPassed(1.0):
-            print("- align angle", self.align_angle)
         if self.align_angle is not None:
             return self.angle_rotation(self.align_angle+self.return_gyro_angle())
         else:
