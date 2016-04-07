@@ -81,6 +81,8 @@ class MyRobot(magicbot.MagicRobot):
         self.sd.putValue('startTheTimer', True)
         self.intake.target_position = None
         self.intake.target_index = None
+        
+        self.drive.disable_camera_tracking()
 
     def teleopPeriodic(self):
         self.drive.move(-self.joystick1.getY(), self.joystick2.getX())   
@@ -170,7 +172,10 @@ class MyRobot(magicbot.MagicRobot):
             self.winch.winch()
         
         if self.joystick2.getRawButton(10):
+            self.drive.enable_camera_tracking()
             self.drive.align_to_tower()
+        else:
+            self.drive.disable_camera_tracking()
 
     def killAutoActions(self):
         self.shooting = False

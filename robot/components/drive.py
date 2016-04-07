@@ -24,6 +24,8 @@ class Drive:
 	winch = winch.Winch
 	
 	target_angle = ntproperty('/components/autoaim/target_angle', 0)
+	enable_camera = ntproperty('/camera/enabled', False)
+	
 	
 	def on_enable(self):
 		'''
@@ -148,6 +150,12 @@ class Drive:
 			return False
 		self.iErr = 0
 		return True
+	
+	def enable_camera_tracking(self):
+		self.enable_camera = True
+		
+	def disable_camera_tracking(self):
+		self.enable_camera = False
 	
 	def align_to_tower(self):
 		self.y = 0

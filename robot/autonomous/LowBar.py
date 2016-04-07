@@ -91,7 +91,10 @@ class CameraLowGoal(StatefulAutonomous):
             self.next_state('find_tower')
     
     @state
-    def find_tower(self):
+    def find_tower(self, initial_call):
+        if initial_call:
+            self.drive.enable_camera_tracking()
+            
         if not self.present:
             self.drive.move(0, self.RotateSpeed)
         else:
@@ -103,6 +106,7 @@ class CameraLowGoal(StatefulAutonomous):
             self.drive.reset_gyro_angle()
         
         if self.drive.align_to_tower():
+            self.drive.disable_camera_tracking()
             self.next_state('drive_to_ramp')
     @state
     def drive_to_ramp(self, initial_call):

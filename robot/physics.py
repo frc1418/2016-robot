@@ -12,6 +12,8 @@ class PhysicsEngine:
     target_angle = ntproperty('/components/autoaim/target_angle', 0)
     target_height = ntproperty('/components/autoaim/target_height', 0)
     
+    camera_enabled = ntproperty('/camera/enabled', False)
+    
     camera_update_rate = 1/15.0
     target_location = (0, 16)
     
@@ -97,7 +99,7 @@ class PhysicsEngine:
         # Simulate the camera approaching the tower
         # -> this is a very simple approximation, should be good enough
         # -> calculation updated at 15hz
-        if now - self.last_cam_update > self.camera_update_rate:
+        if self.camera_enabled and now - self.last_cam_update > self.camera_update_rate:
             
             x, y, angle = self.controller.get_position()
             
