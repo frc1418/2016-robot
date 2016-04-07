@@ -41,6 +41,8 @@ class Drive:
 		self.rotation = 0
 		self.squaredInputs = False
 		
+		self.halfRotation = 1
+		
 		self.angle_P = self.sd.getAutoUpdateValue('Drive | Angle_P', .055)
 		self.angle_I = self.sd.getAutoUpdateValue('Drive | Angle_I', .004)
 		self.drive_constant = self.sd.getAutoUpdateValue('Drive | Drive_Constant', .0001)
@@ -174,7 +176,13 @@ class Drive:
 	def switch_direction(self):
 		'''when called the robot will reverse front/back'''
 		self.isTheRobotBackwards = not self.isTheRobotBackwards
-		
+	
+	def halveRotation(self):
+		self.halfRotation = .5
+	
+	def normalRotation(self):
+		self.halfRotation = 1
+				
 	def execute(self):
 		''' actually makes the robot drive'''
 		backwards = 1
@@ -184,7 +192,7 @@ class Drive:
 		if(self.winch.isExtended and self.isTheRobotBackwards):
 			self.robot_drive.arcadeDrive(-self.y, -self.rotation/2, self.squaredInputs)
 		else:
-			self.robot_drive.arcadeDrive(backwards*self.y, -self.rotation, self.squaredInputs)
+			self.robot_drive.arcadeDrive(backwards*self.y, -self.rotation*self.halfRotation, self.squaredInputs)
 			
 		
 		# by default, the robot shouldn't move

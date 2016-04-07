@@ -132,10 +132,12 @@ class MyRobot(magicbot.MagicRobot):
 
         if (self.lightButton.get() or lightButton) and self.turningOffState == 0:
             if self.light.on:
+                self.drive.normalRotation()
                 self.light.turnOff()
                 self.turningOffState = 1
                 self.lightTimer.start()
             else:
+                self.drive.halveRotation()
                 self.light.turnOn()
                 
         if self.turningOffState%2 == 1 and self.lightTimer.hasPeriodPassed(.25):
