@@ -35,9 +35,8 @@ class Drive:
         self.drive_constant = self.sd.getAutoUpdateValue('Drive | Drive_Constant', .0001)
         self.rotate_max = self.sd.getAutoUpdateValue('Drive | Max Gyro Rotate Speed', .35)
         
-        nt = NetworkTable.getTable("components/autoaim")
-        nt.addTableListener(self._align_angle_updated, True, 'target_angle')
-        
+        self.enabled = False
+        self.align_angle = None
         self.align_print_timer = wpilib.Timer()
         self.align_print_timer.start()
     
@@ -50,6 +49,12 @@ class Drive:
             :type lf_encoder: DriveEncoders()
             
         '''
+        
+        # Hack for one-time initialization because magicbot doesn't support it
+        if not self.enabled:
+            nt = NetworkTable.getTable("components/autoaim")
+            nt.addTableListener(self._align_angle_updated, True, 'target_angle')
+        
         self.isTheRobotBackwards = False
         self.iErr = 0
         # set defaults here
@@ -147,7 +152,7 @@ class Drive:
             return False
         
         angleOffset = target_angle - self.return_gyro_angle()
-        if abs(angleOffset) > 5:
+        if abs(angleOffset) > 3:
             self.iErr += angleOffset
             self.rotation = angleOffset * self.angle_P.value + self.angle_I.value * self.iErr
             self.rotation = max(min(self.rotate_max.value, self.rotation), -self.rotate_max.value)
@@ -161,18 +166,19 @@ class Drive:
         
     def disable_camera_tracking(self):
         self.enable_camera = False
+        self.align_angle = None
     
     def align_to_tower(self):
         self.y = 0
         self.rotation = 0
         if self.align_angle is not None:
-            return self.angle_rotation(self.align_angle+self.return_gyro_angle())
+            return self.angle_rotation(self.align_angle)
         else:
             return False
     
     def _align_angle_updated(self, source, key, value, isNew):
-        self.align_angle = value 
-        #print('update')
+        # store the absolute value that we need to go to
+        self.align_angle = value + self.return_gyro_angle() 
         
     def wall_goto(self):
         '''back up until we are 16 cm away from the wall. Fake PID will move us closer and further to the wall'''
