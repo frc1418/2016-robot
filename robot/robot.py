@@ -7,6 +7,8 @@ from robotpy_ext.control.button_debouncer import ButtonDebouncer
 from components import drive, intake, winch
 from automations import shootBall, portcullis
 from common import driveEncoders, light
+from networktables.util import ntproperty
+
 
 from robotpy_ext.common_drivers import navx, distance_sensors
 
@@ -21,6 +23,8 @@ class MyRobot(magicbot.MagicRobot):
     winch = winch.Winch
     shootBall = shootBall.shootBall
     #auto_portcullis = portcullis.PortcullisLift
+    
+    enable_camera_logging = ntproperty('/camera/logging_enabled', False)
     def createObjects(self):
         
         # #INITIALIZE JOYSTICKS##
@@ -54,6 +58,7 @@ class MyRobot(magicbot.MagicRobot):
         
         ##DISTANCE SENSORS##
         self.back_sensor = distance_sensors.SharpIRGP2Y0A41SK0F(0)
+        self.ultrasonic = wpilib.AnalogInput(1)
         
         ##NavX##
         self.navX = navx.AHRS.create_spi()
@@ -76,11 +81,18 @@ class MyRobot(magicbot.MagicRobot):
     def disabledPeriodic(self):
         pass
     
+    def disabledInit(self):
+        self.enable_camera_logging = True
+        self.drive.disable_camera_tracking()
+    
     def teleopInit(self):
         self.drive.reset_drive_encoders()
         self.sd.putValue('startTheTimer', True)
         self.intake.target_position = None
         self.intake.target_index = None
+        
+        self.drive.disable_camera_tracking()
+        self.enable_camera_logging = False
 
     def teleopPeriodic(self):
         self.drive.move(-self.joystick1.getY(), self.joystick2.getX())   
@@ -132,10 +144,12 @@ class MyRobot(magicbot.MagicRobot):
 
         if (self.lightButton.get() or lightButton) and self.turningOffState == 0:
             if self.light.on:
+                self.drive.normalRotation()
                 self.light.turnOff()
                 self.turningOffState = 1
                 self.lightTimer.start()
             else:
+                self.drive.halveRotation()
                 self.light.turnOn()
                 
         if self.turningOffState%2 == 1 and self.lightTimer.hasPeriodPassed(.25):
@@ -167,8 +181,17 @@ class MyRobot(magicbot.MagicRobot):
             self.killAutoActions()
             self.winch.winch()
         
-        if self.joystick2.getRawButton(10):
-            self.drive.align_to_tower()
+        # Debug stuff
+        if not self.ds.isFMSAttached():
+            if self.joystick1.getRawButton(10):
+                self.drive.angle_rotation(35)
+            elif self.joystick1.getRawButton(9):
+                self.drive.angle_rotation(0)
+            elif self.joystick2.getRawButton(10):
+                self.drive.enable_camera_tracking()
+                self.drive.align_to_tower()
+            else:
+                self.drive.disable_camera_tracking()
 
     def killAutoActions(self):
         self.shooting = False

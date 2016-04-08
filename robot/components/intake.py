@@ -19,43 +19,13 @@ class Arm:
     rightArm = wpilib.CANTalon
     leftBall = wpilib.Talon
     
-    def on_enable (self):
-        """
-        :type motor: wpilib.CANTalon()
-        """
-        
-        self.target_position = None
-        self.target_index = None
-        
+    def __init__(self):
         
         self.isCalibrating = False
         self.isCalibrated = False
         
-        self.want_manual = False
-        self.manual_value = 0
-        
-        self.want_auto = False
-        
-        self.mode = ArmMode.MANUAL
-        self.last_mode = ArmMode.MANUAL
-        
-        #self.manual_value = -.25
-        self.manual_value = 0
-        # These need to be set by subclasses
-        self.wanted_pid = None
-        self.current_pid = (0, 0, 0)
-        self.new_pid = None
-        
         self.sd = NetworkTable.getTable('SmartDashboard')
         
-    
-        self.rightArm.changeControlMode(wpilib.CANTalon.ControlMode.Follower)
-        self.rightArm.reverseOutput(True)
-        
-        self.now_enc = 0
-        
-        self.leftBallSpeed = 0
-                
         self.positions = [
             self.sd.getAutoUpdateValue('Arm | Bottom', 3000),
             self.sd.getAutoUpdateValue('Arm | Middle', 2500),
@@ -68,8 +38,37 @@ class Arm:
             self.sd.getAutoUpdateValue('Arm |D', 0)
         )
         
+        
         self.calibrate_timer = wpilib.Timer()
-        self.start = 0
+    
+    def on_enable (self):
+        """
+        :type motor: wpilib.CANTalon()
+        """
+        
+        self.target_position = None
+        self.target_index = None
+        
+        self.want_manual = False
+        self.manual_value = 0
+        
+        self.want_auto = False
+        
+        self.mode = ArmMode.MANUAL
+        self.last_mode = ArmMode.MANUAL
+        
+        #self.manual_value = -.25
+        self.manual_value = 0
+        # These need to be set by subclasses
+        
+        self.current_pid = (0, 0, 0)
+        self.new_pid = None
+        
+        self.leftArm.changeControlMode(wpilib.CANTalon.ControlMode.PercentVbus)
+        self.rightArm.changeControlMode(wpilib.CANTalon.ControlMode.Follower)
+        self.rightArm.reverseOutput(True)
+        
+        self.leftBallSpeed = 0
     
     def set_arm_top(self):
         self._set_position(2)

@@ -12,6 +12,8 @@ class PhysicsEngine:
     target_angle = ntproperty('/components/autoaim/target_angle', 0)
     target_height = ntproperty('/components/autoaim/target_height', 0)
     
+    camera_enabled = ntproperty('/camera/enabled', False)
+    
     camera_update_rate = 1/15.0
     target_location = (0, 16)
     
@@ -91,13 +93,13 @@ class PhysicsEngine:
         rf_motor = -hal_data['CAN'][15]['value']/1023
         rr_motor = -hal_data['CAN'][20]['value']/1023
         
-        fwd, rcw = four_motor_drivetrain(lr_motor, rr_motor, lf_motor, rf_motor)
+        fwd, rcw = four_motor_drivetrain(lr_motor, rr_motor, lf_motor, rf_motor, speed=6)
         self.controller.drive(fwd, rcw, tm_diff)
             
         # Simulate the camera approaching the tower
         # -> this is a very simple approximation, should be good enough
         # -> calculation updated at 15hz
-        if now - self.last_cam_update > self.camera_update_rate:
+        if self.camera_enabled and now - self.last_cam_update > self.camera_update_rate:
             
             x, y, angle = self.controller.get_position()
             
