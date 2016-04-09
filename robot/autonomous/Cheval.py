@@ -91,7 +91,7 @@ class ArmCheval(StatefulAutonomous):
     
     def initialize(self):
         #TODO: Figure out positions for the arm
-        self.register_sd_var("Correct_arm_position", 1000)
+        self.register_sd_var("Correct_arm_position", 2700)
         self.register_sd_var("Drive_on_distance", 1)
         
     @timed_state(duration = 2, next_state='drive_back', first = True)
@@ -100,9 +100,10 @@ class ArmCheval(StatefulAutonomous):
         
     @state
     def drive_back(self, initial_call):
-        self.intake.set_target_position(self.Correct_arm_position)
+        self.intake.set_arm_bottom()
+        self.drive.move(-0.2,0)
         
-        if self.intake.on_target():
+        if self.intake.get_position() > self.Correct_arm_position:
             self.next_state('drive_on')
         
     @timed_state(duration = 2, next_state='drive_over')

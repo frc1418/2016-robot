@@ -72,13 +72,14 @@ class CameraLowGoal(StatefulAutonomous):
     def initialize(self):
         self.register_sd_var('Drive_Bar_Distance', 10)
         self.register_sd_var('Drive_Distance', 18)
-        self.register_sd_var('Ramp_Distance', 5)
+        self.register_sd_var('Ramp_Distance', 6)
         self.register_sd_var('Max_Drive_Speed', .5)
-        self.register_sd_var('RotateSpeed', .6)
+        self.register_sd_var('RotateSpeed', .4)
+        self.register_sd_var('RotateAngle', 45)
     
     @timed_state(duration = 1, next_state='drive_under_bar', first=True)
     def lower_arm(self, initial_call):
-        
+        print (self.intake)
         self.drive.reset_drive_encoders()
         self.intake.set_arm_bottom()
             
@@ -95,38 +96,72 @@ class CameraLowGoal(StatefulAutonomous):
         if self.drive.drive_distance(self.Drive_Distance*12, max_speed=self.Max_Drive_Speed):
             self.next_state('lower_arm2')
        
-    @timed_state(duration=1, next_state='find_tower')     
+    @timed_state(duration=1, next_state='rotate')     
     def lower_arm2(self):
-        self.intake.set_arm_middle()
+        self.intake.set_arm_bottom()
     
-    @state
-    def find_tower(self, initial_call):
-        if initial_call:
-            self.drive.enable_camera_tracking()
-            
-        if not self.present:
-            self.drive.move(0, self.RotateSpeed)
-        else:
-            self.next_state('rotate')
+    #@state
+    #def find_tower(self, initial_call):
+    #    if initial_call:
+    #        self.drive.enable_camera_tracking()
+    #        
+    #    if not self.present:
+    #        self.drive.move(0, self.RotateSpeed)
+    #    else:
+    #        self.next_state('rotate')
+    #
+    #@state
+    #def rotate(self, initial_call):
+    #    if initial_call:
+    #        self.drive.reset_gyro_angle()
+    #    
+    #    if self.drive.align_to_tower():
+    #        self.drive.disable_camera_tracking()
+    #        self.next_state('stay_on_target')
+    #
+    #@timed_state(duration=2, next_state='drive_to_ramp')
+    #def stay_on_target(self):
+    #    self.drive.align_to_tower()
+    #####   
     
     @state
     def rotate(self, initial_call):
         if initial_call:
+            self.drive.enable_camera_tracking()
+            
+        if self.drive.angle_rotation(self.RotateAngle):
+            self.next_state('test_camera')
+    
+    @timed_state(duration = 1, next_state='drive_to_ramp')
+    def test_camera(self):
+        if self.present:
+            self.next_state('rotate_to_align')
+    
+    @timed_state(duration=1, next_state='camera_drive')
+    def rotate_to_align(self, initial_call):
+        if initial_call:
             self.drive.reset_gyro_angle()
         
         if self.drive.align_to_tower():
-            self.drive.disable_camera_tracking()
-            self.next_state('stay_on_target')
+            self.next_state('camera_drive')
+
     
-    @timed_state(duration=2, next_state='drive_to_ramp')
-    def stay_on_target(self):
+    @state
+    def camera_drive(self, initial_call):
+        if initial_call:
+            self.drive.reset_drive_encoders()
+        
         self.drive.align_to_tower()
         
+        if self.drive.drive_distance(self.Ramp_Distance*12, max_speed=self.Max_Drive_Speed):
+            self.next_state('lower_to_shoot')      
+            
     @state
     def drive_to_ramp(self, initial_call):
         if initial_call:
             self.drive.reset_drive_encoders()
-        
+            self.drive.disable_camera_tracking()
+    
         if self.drive.drive_distance(self.Ramp_Distance*12, max_speed=self.Max_Drive_Speed):
             self.next_state('lower_to_shoot')
             
@@ -138,6 +173,10 @@ class CameraLowGoal(StatefulAutonomous):
             self.next_state('shoot')
         
     
-    @timed_state(duration = 15)
-    def shoot(self, initial_call):
+    @timed_state(duration = 2, next_state='intakeBall')
+    def shoot(self):
         self.intake.outtake()
+    
+    @timed_state(duration = 2, next_state = 'shoot')
+    def intakeBall(self):
+        self.intake.intake()

@@ -30,10 +30,10 @@ class Drive:
     
     def __init__(self):
         self.sd = NetworkTable.getTable('/SmartDashboard')
-        self.angle_P = self.sd.getAutoUpdateValue('Drive | Angle_P', .055)
-        self.angle_I = self.sd.getAutoUpdateValue('Drive | Angle_I', 0)
-        self.drive_constant = self.sd.getAutoUpdateValue('Drive | Drive_Constant', .0001)
-        self.rotate_max = self.sd.getAutoUpdateValue('Drive | Max Gyro Rotate Speed', .35)
+        self.angle_P = self.sd.getAutoUpdateValue('Drive/Angle_P', .055)
+        self.angle_I = self.sd.getAutoUpdateValue('Drive/Angle_I', 0)
+        self.drive_constant = self.sd.getAutoUpdateValue('Drive/Drive_Constant', .0001)
+        self.rotate_max = self.sd.getAutoUpdateValue('Drive/Max Gyro Rotate Speed', .35)
         
         self.enabled = False
         self.align_angle = None
@@ -169,7 +169,6 @@ class Drive:
         self.align_angle = None
     
     def align_to_tower(self):
-        self.y = 0
         self.rotation = 0
         if self.align_angle is not None:
             return self.angle_rotation(self.align_angle)
@@ -220,11 +219,8 @@ class Drive:
         self.update_sd()
         
     def update_sd(self):
-        self.sd.putValue('NavX | Pitch', self.navX.getPitch())
-        self.sd.putValue('NavX | Yaw', self. navX.getYaw())
-        self.sd.putValue('NavX | Roll', self.navX.getRoll())
-        self.sd.putValue('Drive | Encoder', self.return_drive_encoder_position())
-        self.sd.putValue('Drive | Y', self.y)
-        self.sd.putValue('Drive | backCamera', self.isTheRobotBackwards)
-        self.sd.putValue('Drive | Ultrasonic', self.ultrasonic.getVoltage())
+        self.sd.putValue('Drive/NavX | Yaw', self. navX.getYaw())
+        self.sd.putValue('Drive/Encoder', self.return_drive_encoder_position())
+        self.sd.putValue('Drive/backCamera', self.isTheRobotBackwards)
+        self.sd.putValue('Drive/Ultrasonic', self.ultrasonic.getVoltage())
         

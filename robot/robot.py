@@ -24,7 +24,7 @@ class MyRobot(magicbot.MagicRobot):
     shootBall = shootBall.shootBall
     #auto_portcullis = portcullis.PortcullisLift
     
-    enable_camera_logging = ntproperty('/camera/logging_enabled', False)
+    enable_camera_logging = ntproperty('/camera/logging_enabled', True)
     def createObjects(self):
         
         # #INITIALIZE JOYSTICKS##
@@ -180,6 +180,10 @@ class MyRobot(magicbot.MagicRobot):
         if self.joystick1.getRawButton(8):
             self.killAutoActions()
             self.winch.winch()
+        
+        if self.joystick1.getRawButton(9):
+            if self.drive.isTheRobotBackwards:
+                self.drive.move(.5, 0)
         
         # Debug stuff
         if not self.ds.isFMSAttached():

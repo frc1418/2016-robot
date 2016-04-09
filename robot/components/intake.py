@@ -27,15 +27,15 @@ class Arm:
         self.sd = NetworkTable.getTable('SmartDashboard')
         
         self.positions = [
-            self.sd.getAutoUpdateValue('Arm | Bottom', 3000),
-            self.sd.getAutoUpdateValue('Arm | Middle', 2500),
-            self.sd.getAutoUpdateValue('Arm | Top', -20),
+            self.sd.getAutoUpdateValue('Arm/Bottom', 3000),
+            self.sd.getAutoUpdateValue('Arm/Middle', 2500),
+            self.sd.getAutoUpdateValue('Arm/Top', -20),
           ]
-        self.position_threshold = self.sd.getAutoUpdateValue("Arm|On Target Threshold", 25)
+        self.position_threshold = self.sd.getAutoUpdateValue("Arm/On Target Threshold", 25)
         self.wanted_pid = (
-            self.sd.getAutoUpdateValue('Arm |P', 2),
-            self.sd.getAutoUpdateValue('Arm |I', 0), 
-            self.sd.getAutoUpdateValue('Arm |D', 0)
+            self.sd.getAutoUpdateValue('Arm/P', 2),
+            self.sd.getAutoUpdateValue('Arm/I', 0), 
+            self.sd.getAutoUpdateValue('Arm/D', 0)
         )
         
         
@@ -283,17 +283,17 @@ class Arm:
         #print(self.leftArm.getOutputVoltage())
     def update_sd(self, name):
         '''Puts refreshed values to SmartDashboard'''
-        self.sd.putValue('Arm | Manual Value', self.manual_value)
-        self.sd.putValue('%s | Encoder' % name, self.leftArm.getEncPosition())
-        self.sd.putValue("Arm | Reverse Limit Switch", self.leftArm.isRevLimitSwitchClosed())
-        self.sd.putValue("Arm | Forward Limit Switch", self.leftArm.isFwdLimitSwitchClosed())
-        self.sd.putValue('%s | Calibrated' % name, self.isCalibrated)
-        self.sd.putValue('%s | Arm Position' % name, self.leftArm.getAnalogInPosition())
-        self.sd.putValue('%s | Burnout' % name, ArmMode.AUTO == ArmMode.MANUAL)
+        self.sd.putValue('Arm/Manual Value', self.manual_value)
+        self.sd.putValue('Arm/Encoder', self.leftArm.getEncPosition())
+        self.sd.putValue("Arm/Reverse Limit Switch", self.leftArm.isRevLimitSwitchClosed())
+        self.sd.putValue("Arm/Forward Limit Switch", self.leftArm.isFwdLimitSwitchClosed())
+        self.sd.putValue('Arm/Calibrated', self.isCalibrated)
+        self.sd.putValue('Arm/Position', self.leftArm.getAnalogInPosition())
+        self.sd.putValue('Arm/Burnout', ArmMode.AUTO == ArmMode.MANUAL)
         
         
         if self.target_position is None:
-            self.sd.getAutoUpdateValue('%s|Target Position' % name, -1)
+            self.sd.getAutoUpdateValue('Arm/Target Position', -1)
         else:
-            self.sd.getAutoUpdateValue('%s|Target Position' % name, self.target_index)
+            self.sd.getAutoUpdateValue('Arm/Target Position', self.target_index)
         
