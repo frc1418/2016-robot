@@ -79,7 +79,6 @@ class CameraLowGoal(StatefulAutonomous):
     
     @timed_state(duration = 1, next_state='drive_under_bar', first=True)
     def lower_arm(self, initial_call):
-        print (self.intake)
         self.drive.reset_drive_encoders()
         self.intake.set_arm_bottom()
             
@@ -180,3 +179,4 @@ class CameraLowGoal(StatefulAutonomous):
     @timed_state(duration = 2, next_state = 'shoot')
     def intakeBall(self):
         self.intake.intake()
+    
