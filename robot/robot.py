@@ -77,7 +77,11 @@ class MyRobot(magicbot.MagicRobot):
         
         self.shooting = False
         self.raise_portcullis = False
-        
+    
+    def autonomous(self):
+        self.drive.reset_gyro_angle()
+        magicbot.MagicRobot.autonomous(self)
+    
     def disabledPeriodic(self):
         pass
     

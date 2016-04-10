@@ -13,7 +13,7 @@ class LowGoal(StatefulAutonomous):
     sd = NetworkTable
     def initialize(self):
         self.register_sd_var('Drive_Distance', 18)
-        self.register_sd_var('Rotate_Angle', 45)
+        self.register_sd_var('Rotate_Angle', 46)
         self.register_sd_var('Ramp_Distance', 6)
         self.register_sd_var('Max_Drive_Speed', .5)
     
@@ -75,7 +75,7 @@ class CameraLowGoal(StatefulAutonomous):
         self.register_sd_var('Ramp_Distance', 6)
         self.register_sd_var('Max_Drive_Speed', .5)
         self.register_sd_var('RotateSpeed', .4)
-        self.register_sd_var('RotateAngle', 45)
+        self.register_sd_var('RotateAngle', 46)
     
     @timed_state(duration = 1, next_state='drive_under_bar', first=True)
     def lower_arm(self, initial_call):
@@ -126,6 +126,7 @@ class CameraLowGoal(StatefulAutonomous):
     @state
     def rotate(self, initial_call):
         if initial_call:
+            self.drive.reset_gyro_angle()
             self.drive.enable_camera_tracking()
             
         if self.drive.angle_rotation(self.RotateAngle):
