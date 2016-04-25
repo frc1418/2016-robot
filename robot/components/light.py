@@ -1,5 +1,5 @@
 import wpilib
-class Light():
+class Light:
     
     flashlight = wpilib.Relay
     

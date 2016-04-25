@@ -1,7 +1,6 @@
 from networktables.util import ntproperty
-import wpilib
 from components import drive, intake
-from magicbot import StateMachine, state, timed_state
+from magicbot import StateMachine, state
 from automations import shootBall
 
 class TargetGoal(StateMachine):

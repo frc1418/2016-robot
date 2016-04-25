@@ -1,6 +1,5 @@
 from robotpy_ext.autonomous import state, timed_state, StatefulAutonomous
 from components import intake, drive as Drive
-import wpilib
 from networktables.util import ntproperty
 from networktables import NetworkTable
 
