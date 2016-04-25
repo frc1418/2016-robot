@@ -5,7 +5,7 @@ import wpilib
 
 from robotpy_ext.control.button_debouncer import ButtonDebouncer
 from components import drive, intake, winch, light
-from automations import shootBall, portcullis, lightOff
+from automations import shootBall, portcullis, lightOff, targetGoal
 from common import driveEncoders
 from networktables.util import ntproperty
 
@@ -13,17 +13,17 @@ from networktables.util import ntproperty
 from robotpy_ext.common_drivers import navx, distance_sensors
 
 from networktables.networktable import NetworkTable
-import automations
 
 
 class MyRobot(magicbot.MagicRobot):
     
-    drive = drive.Drive
-    intake = intake.Arm
+    targetGoal = targetGoal.TargetGoal
+    shootBall = shootBall.ShootBall
     winch = winch.Winch
-    shootBall = shootBall.shootBall
     light = light.Light
     lightSwitch = lightOff.LightSwitch
+    intake = intake.Arm
+    drive = drive.Drive
     #auto_portcullis = portcullis.PortcullisLift
     
     enable_camera_logging = ntproperty('/camera/logging_enabled', True)
@@ -32,6 +32,7 @@ class MyRobot(magicbot.MagicRobot):
         # #INITIALIZE JOYSTICKS##
         self.joystick1 = wpilib.Joystick(0)
         self.joystick2 = wpilib.Joystick(1)
+        
 
         # #INITIALIZE MOTORS##
         self.lf_motor = wpilib.CANTalon(5)
@@ -206,9 +207,9 @@ class MyRobot(magicbot.MagicRobot):
             elif self.joystick2.getRawButton(10):
                 self.drive.enable_camera_tracking()
                 self.drive.align_to_tower()
-            else:
-                self.drive.disable_camera_tracking()
-
+            
+                
+                
     def killAutoActions(self):
         self.shooting = False
         self.raise_portcullis = False

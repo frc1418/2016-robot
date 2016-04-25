@@ -11,7 +11,6 @@ class LightSwitch(StateMachine):
     
     def switch(self):
         self.counter = 0
-        print('switching')
         self.begin()
     
     @state(first=True)
@@ -19,13 +18,11 @@ class LightSwitch(StateMachine):
         if self.light.on:
             self.next_state('off')
         else:
-            print('turning on')
             self.light.turnOn()
             self.done()
             
     @timed_state(duration = .25, next_state='on')
     def off(self, initial_call):
-        print('off', initial_call)
         if initial_call:
             self.counter += 1
         
@@ -35,6 +32,5 @@ class LightSwitch(StateMachine):
     
     @timed_state(duration = .25, next_state = 'off')
     def on(self):
-        print('on')
         self.light.turnOn()
     
