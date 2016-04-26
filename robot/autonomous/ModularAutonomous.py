@@ -133,7 +133,7 @@ class BallModularAutonomous(ModularAutonomous):
             self.intake.set_arm_middle()
             
         #Drive distance is negative here because we have to back up to make sure the arms dont extend too far!
-        if self.drive.drive_distance(self.Drive_Distance):
+        if self.drive.drive_distance(self.Drive_Distance) and self.intake.on_target():
             self.next_state('collect')
                 
     @state
