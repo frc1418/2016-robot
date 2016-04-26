@@ -2,6 +2,7 @@ from networktables.util import ntproperty
 from components import drive, intake
 from magicbot import StateMachine, state
 from automations import shootBall
+from magicbot.magic_tunable import tunable
 
 class TargetGoal(StateMachine):
     
@@ -12,6 +13,8 @@ class TargetGoal(StateMachine):
     
     present = ntproperty('/components/autoaim/present', False)
     targetHeight = ntproperty('/components/autoaim/target_height', 0)
+    
+    idealHeight = tunable(-11)
     
     def target(self):
         if not self.drive.enable_camera:
@@ -33,7 +36,7 @@ class TargetGoal(StateMachine):
     @state
     def camera_assisted_drive(self):
         if self.targetHeight < 10:#> -12:
-            self.drive.move(max(abs(10-self.targetHeight)/55, .5), 0)
+            self.drive.move(max(abs(self.idealHeight-self.targetHeight)/55, .5), 0)
             #self.drive.align_to_tower()
         else:
             self.next_state('shoot')
