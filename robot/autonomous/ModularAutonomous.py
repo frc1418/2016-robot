@@ -115,7 +115,7 @@ class BallModularAutonomous(ModularAutonomous):
         ChevalDeFrise.initialize(self)
         Portcullis.initialize(self)
         
-        self.register_sd_var('Drive_Distance', 10.5)
+        self.register_sd_var('Drive_Distance', -5)
         self.register_sd_var('Rotate_Angle', 180)
         self.register_sd_var('Collect_Distance', 0.5)
 
@@ -126,20 +126,16 @@ class BallModularAutonomous(ModularAutonomous):
         self.drive.reset_gyro_angle()
         self.next_state('drive_to_ball')
         
-    @timed_state(duration = 2, next_state='lower_arms')
+    @timed_state(duration = 4, next_state='lower_arms')
     def drive_to_ball(self, initial_call):
         if initial_call:
             self.drive.reset_drive_encoders()
+            self.intake.set_arm_middle()
             
+        #Drive distance is negative here because we have to back up to make sure the arms dont extend too far!
         if self.drive.drive_distance(self.Drive_Distance):
-            self.next_state('lower_arms')
-            
-    @timed_state(duration = 1, next_state='collect')
-    def lower_arms(self, initial_call):
-        self.intake.set_arm_middle()
-        if self.intake.on_target(): 
             self.next_state('collect')
-    
+                
     @state
     def collect(self, initial_call):
         if initial_call:
