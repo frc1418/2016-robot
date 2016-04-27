@@ -14,12 +14,18 @@ class TargetGoal(StateMachine):
     present = ntproperty('/components/autoaim/present', False)
     targetHeight = ntproperty('/components/autoaim/target_height', 0)
     
-    idealHeight = tunable(-11)
     
+    idealHeight = tunable(-11)
+    heightThreshold = tunable(10)
+    
+    def on_enable(self):
+        self.atGoal = False
+        
     def target(self):
         if not self.drive.enable_camera:
             self.drive.enable_camera_tracking()
-        self.engage()
+        if self.present or self.atGoal:
+            self.engage()
     
     
     @state(first = True)
@@ -35,10 +41,11 @@ class TargetGoal(StateMachine):
             
     @state
     def camera_assisted_drive(self):
-        if self.targetHeight < 10:#> -12:
+        if self.targetHeight < self.heightThreshold:#> -12:
             self.drive.move(max(abs(self.idealHeight-self.targetHeight)/55, .5), 0)
             #self.drive.align_to_tower()
         else:
+            self.atGoal = True
             self.next_state('shoot')
     
     @state
