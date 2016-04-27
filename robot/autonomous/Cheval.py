@@ -2,6 +2,7 @@ from robotpy_ext.autonomous import state, timed_state, StatefulAutonomous
 from components import intake, drive as Drive
 import wpilib
 from networktables import NetworkTable
+from magicbot.magic_tunable import tunable
 
 class ChevalDeFrise(StatefulAutonomous):
     MODE_NAME = "ChevalDeFrise"
@@ -42,45 +43,56 @@ class ChevalDeFrise(StatefulAutonomous):
         
         self.drive.move(0.7, 0)
 
-class DriveCheval(StatefulAutonomous):
-    MODE_NAME = "DriveCheval"
+class SonicCheval(StatefulAutonomous):
+    MODE_NAME = "SonicCheval"
     DEFAULT = False
+    '''This autonomous utilizes the ultrasonic sensor mounted on the front
+        of the robot to tell when we are ready to lower the arms'''
     
     intake = intake.Arm
     drive = Drive.Drive
     
-    def initialize(self):
-        self.register_sd_var("Drive_on_distance", 1)
-        
-    @timed_state(duration = 2, next_state='drive_back', first = True)
-    def drive_to(self, initial_call):
-        #TODO: Figure out good drive speed
-        self.drive.move(0.3,0)
-        
-    @timed_state(duration = 0.1, next_state='lower_arms')
-    def drive_back(self, initial_call):
-        self.drive.move(-0.3,0)
-            
-    @timed_state(duration = .4, next_state='drive_on')
+    ultrasonic = wpilib.AnalogInput
+    
+    targetDistance = tunable(.4)
+    driveOnDistance = tunable(1)
+    driveOffDistance = tunable(4)
+    
+    @state(first = True)
+    def drive_to_cheval(self):
+        '''Drives forward toward the cheval'''
+        self.drive.move(.4, 0)
+        if self.ultrasonic.getVoltage() < self.targetDistance:
+            self.next_state('lower_arms')
+    
+    @state
     def lower_arms(self, initial_call):
-        self.intake.set_arm_bottom()
-        
+        '''Lowers arms onto cheval'''
+        if initial_call:
+            self.intake.set_arm_bottom()
         if self.intake.on_target():
             self.next_state('drive_on')
-        
-    @timed_state(duration = 2, next_state='drive_over')
+    
+    @state
     def drive_on(self, initial_call):
+        '''Drives forward onto the cheval'''
         if initial_call:
             self.drive.reset_drive_encoders()
-            
-        if self.drive.drive_distance(self.Drive_on_distance*12):
-            self.next_state('drive_over')
-        
-    @timed_state(duration = 2)
-    def drive_over(self, initial_call):
+        if self.drive.drive_distance(self.driveOnDistance):
+            self.next_state('raise_arms')
+    
+    @state
+    def raise_arms(self, initial_call):
+        '''Raises arms to protect them when coming down'''
         self.intake.set_arm_top()
-        
-        self.drive.move(0.7, 0)   
+        self.next_state('drive_off')
+    
+    @state
+    def drive_off(self, initial_call):
+        '''Drives off cheval'''
+        if initial_call:
+            self.drive.reset_drive_encoders()
+        self.drive.drive_distance(self.driveOffDistance*12)
 
 class ArmCheval(StatefulAutonomous):
     MODE_NAME = "ArmCheval"
