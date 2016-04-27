@@ -4,24 +4,26 @@ import magicbot
 import wpilib
 
 from robotpy_ext.control.button_debouncer import ButtonDebouncer
-from components import drive, intake, winch
-from automations import shootBall, portcullis
-from common import driveEncoders, light
+from components import drive, intake, winch, light
+from automations import shootBall, portcullis, lightOff, targetGoal
+from common import driveEncoders
 from networktables.util import ntproperty
 
 
 from robotpy_ext.common_drivers import navx, distance_sensors
 
 from networktables.networktable import NetworkTable
-import automations
 
 
 class MyRobot(magicbot.MagicRobot):
     
-    drive = drive.Drive
-    intake = intake.Arm
+    targetGoal = targetGoal.TargetGoal
+    shootBall = shootBall.ShootBall
     winch = winch.Winch
-    shootBall = shootBall.shootBall
+    light = light.Light
+    lightSwitch = lightOff.LightSwitch
+    intake = intake.Arm
+    drive = drive.Drive
     #auto_portcullis = portcullis.PortcullisLift
     
     enable_camera_logging = ntproperty('/camera/logging_enabled', True)
@@ -30,6 +32,7 @@ class MyRobot(magicbot.MagicRobot):
         # #INITIALIZE JOYSTICKS##
         self.joystick1 = wpilib.Joystick(0)
         self.joystick2 = wpilib.Joystick(1)
+        
 
         # #INITIALIZE MOTORS##
         self.lf_motor = wpilib.CANTalon(5)
@@ -47,10 +50,11 @@ class MyRobot(magicbot.MagicRobot):
         self.winchMotor = wpilib.Talon(0)
         self.kickMotor = wpilib.Talon(1)
         
-        self.light = light.Light(wpilib.Relay(0))
+        self.flashlight = wpilib.Relay(0)
         self.lightTimer = wpilib.Timer()
         self.turningOffState = 0
         self.lastState = False
+        
                 
         ##DRIVE ENCODERS##
         self.rf_encoder = driveEncoders.DriveEncoders(self.robot_drive.frontRightMotor, True)
@@ -130,12 +134,13 @@ class MyRobot(magicbot.MagicRobot):
             
         ##AUTO SHOOT##
         if self.shoot.get():
-            self.shooting = not self.shooting
-            self.raise_portcullis = False
-        if self.shooting:
-            self.raise_portcullis = False
-            self.shootBall.doit()
-            self.shooting = self.shootBall.get_running()
+            self.shootBall.shoot()
+            #self.shooting = not self.shooting
+            #self.raise_portcullis = False
+        #if self.shooting:
+            #self.raise_portcullis = False
+            #self.shootBall.doit()
+            #self.shooting = self.shootBall.get_running()
         
         ##LIGHTBULB##
         lightButton = False
@@ -147,6 +152,8 @@ class MyRobot(magicbot.MagicRobot):
         self.lastState = guiButton
 
         if (self.lightButton.get() or lightButton) and self.turningOffState == 0:
+            self.lightSwitch.switch()
+        '''
             if self.light.on:
                 self.drive.normalRotation()
                 self.light.turnOff()
@@ -168,7 +175,9 @@ class MyRobot(magicbot.MagicRobot):
                 self.turningOffState=0
                 self.lightTimer.reset()
                 self.lightTimer.stop()
-            
+        '''
+        if self.sd.getValue('autoAim', False):
+            pass    
         ##AUTO PORTCULLIS##
         #if self.portcullis.get():
         #    self.raise_portcullis = not self.raise_portcullis
@@ -198,9 +207,9 @@ class MyRobot(magicbot.MagicRobot):
             elif self.joystick2.getRawButton(10):
                 self.drive.enable_camera_tracking()
                 self.drive.align_to_tower()
-            else:
-                self.drive.disable_camera_tracking()
-
+            
+                
+                
     def killAutoActions(self):
         self.shooting = False
         self.raise_portcullis = False

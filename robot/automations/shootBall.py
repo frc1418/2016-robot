@@ -1,41 +1,27 @@
-import wpilib
 import components.intake as Intake
+from magicbot import StateMachine, state, timed_state
 
-ARM_UP = 0
-SPIN_WHEEL = 1
-ARM_DOWN = 2    
-
-class shootBall():
+class ShootBall(StateMachine):
     intake = Intake.Arm
+    
     def on_enable(self):
         self.is_running = False
-        self.state = ARM_UP
-        self.timer = wpilib.Timer()
-        self.timer.start()
         
     def get_running(self):
         return self.is_running
+    
+    def shoot(self):
+        self.engage()
         
+    def stop(self):
+        self.done()    
         
-    def doit(self):
-        self.is_running = True
-        
-        if self.state == ARM_UP:
-            self.timer.reset()
-            self.intake.set_arm_middle()
-            if self.intake.get_position()>2000:
-                self.state = SPIN_WHEEL
-        if self.state == SPIN_WHEEL:
-            self.intake.outtake()
-            if self.timer.hasPeriodPassed(1):
-                self.is_running = False
-                self.state = ARM_UP
-        #    self.state = ARM_DOWN
-        #if self.state == ARM_DOWN:
-        #    self.intake.outtake()
-        #    self.intake.set_arm_bottom()
-        #    if self.intake.on_target():
-        #        self.state = ARM_UP
-        #        self.is_running = False
-    def execute(self):
-        pass
+    @state(first = True, must_finish = True)
+    def lower_arms(self):
+        self.intake.set_arm_middle()
+        if self.intake.get_position()>2000:
+            self.next_state('fire')
+            
+    @timed_state(duration = 1, must_finish = True)
+    def fire(self):
+        self.intake.outtake()
