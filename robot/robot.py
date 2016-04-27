@@ -111,36 +111,24 @@ class MyRobot(magicbot.MagicRobot):
         ##BALL INTAKE##
         if self.joystick2.getRawButton(5):
             self.intake.outtake()
-            self.killAutoActions()
         elif self.joystick2.getRawButton(4):
             self.intake.intake()
-            self.killAutoActions()
         
         ##AUTO ARM##
         if self.raiseButton.get():
             self.intake.raise_arm()
-            self.killAutoActions()
         elif self.lowerButton.get():
             self.intake.lower_arm()
-            self.killAutoActions()
             
         ##MANUAL ARM##
         if self.joystick1.getRawButton(3):
             self.intake.set_manual(-1)
-            self.killAutoActions()
         if self.joystick1.getRawButton(2):
             self.intake.set_manual(1)
-            self.killAutoActions()
             
         ##AUTO SHOOT##
         if self.shoot.get():
             self.shootBall.shoot()
-            #self.shooting = not self.shooting
-            #self.raise_portcullis = False
-        #if self.shooting:
-            #self.raise_portcullis = False
-            #self.shootBall.doit()
-            #self.shooting = self.shootBall.get_running()
         
         ##LIGHTBULB##
         lightButton = False
@@ -153,39 +141,10 @@ class MyRobot(magicbot.MagicRobot):
 
         if (self.lightButton.get() or lightButton) and self.turningOffState == 0:
             self.lightSwitch.switch()
-        '''
-            if self.light.on:
-                self.drive.normalRotation()
-                self.light.turnOff()
-                self.turningOffState = 1
-                self.lightTimer.start()
-            else:
-                self.drive.halveRotation()
-                self.light.turnOn()
-                
-        if self.turningOffState%2 == 1 and self.lightTimer.hasPeriodPassed(.25):
-            self.light.turnOn()
-            self.turningOffState += 1
             
-        elif self.lightTimer.hasPeriodPassed(.25):
-            self.light.turnOff()
-            self.turningOffState += 1
-            
-            if self.turningOffState > 3:
-                self.turningOffState=0
-                self.lightTimer.reset()
-                self.lightTimer.stop()
-        '''
-        if self.sd.getValue('autoAim', False):
-            pass    
-        ##AUTO PORTCULLIS##
-        #if self.portcullis.get():
-        #    self.raise_portcullis = not self.raise_portcullis
-        #if self.raise_portcullis:
-        #    self.auto_portcullis.doit()
-        #    self.raise_portcullis = self.auto_portcullis.get_running()
-        #else:
-        #    self.auto_portcullis.state = 1
+        if self.sd.getValue('Drive/autoAim', False):
+            self.targetGoal.target()    
+        
         
         ##WINCH##
         if self.joystick1.getRawButton(7): #or self.sd.getValue('ladderButtonPressed'):
@@ -202,17 +161,13 @@ class MyRobot(magicbot.MagicRobot):
         if not self.ds.isFMSAttached():
             if self.joystick1.getRawButton(10):
                 self.drive.angle_rotation(35)
-            elif self.joystick1.getRawButton(9):
+            elif self.joystick1.getRawButton(9): #this could prove problematic if the robot is backwards
                 self.drive.angle_rotation(0)
             elif self.joystick2.getRawButton(10):
                 self.drive.enable_camera_tracking()
                 self.drive.align_to_tower()
             
                 
-                
-    def killAutoActions(self):
-        self.shooting = False
-        self.raise_portcullis = False
 
 if __name__ == '__main__':
     wpilib.run(MyRobot)
