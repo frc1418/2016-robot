@@ -3,8 +3,8 @@ from components import intake, drive as Drive
 from networktables.util import ntproperty
 from networktables import NetworkTable
 
-class LowGoal(StatefulAutonomous):
-    MODE_NAME='LowGoal'
+class LowBar(StatefulAutonomous):
+    MODE_NAME='LowBar'
     DEFAULT = False
     
     intake = intake.Arm
@@ -59,8 +59,8 @@ class LowGoal(StatefulAutonomous):
     def shoot(self, initial_call):
         self.intake.outtake()
         
-class CameraLowGoal(StatefulAutonomous):
-    MODE_NAME='CameraLowGoal'
+class CameraLowBar(StatefulAutonomous):
+    MODE_NAME='CameraLowBar'
     DEFAULT = False
     
     intake = intake.Arm
@@ -72,7 +72,7 @@ class CameraLowGoal(StatefulAutonomous):
         self.register_sd_var('Drive_Bar_Distance', 10)
         self.register_sd_var('Drive_Distance', 18)
         self.register_sd_var('Ramp_Distance', 6)
-        self.register_sd_var('Max_Drive_Speed', .5)
+        self.register_sd_var('Max_Drive_Speed', .9)
         self.register_sd_var('RotateSpeed', .4)
         self.register_sd_var('RotateAngle', 46)
     
