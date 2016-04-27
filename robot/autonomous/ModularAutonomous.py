@@ -34,7 +34,6 @@ class ModularAutonomous(LowBar, ChevalDeFrise, Portcullis, Charge, Default):
         self.drive.reset_gyro_angle()
         self.next_state(self.sd.getValue('robotDefense', 'LowBar') + 'Start')
         self.position = int(self.sd.getValue('robotPosition', '1'))
-        print(self.position)
     
     @state
     def transition(self):
@@ -46,7 +45,6 @@ class ModularAutonomous(LowBar, ChevalDeFrise, Portcullis, Charge, Default):
         elif self.position == 2 :
             self.angleConst = -1
         self.rotateAngle = math.degrees(math.atan(self.opposite/50)) * self.angleConst
-        print(self.rotateAngle)
         self.drive_distance = math.sqrt(2500 + self.opposite**2)
         if self.position == 1 or self.position == 4:
             self.next_state('drive_to_wall')
