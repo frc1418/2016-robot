@@ -124,10 +124,10 @@ class PhysicsEngine:
                     target_present = True 
                 
                     # target 'height' is a number between -18 and 18, where
-                    # the value is related to the distance away. 11 is ideal.
+                    # the value is related to the distance away. -11 is ideal.
                 
                     self.target_angle = offset
-                    self.target_height = -(distance*3)+30
+                    self.target_height = -(-(distance*3)+30)
                 
             self.target_present = target_present
             self.last_cam_update = now
