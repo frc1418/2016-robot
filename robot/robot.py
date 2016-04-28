@@ -150,7 +150,6 @@ class MyRobot(magicbot.MagicRobot):
         if self.joystick1.getRawButton(7): #or self.sd.getValue('ladderButtonPressed'):
             self.winch.deploy_winch()
         if self.joystick1.getRawButton(8):
-            self.killAutoActions()
             self.winch.winch()
         
         if self.joystick1.getRawButton(9):

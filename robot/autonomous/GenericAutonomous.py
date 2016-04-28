@@ -1,6 +1,7 @@
 from robotpy_ext.autonomous import state, timed_state, StatefulAutonomous
 from components import intake, drive
 import wpilib
+from magicbot.magic_tunable import tunable
 
 class LowBar(StatefulAutonomous):
     DEFAULT = False
@@ -32,40 +33,54 @@ class LowBar(StatefulAutonomous):
 class ChevalDeFrise(StatefulAutonomous):
     DEFAULT = False
     
+    '''This autonomous utilizes the ultrasonic sensor mounted on the front
+        of the robot to tell when we are ready to lower the arms'''
+    
     intake = intake.Arm
     drive = drive.Drive
-    def initialize(self):
-        self.register_sd_var("Drive_to_distance", 3)
+    
+    ultrasonic = wpilib.AnalogInput
+    
+    targetDistance = tunable(.13)
+    driveOnDistance = tunable(1)
+    driveOffDistance = tunable(4)
+    
+    def drive_to_cheval(self):
+        '''Drives forward toward the cheval'''
+        self.drive.move(.4, 0)
+        if self.ultrasonic.getVoltage() < self.targetDistance:
+            self.next_state('lower_arms')
     
     @state
-    def A1Start(self):
-        self.next_state('A1_drive_to')
+    def lower_arms(self, initial_call):
+        '''Lowers arms onto cheval'''
+        if initial_call:
+            self.intake.set_arm_bottom()
+        if self.intake.on_target():
+            self.next_state('drive_on')
     
-    @timed_state(duration = 2, next_state='A1_lower_arms')
-    def A1_drive_to(self, initial_call):
+    @state
+    def drive_on(self, initial_call):
+        '''Drives forward onto the cheval'''
         if initial_call:
             self.drive.reset_drive_encoders()
-        
-        if self.drive.drive_distance(self.Drive_to_distance*12):
-            self.next_state('A1_lower_arms')
-            
-    @timed_state(duration = 1.2, next_state='A1_drive_on')
-    def A1_lower_arms(self, initial_call):
-        self.intake.set_arm_bottom()
-        
-        if self.intake.on_target():
-            print('on target')
-            self.next_state('A1_drive_on')
-        
-    @timed_state(duration = 0.25, next_state='A1_drive_over')
-    def A1_drive_on(self, initial_call):
-        self.drive.move(0.7, 0)
-        
-    @timed_state(duration = 1.7, next_state='transition')
-    def A1_drive_over(self, initial_call):
+        if self.drive.drive_distance(self.driveOnDistance):
+            self.next_state('raise_arms')
+    
+    @state
+    def raise_arms(self, initial_call):
+        '''Raises arms to protect them when coming down'''
         self.intake.set_arm_top()
-        
-        self.drive.move(0.7, 0)
+        self.next_state('drive_off')
+    
+    @state
+    def drive_off(self, initial_call):
+        '''Drives off cheval'''
+        if initial_call:
+            self.drive.reset_drive_encoders()
+        if self.drive.drive_distance(self.driveOffDistance*12):
+            self.next_state('transition')
+            
         
 class Portcullis(StatefulAutonomous):
     DEFAULT = False

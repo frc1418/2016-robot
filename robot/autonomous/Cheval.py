@@ -10,6 +10,7 @@ class ChevalDeFrise(StatefulAutonomous):
     
     intake = intake.Arm
     drive = Drive.Drive
+    
     def initialize(self):
         self.register_sd_var("Drive_to_distance", 4.2)
         self.register_sd_var("Drive_on_distance", 1)
@@ -46,6 +47,7 @@ class ChevalDeFrise(StatefulAutonomous):
 class SonicCheval(StatefulAutonomous):
     MODE_NAME = "SonicCheval"
     DEFAULT = False
+    
     '''This autonomous utilizes the ultrasonic sensor mounted on the front
         of the robot to tell when we are ready to lower the arms'''
     
@@ -54,7 +56,7 @@ class SonicCheval(StatefulAutonomous):
     
     ultrasonic = wpilib.AnalogInput
     
-    targetDistance = tunable(.4)
+    targetDistance = tunable(.13)
     driveOnDistance = tunable(1)
     driveOffDistance = tunable(4)
     
