@@ -24,7 +24,6 @@ class ModularAutonomous(LowBar, ChevalDeFrise, Portcullis, Charge, Default):
     
     def initialize(self):
         LowBar.initialize(self)
-        ChevalDeFrise.initialize(self)
         Portcullis.initialize(self)
         
     @state(first=True)
@@ -94,7 +93,6 @@ class BallModularAutonomous(ModularAutonomous):
 
     def initialize(self):
         LowBar.initialize(self)
-        ChevalDeFrise.initialize(self)
         Portcullis.initialize(self)
         
         self.register_sd_var('Drive_Distance', -5)
