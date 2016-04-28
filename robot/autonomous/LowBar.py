@@ -92,11 +92,7 @@ class CameraLowBar(StatefulAutonomous):
     def drive_forward(self):
         self.intake.set_target_position(1000)
         if self.drive.drive_distance(self.Drive_Distance*12, max_speed=self.Max_Drive_Speed):
-            self.next_state('lower_arm2')
-       
-    @timed_state(duration=1, next_state='rotate')     
-    def lower_arm2(self):
-        self.intake.set_arm_bottom()
+            self.next_state('rotate')
     
     #@state
     #def find_tower(self, initial_call):
@@ -122,12 +118,21 @@ class CameraLowBar(StatefulAutonomous):
     #    self.drive.align_to_tower()
     #####   
     
-    @state
+    @timed_state(duration=4, next_state='emergency')
     def rotate(self, initial_call):
         if initial_call:
             self.drive.reset_gyro_angle()
             self.drive.enable_camera_tracking()
             
+        if self.drive.angle_rotation(self.RotateAngle):
+            self.next_state('test_camera')
+            
+    @timed_state(duration=1, next_state='rotate2')
+    def emergency(self):
+        self.drive.move(.4, .2)
+        
+    @state
+    def rotate2(self):
         if self.drive.angle_rotation(self.RotateAngle):
             self.next_state('test_camera')
     
