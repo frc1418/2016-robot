@@ -31,10 +31,7 @@ class LowBar(StatefulAutonomous):
         if self.drive.drive_distance(self.Drive_Distance*12, max_speed=self.Max_Drive_Speed):
             self.next_state('rotate')
     @state
-    def rotate(self, initial_call):
-        if initial_call:
-            self.drive.reset_gyro_angle()
-            
+    def rotate(self):
         self.intake.set_arm_top()
         
         if self.drive.angle_rotation(self.Rotate_Angle):
@@ -121,7 +118,6 @@ class CameraLowBar(StatefulAutonomous):
     @timed_state(duration=4, next_state='emergency')
     def rotate(self, initial_call):
         if initial_call:
-            self.drive.reset_gyro_angle()
             self.drive.enable_camera_tracking()
             
         if self.drive.angle_rotation(self.RotateAngle):
@@ -143,8 +139,6 @@ class CameraLowBar(StatefulAutonomous):
     
     @timed_state(duration=1, next_state='camera_drive')
     def rotate_to_align(self, initial_call):
-        if initial_call:
-            self.drive.reset_gyro_angle()
         
         if self.drive.align_to_tower():
             self.next_state('camera_drive')

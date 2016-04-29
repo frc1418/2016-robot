@@ -26,6 +26,7 @@ class Drive:
     
     target_angle = ntproperty('/components/autoaim/target_angle', 0)
     enable_camera = ntproperty('/camera/enabled', False)
+    align_angle_nt = ntproperty('/components/drive/align_angle', 0)
     
     
     def __init__(self):
@@ -167,6 +168,7 @@ class Drive:
     def disable_camera_tracking(self):
         self.enable_camera = False
         self.align_angle = None
+        self.align_angle_nt = 0
     
     def align_to_tower(self):
         #self.rotation = 0
@@ -177,7 +179,8 @@ class Drive:
     
     def _align_angle_updated(self, source, key, value, isNew):
         # store the absolute value that we need to go to
-        self.align_angle = value + self.return_gyro_angle() 
+        self.align_angle = value + self.return_gyro_angle()
+        self.align_angle_nt = self.align_angle
         
     def wall_goto(self):
         '''back up until we are 16 cm away from the wall. Fake PID will move us closer and further to the wall'''
