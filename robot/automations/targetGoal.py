@@ -15,40 +15,40 @@ class TargetGoal(StateMachine):
     targetHeight = ntproperty('/components/autoaim/target_height', 0)
     
     
-    idealHeight = tunable(-11)
-    heightThreshold = tunable(10)
+    idealHeight = tunable(-7)
+    heightThreshold = tunable(-7)
     
-    def on_enable(self):
-        self.atGoal = False
+    shoot = False
         
     def target(self):
-        if not self.drive.enable_camera:
+        self.engage()
+        self.shoot = False
+        
+    def target_shoot(self):
+        self.engage()
+        self.shoot = True
+    
+    @state(first=True)
+    def align(self, initial_call):
+        if initial_call:
             self.drive.enable_camera_tracking()
-        if self.present or self.atGoal:
-            self.engage()
-    
-    
-    @state(first = True)
-    def lower_arms(self):
-        self.intake.set_arm_middle()
-        if self.intake.get_position()>2000:
-            self.next_state('align')
-    
-    @state
-    def align(self):
-        if self.drive.align_to_tower():
+        
+        if self.drive.align_to_tower() and self.shoot:
             self.next_state('camera_assisted_drive')
             
     @state
     def camera_assisted_drive(self):
-        if self.targetHeight < self.heightThreshold:#> -12:
+        if self.targetHeight > self.heightThreshold:#> -12:
             self.drive.move(max(abs(self.idealHeight-self.targetHeight)/55, .5), 0)
-            #self.drive.align_to_tower()
+            self.drive.align_to_tower()
         else:
-            self.atGoal = True
             self.next_state('shoot')
     
     @state
     def shoot(self):
+        self.drive.align_to_tower()
         self.shootBall.shoot()
     
+    def done(self):
+        self.drive.disable_camera_tracking()
+        StateMachine.done(self)
