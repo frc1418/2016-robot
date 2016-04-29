@@ -27,6 +27,8 @@ class MyRobot(magicbot.MagicRobot):
     #auto_portcullis = portcullis.PortcullisLift
     
     enable_camera_logging = ntproperty('/camera/logging_enabled', True)
+    auto_aim_button = ntproperty('/SmartDashboard/Drive/autoAim', False, writeDefault=False)
+    
     def createObjects(self):
         
         # #INITIALIZE JOYSTICKS##
@@ -142,7 +144,8 @@ class MyRobot(magicbot.MagicRobot):
         if (self.lightButton.get() or lightButton) and self.turningOffState == 0:
             self.lightSwitch.switch()
             
-        if self.sd.getValue('Drive/autoAim', False):
+        #if self.sd.getValue('Drive/autoAim', False):
+        if self.joystick1.getRawButton(5) or self.auto_aim_button:
             self.targetGoal.target()    
         
         
