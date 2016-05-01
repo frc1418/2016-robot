@@ -81,7 +81,9 @@ class CameraLowBar(StatefulAutonomous):
         if self.intake.on_target(): 
             self.next_state('drive_under_bar')
     @state
-    def drive_under_bar(self):
+    def drive_under_bar(self, state_tm):
+        if state_tm > 1.5:
+            self.intake.set_target_position(1000)
         if self.drive.drive_distance(self.Drive_Bar_Distance*12, max_speed=self.Max_Drive_Speed):
             self.next_state('drive_forward')
     
@@ -167,14 +169,38 @@ class CameraLowBar(StatefulAutonomous):
     def lower_to_shoot(self):
         self.intake.set_arm_middle()
         
-        if self.intake.on_target():
+        if self.drive.align_to_tower() and self.intake.on_target():
             self.next_state('shoot')
         
     
     @timed_state(duration = 2, next_state='intakeBall')
     def shoot(self):
         self.intake.outtake()
+        
+    @timed_state(duration=2, next_state='unrotate')
+    def go_back(self, initial_call):
+        if initial_call:
+            self.drive.reset_drive_encoders()
+            
+        if self.drive.drive_distance(self.Ramp_Distance*-12, max_speed=self.Max_Drive_Speed):
+            self.next_state('unrotate')
+        
+    @state
+    def unrotate(self):
+        if self.drive.angle_rotation(0):
+            self.next_state('go_back_more')
+            
+    @state
+    def go_back_more(self,initial_call):
+        if initial_call:
+            self.drive.reset_drive_encoders()
+        if self.drive.drive_distance(self.Drive_Distance*-12, max_speed=self.Max_Drive_Speed):
+            self.next_state('end')
     
+    @state
+    def end(self):
+        pass
+
     @timed_state(duration = 2, next_state = 'shoot')
     def intakeBall(self):
         self.intake.intake()

@@ -94,6 +94,9 @@ class PhysicsEngine:
         rr_motor = -hal_data['CAN'][20]['value']/1023
         
         fwd, rcw = four_motor_drivetrain(lr_motor, rr_motor, lf_motor, rf_motor, speed=5)
+        if abs(fwd) > 0.1:
+            rcw += -(0.2*tm_diff)
+        
         self.controller.drive(fwd, rcw, tm_diff)
             
         # Simulate the camera approaching the tower

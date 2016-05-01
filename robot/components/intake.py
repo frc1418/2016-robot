@@ -28,7 +28,7 @@ class Arm:
         
         self.positions = [
             self.sd.getAutoUpdateValue('Arm/Bottom', 3000),
-            self.sd.getAutoUpdateValue('Arm/Middle', 2500),
+            self.sd.getAutoUpdateValue('Arm/Middle', 2300),
             self.sd.getAutoUpdateValue('Arm/Top', -20),
           ]
         self.position_threshold = self.sd.getAutoUpdateValue("Arm/On Target Threshold", 25)
@@ -262,7 +262,7 @@ class Arm:
             self.leftArm.set(0)
         
         if self.leftArm.isFwdLimitSwitchClosed():
-            self.leftArm.setPosition(3000)
+            self.leftArm.setPosition(3600)
             
         if self.leftArm.isRevLimitSwitchClosed():
             self.leftArm.setPosition(0)

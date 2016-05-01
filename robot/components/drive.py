@@ -34,7 +34,7 @@ class Drive:
         self.angle_P = self.sd.getAutoUpdateValue('Drive/Angle_P', .055)
         self.angle_I = self.sd.getAutoUpdateValue('Drive/Angle_I', 0)
         self.drive_constant = self.sd.getAutoUpdateValue('Drive/Drive_Constant', .0001)
-        self.rotate_max = self.sd.getAutoUpdateValue('Drive/Max Gyro Rotate Speed', .4)
+        self.rotate_max = self.sd.getAutoUpdateValue('Drive/Max Gyro Rotate Speed', .37)
         
         self.enabled = False
         self.align_angle = None
