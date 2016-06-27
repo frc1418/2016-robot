@@ -58,7 +58,7 @@ class TargetGoal(StateMachine):
 
     @state
     def shoot(self):
-        """Align to tower and fire ball.""""
+        """Align to tower and fire ball."""
         self.drive.align_to_tower()
         self.shootBall.shoot()
 
