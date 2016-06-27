@@ -5,6 +5,8 @@ This code was used to control Team 1418's robot in 2016, during the FIRST Strong
 
 The team had a historic season in 2016. They were part of the 1st place alliance at the Greater DC District competition at Battlefield High School, and then proceeded to lead the first place alliances at the Bethesda District competition and the Chesapeake Regional Championship. The team finished the stellar season by making it to quarterfinals at the World Championship in St. Louis.
 
+## Robot code features
+
 * Full pyfrc integration for testing & robot simulation
 * Unit tests over the robot code with 70% code coverage
 * Arcade drive system

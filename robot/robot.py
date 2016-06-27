@@ -16,6 +16,7 @@ from networktables.networktable import NetworkTable
 
 
 class MyRobot(magicbot.MagicRobot):
+    # Shorten a bunch of things
     targetGoal = targetGoal.TargetGoal
     shootBall = shootBall.ShootBall
     winch = winch.Winch
@@ -163,41 +164,56 @@ class MyRobot(magicbot.MagicRobot):
             self.intake.set_manual(1)
 
 
-        # Flashlight management
+        # Flashlight
         # Automatically turn flashlight off at the starting. It will only be made true if NT value is true.
         lightButton = False
-
-        guiButton = self.sd.getValue('LightBulb', False)
-        if guiButton != self.lastState:
-            self.lastState = guiButton
+        # Store whether flashlight button is pressed on dashboard
+        uiButton = self.sd.getValue('LightBulb', False)
+        # If the value has changed
+        if uiButton != self.lastState:
+            # Flashlight on
             lightButton = True
-
-        self.lastState = guiButton
-
+        # Update self.lastState to the new state
+        self.lastState = uiButton
+        # If light button on joystick or light button is pressed and turn-off state is 0
         if (self.lightButton.get() or lightButton) and self.turningOffState == 0:
+            # Turn on flashlight
             self.lightSwitch.switch()
-
+        # If joystick button 5 or UI autoaim button is pressed
         if self.joystick1.getRawButton(5) or self.auto_aim_button:
+            # Start targeting goal
             self.targetGoal.target()
 
 
-        ##WINCH##
-        if self.joystick1.getRawButton(7): #or self.sd.getValue('ladderButtonPressed'):
+        # Winch
+        # If joystick1 button 7 is pressed
+        if self.joystick1.getRawButton(7):
+            # Set off winch
             self.winch.deploy_winch()
+        # If joystick1 button 8 is pressed
         if self.joystick1.getRawButton(8):
+            # Reel in winch
             self.winch.winch()
 
-        if self.joystick1.getRawButton(9):
-            if self.drive.isTheRobotBackwards:
-                self.drive.move(.5, 0)
+        # If button 9 on joystick1 pressed and robot is backwards
+        if self.joystick1.getRawButton(9) and self.drive.isTheRobotBackwards:
+            # Move
+            self.drive.move(.5, 0)
 
-        # Debug stuff
+        # Testing angles in pit or when not in competition
+        # If Field Management System isn't attached
         if not self.ds.isFMSAttached():
+            # If button 10 on joystick1 is pressed
             if self.joystick1.getRawButton(10):
+                # Calibrate rotation angle to 35deg
                 self.drive.angle_rotation(35)
-            elif self.joystick1.getRawButton(9): #this could prove problematic if the robot is backwards
+            # If button 9 on joystick1 is pressed
+            elif self.joystick1.getRawButton(9): # Could be problematic if robot is backwards
+                # Calibrate robot rotation angle to 0
                 self.drive.angle_rotation(0)
+            # If button 10 on joystick2 is pressed
             elif self.joystick2.getRawButton(10):
+                # Activate vision things
                 self.drive.enable_camera_tracking()
                 self.drive.align_to_tower()
 

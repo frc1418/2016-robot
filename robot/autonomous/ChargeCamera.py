@@ -24,7 +24,7 @@ class ChargeCamera(StatefulAutonomous):
         if initial_call:
             self.drive.reset_drive_encoders()
 
-        if self.drive.drive_distance(self.Drive_Distance*12, max_speed=self.Max_Drive_Speed):
+        if self.drive.drive_distance(self.Drive_Distance * 12, max_speed = self.Max_Drive_Speed):
             self.next_state('rotate')
         else:
             self.drive.angle_rotation(0)

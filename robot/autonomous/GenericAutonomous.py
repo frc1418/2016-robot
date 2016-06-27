@@ -26,7 +26,6 @@ class LowBar(StatefulAutonomous):
 
     @state
     def drive_forward(self):
-        #self.intake.set_arm_middle()
         if self.drive.drive_distance(self.Drive_Distance*12):
             self.next_state('transition')
 
@@ -88,9 +87,9 @@ class Portcullis(StatefulAutonomous):
     intake = intake.Arm
     drive = drive.Drive
     def initialize(self):
-        self.register_sd_var("A0_Drive_Encoder_Distance", 4.90)
-        self.register_sd_var("A0_Arm_To_Position", 500)
-        self.register_sd_var("A0_DriveThru_Speed", 0.4)
+        self.register_sd_var('A0_Drive_Encoder_Distance', 4.90)
+        self.register_sd_var('A0_Arm_To_Position', 500)
+        self.register_sd_var('A0_DriveThru_Speed', 0.4)
 
     @state
     def A0Start(self):

@@ -32,7 +32,7 @@ class PhysicsEngine:
         self.last_cam_update = -10
 
 
-    """
+    '''
         Update pyfrc simulator
 
         Keyword arguments:
@@ -40,7 +40,7 @@ class PhysicsEngine:
         hal_data -- Data about motors and other components.
         now -- Current time in ms
         tm_diff -- Diff between current time and time when last checked
-    """
+    '''
     def update_sim(self, hal_data, now, tm_diff):
         # Simulate the arm
         try:

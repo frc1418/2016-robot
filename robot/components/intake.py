@@ -1,7 +1,7 @@
 import wpilib
 from networktables.networktable import NetworkTable
 import logging
-logger = logging.getLogger("arm")
+logger = logging.getLogger('arm')
 
 forward = 1
 reverse = -1
@@ -13,13 +13,11 @@ class ArmMode:
     AUTO = 2
 
 class Arm:
-
     leftArm = wpilib.CANTalon
     rightArm = wpilib.CANTalon
     leftBall = wpilib.Talon
 
     def __init__(self):
-
         self.isCalibrating = False
         self.isCalibrated = False
 
@@ -29,21 +27,20 @@ class Arm:
             self.sd.getAutoUpdateValue('Arm/Bottom', 3000),
             self.sd.getAutoUpdateValue('Arm/Middle', 2300),
             self.sd.getAutoUpdateValue('Arm/Top', -20),
-          ]
-        self.position_threshold = self.sd.getAutoUpdateValue("Arm/On Target Threshold", 25)
+        ]
+        self.position_threshold = self.sd.getAutoUpdateValue('Arm/On Target Threshold', 25)
         self.wanted_pid = (
             self.sd.getAutoUpdateValue('Arm/P', 2),
             self.sd.getAutoUpdateValue('Arm/I', 0),
             self.sd.getAutoUpdateValue('Arm/D', 0)
         )
 
-
         self.calibrate_timer = wpilib.Timer()
 
-    def on_enable (self):
-        """
+    def on_enable(self):
+        '''
         :type motor: wpilib.CANTalon()
-        """
+        '''
 
         self.target_position = None
         self.target_index = None
@@ -238,7 +235,7 @@ class Arm:
             if self.mode == ArmMode.MANUAL:
                 self.leftArm.changeControlMode(wpilib.CANTalon.ControlMode.PercentVbus)
             if self.mode != ArmMode.MANUAL and self.mode != ArmMode.AUTO:
-                raise ValueError("INVALID MODE")
+                raise ValueError('INVALID MODE')
 
             self.last_mode = self.mode
 
@@ -277,15 +274,14 @@ class Arm:
 
         self.manual_value = 0
 
-        self.update_sd("Arm")
+        self.update_sd('Arm')
 
-        #print(self.leftArm.getOutputVoltage())
     def update_sd(self, name):
         '''Puts refreshed values to SmartDashboard'''
         self.sd.putValue('Arm/Manual Value', self.manual_value)
         self.sd.putValue('Arm/Encoder', self.leftArm.getEncPosition())
-        self.sd.putValue("Arm/Reverse Limit Switch", self.leftArm.isRevLimitSwitchClosed())
-        self.sd.putValue("Arm/Forward Limit Switch", self.leftArm.isFwdLimitSwitchClosed())
+        self.sd.putValue('Arm/Reverse Limit Switch', self.leftArm.isRevLimitSwitchClosed())
+        self.sd.putValue('Arm/Forward Limit Switch', self.leftArm.isFwdLimitSwitchClosed())
         self.sd.putValue('Arm/Calibrated', self.isCalibrated)
         self.sd.putValue('Arm/Position', self.leftArm.getAnalogInPosition())
         self.sd.putValue('Arm/Burnout', ArmMode.AUTO == ArmMode.MANUAL)
