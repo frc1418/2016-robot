@@ -1,4 +1,4 @@
-#Useful sensors 
+# Useful sensors
 |Sensor|Use|
 |------|---|
 |Distance|Tell when we pass the shields in the outer walls|
