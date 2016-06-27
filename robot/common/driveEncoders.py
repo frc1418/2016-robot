@@ -1,13 +1,13 @@
 import wpilib
 
 class DriveEncoders:
-    '''
+    """
         This class deals with the zeroing and reading
         from the encoders mounted on the drive motors
-    '''
+    """
 
     def __init__(self, motor, isReversed = False):
-        ''':type motor: wpilib.CANTalon()'''
+        """:type motor: wpilib.CANTalon()"""
 
         self.motor = motor
         if(isReversed):

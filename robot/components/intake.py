@@ -38,9 +38,9 @@ class Arm:
         self.calibrate_timer = wpilib.Timer()
 
     def on_enable(self):
-        '''
+        """
         :type motor: wpilib.CANTalon()
-        '''
+        """
 
         self.target_position = None
         self.target_index = None
@@ -79,24 +79,24 @@ class Arm:
         return self.limit.get()
 
     def get_position(self):
-        '''
+        """
         :returns: Tote lift encoder position
         :rtype: int
-        '''
+        """
         return self.leftArm.getEncPosition()
     def get_target_position(self):
         return self.target_position
 
     def set_manual(self, value):
-        '''
+        """
             :param value: Motor value between -1 and 1
-        '''
+        """
         self.want_manual = True
         self.manual_value = max(min(value, 1), -1)
 
 
     def _detect_position_index(self, offset, pos_idx):
-        '''Returns the current position index'''
+        """Returns the current position index"""
 
         if self.mode == ArmMode.AUTO:
             return self.target_index
@@ -115,7 +115,7 @@ class Arm:
         return (len(self.positions) - 1) + pos_idx
 
     def raise_arm(self):
-        '''Raises the arm by one position'''
+        """Raises the arm by one position"""
         target_index = self._detect_position_index(30, -1)
         if target_index == -1:
             target_index = 0
@@ -132,7 +132,7 @@ class Arm:
 
 
     def lower_arm(self):
-        '''Lowers the arm by one position'''
+        """Lowers the arm by one position"""
 
         target_index = self._detect_position_index(-30, 0)
 
@@ -147,7 +147,7 @@ class Arm:
         self._set_position(index)
 
     def _set_position(self, index):
-        '''Sets position to index of positions list'''
+        """Sets position to index of positions list"""
         self.want_auto = True
         self.target_index = index
         self.target_position = self.positions[index].value
@@ -157,10 +157,10 @@ class Arm:
         self.target_position = position
 
     def on_target(self):
-        '''
+        """
         :returns:  Is the encoder at the set target
         :rtype: Bool
-        '''
+        """
         if abs(self.get_position()-self.target_position)< self.position_threshold.value:
             return True
         elif self.target_index == 0 and self.leftArm.isFwdLimitSwitchClosed():
@@ -171,7 +171,7 @@ class Arm:
         return False
 
     def overide_calibrate(self):
-        '''in case of calibration faliure, this can be called to ignore it.'''
+        """in case of calibration faliure, this can be called to ignore it."""
         self.leftArm.set(0)
         self.leftArm.setSensorPosition(0)
 
@@ -180,7 +180,7 @@ class Arm:
 
 
     def _calibrate(self):
-        '''Moves the motor towards the limit switch to reset the encoder to 0'''
+        """Moves the motor towards the limit switch to reset the encoder to 0"""
         if not self.isCalibrated:
             if not self.isCalibrating:
                 self.calibrate_timer.start()
@@ -219,7 +219,7 @@ class Arm:
 
 
     def execute(self):
-        '''Actually does stuff'''
+        """Actually does stuff"""
         #self.rightArm.reverseOutput(self.rightArmReverse)
         if self.want_manual:
             self.mode = ArmMode.MANUAL
@@ -277,7 +277,7 @@ class Arm:
         self.update_sd('Arm')
 
     def update_sd(self, name):
-        '''Puts refreshed values to SmartDashboard'''
+        """Puts refreshed values to SmartDashboard"""
         self.sd.putValue('Arm/Manual Value', self.manual_value)
         self.sd.putValue('Arm/Encoder', self.leftArm.getEncPosition())
         self.sd.putValue('Arm/Reverse Limit Switch', self.leftArm.isRevLimitSwitchClosed())

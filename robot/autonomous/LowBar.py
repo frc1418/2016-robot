@@ -149,7 +149,7 @@ class CameraLowBar(StatefulAutonomous):
             self.next_state('shoot')
 
 
-    @timed_state(duration = 2, next_state='intakeBall')
+    @timed_state(duration = 2, next_state='IntakeBall')
     def shoot(self):
         self.intake.outtake()
 
@@ -178,5 +178,5 @@ class CameraLowBar(StatefulAutonomous):
         pass
 
     @timed_state(duration = 2, next_state = 'shoot')
-    def intakeBall(self):
+    def IntakeBall(self):
         self.intake.intake()

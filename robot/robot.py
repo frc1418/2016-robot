@@ -28,7 +28,7 @@ class MyRobot(magicbot.MagicRobot):
     enable_camera_logging = ntproperty('/camera/logging_enabled', True)
     auto_aim_button = ntproperty('/SmartDashboard/Drive/autoAim', False, writeDefault = False)
 
-    '''Create basic components (motor controllers, joysticks, etc.)'''
+    """Create basic components (motor controllers, joysticks, etc.)"""
     def createObjects(self):
         # Joysticks
         self.joystick1 = wpilib.Joystick(0)
@@ -93,7 +93,7 @@ class MyRobot(magicbot.MagicRobot):
         self.lightButton = ButtonDebouncer(self.joystick1, 6)
 
     def autonomous(self):
-        '''Prepare for autonomous mode'''
+        """Prepare for autonomous mode"""
 
         # Reset Gyro to 0
         self.drive.reset_gyro_angle()
@@ -101,16 +101,16 @@ class MyRobot(magicbot.MagicRobot):
         magicbot.MagicRobot.autonomous(self)
 
     def disabledPeriodic(self):
-        '''Repeat periodically while robot is disabled. Usually emptied. Sometimes used to easily test sensors and other things.'''
+        """Repeat periodically while robot is disabled. Usually emptied. Sometimes used to easily test sensors and other things."""
         pass
 
     def disabledInit(self):
-        '''Do once right away when robot is disabled.'''
+        """Do once right away when robot is disabled."""
         self.enable_camera_logging = True
         self.drive.disable_camera_tracking()
 
     def teleopInit(self):
-        '''Do when teleoperated mode is started.'''
+        """Do when teleoperated mode is started."""
         self.drive.reset_drive_encoders()
         self.sd.putValue('startTheTimer', True)
         self.intake.target_position = None
@@ -120,7 +120,7 @@ class MyRobot(magicbot.MagicRobot):
         self.enable_camera_logging = False
 
     def teleopPeriodic(self):
-        '''Do periodically while robot is in teleoperated mode.'''
+        """Do periodically while robot is in teleoperated mode."""
 
         # Get the joystick values and move as much as they say.
         self.drive.move(-self.joystick1.getY(), self.joystick2.getX())
@@ -144,7 +144,7 @@ class MyRobot(magicbot.MagicRobot):
             # Automatically shoot ball
             self.shootBall.shoot()
 
-        '''There's two sets of arm buttons. The first automatically raises and lowers the arm the proper amount, whereas the second will let you manually raise and lower it more precise amounts.'''
+        """There's two sets of arm buttons. The first automatically raises and lowers the arm the proper amount, whereas the second will let you manually raise and lower it more precise amounts."""
         # If automatic arm raise button is pressed,
         if self.raiseButton.get():
             # Raise arm

@@ -48,8 +48,8 @@ class SonicCheval(StatefulAutonomous):
     MODE_NAME = 'SonicCheval'
     DEFAULT = False
 
-    '''This autonomous utilizes the ultrasonic sensor mounted on the front
-        of the robot to tell when we are ready to lower the arms'''
+    """This autonomous utilizes the ultrasonic sensor mounted on the front
+        of the robot to tell when we are ready to lower the arms"""
 
     intake = intake.Arm
     drive = Drive.Drive
@@ -62,14 +62,14 @@ class SonicCheval(StatefulAutonomous):
 
     @state(first = True)
     def drive_to_cheval(self):
-        '''Drives forward toward the cheval'''
+        """Drives forward toward the cheval"""
         self.drive.move(.4, 0)
         if self.ultrasonic.getVoltage() < self.targetDistance:
             self.next_state('lower_arms')
 
     @state
     def lower_arms(self, initial_call):
-        '''Lowers arms onto cheval'''
+        """Lowers arms onto cheval"""
         if initial_call:
             self.intake.set_arm_bottom()
         if self.intake.on_target():
@@ -77,7 +77,7 @@ class SonicCheval(StatefulAutonomous):
 
     @state
     def drive_on(self, initial_call):
-        '''Drives forward onto the cheval'''
+        """Drives forward onto the cheval"""
         if initial_call:
             self.drive.reset_drive_encoders()
         if self.drive.drive_distance(self.driveOnDistance):
@@ -85,13 +85,13 @@ class SonicCheval(StatefulAutonomous):
 
     @state
     def raise_arms(self, initial_call):
-        '''Raises arms to protect them when coming down'''
+        """Raises arms to protect them when coming down"""
         self.intake.set_arm_top()
         self.next_state('drive_off')
 
     @state
     def drive_off(self, initial_call):
-        '''Drives off cheval'''
+        """Drives off cheval"""
         if initial_call:
             self.drive.reset_drive_encoders()
         self.drive.drive_distance(self.driveOffDistance*12)

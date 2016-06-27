@@ -11,11 +11,11 @@ import math
 ENCODER_ROTATION = 1023
 WHEEL_DIAMETER = 7.639
 class Drive:
-    '''
+    """
         The sole interaction between the robot and its driving system
         occurs here. Anything that wants to drive the robot must go
         through this class.
-    '''
+    """
     robot_drive = wpilib.RobotDrive
     navX = navx.AHRS
     rf_encoder = driveEncoders.DriveEncoders
@@ -43,14 +43,14 @@ class Drive:
         self.align_print_timer.start()
 
     def on_enable(self):
-        '''
+        """
             Constructor.
 
             :param robotDrive: a `wpilib.RobotDrive` object
             :type rf_encoder: DriveEncoders()
             :type lf_encoder: DriveEncoders()
 
-        '''
+        """
 
         # Hack for one-time initialization because magicbot doesn't support it
         if not self.enabled:
@@ -75,51 +75,51 @@ class Drive:
     # conflicts.
 
     def move(self, y, rotation, squaredInputs=False):
-        '''
+        """
             Causes the robot to move
 
             :param x: The speed that the robot should drive in the X direction. 1 is right [-1.0..1.0]
             :param y: The speed that the robot should drive in the Y direction. -1 is forward. [-1.0..1.0]
             :param rotation:  The rate of rotation for the robot that is completely independent of the translation. 1 is rotate to the right [-1.0..1.0]
             :param squaredInputs: If True, the x and y values will be squared, allowing for more gradual speed.
-        '''
+        """
         self.y = max(min(y, 1), -1)
         self.rotation = max(min(1.0, rotation), -1)
         self.squaredInputs = squaredInputs
 
 
     def set_gyro_enabled(self, value):
-        '''
+        """
             Enables the gyro
             :param value: Whether or not the gyro is enabled
             :type value: Boolean
-        '''
+        """
         self.gyro_enabled = value
 
     def return_gyro_angle(self):
-        '''Returns the gyro angle'''
+        """Returns the gyro angle"""
         return self.navX.getYaw()
 
     def reset_gyro_angle(self):
-        '''Resets the gyro angle'''
+        """Resets the gyro angle"""
         self.navX.reset()
 
     def set_angle_constant(self, constant):
-        '''Sets the constant that is used to determine the robot turning speed'''
+        """Sets the constant that is used to determine the robot turning speed"""
         self.angle_constant = constant
 
     def reset_drive_encoders(self):
-        '''Resets drive encoders'''
+        """Resets drive encoders"""
         self.lf_encoder.zero()
         self.rf_encoder.zero()
 
 
     def return_drive_encoder_position(self):
-        ''':returns: Drive Encoder Position'''
+        """:returns: Drive Encoder Position"""
         return self.lf_encoder.get()
 
     def _get_inches_to_ticks(self, inches):
-        '''Converts inches to encoder ticks'''
+        """Converts inches to encoder ticks"""
 
         gear_ratio = 50 / 12
         target_position = (gear_ratio * ENCODER_ROTATION * inches) / (math.pi*WHEEL_DIAMETER)
@@ -140,14 +140,14 @@ class Drive:
 
 
     def angle_rotation(self, target_angle):
-        '''
+        """
             Adjusts the robot so that it points at a particular angle. Returns True
             if the robot is near the target angle, False otherwise
 
             :param target_angle: Angle to point at, in degrees
 
             :returns: True if near angle, False if gyro is not enabled or not within 1º of target
-        '''
+        """
         if not self.gyro_enabled:
             return False
 
@@ -182,7 +182,7 @@ class Drive:
         self.align_angle_nt = self.align_angle
 
     def wall_goto(self):
-        '''back up until we are 16 cm away from the wall. Fake PID will move us closer and further to the wall'''
+        """back up until we are 16 cm away from the wall. Fake PID will move us closer and further to the wall"""
         y = (self.back_sensor.getDistance() - 16.0)/35
         y = max(min(.6, y), -.6)
 
@@ -190,11 +190,11 @@ class Drive:
         return y
 
     def set_direction(self, direction):
-        '''Used to reverse direction'''
+        """Used to reverse direction"""
         self.isTheRobotBackwards = bool(direction)
 
     def switch_direction(self):
-        '''when called the robot will reverse front/back'''
+        """when called the robot will reverse front/back"""
         self.isTheRobotBackwards = not self.isTheRobotBackwards
 
     def halveRotation(self):
@@ -204,7 +204,7 @@ class Drive:
         self.halfRotation = 1
 
     def execute(self):
-        '''Actually makes the robot drive'''
+        """Actually makes the robot drive"""
         backwards = -1 if self.isTheRobotBackwards else 1
 
         if(self.winch.isExtended and self.isTheRobotBackwards):
