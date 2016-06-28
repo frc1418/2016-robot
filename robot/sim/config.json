@@ -1,86 +1,115 @@
 {
-  "pyfrc": {
-  
-  	"robot": {
-  	  "w": 3,
-  	  "h": 2,
-      "starting_x": 25, 
-      "starting_y": 25,
-      "starting_angle": 180
-  	},
-  
-    "analog": {
-    },
-    
-    "dio": {
-    },
-    
-    "pwm": {
-    "0":"Winch Motor",
-    "1": "Kicker Motor",
-    "9":"Intake"
-    },
-    
-    "CAN": {
-      "5": "Left Front",
-      "10": "Left Rear",
-      "15": "Right Front",
-      "20": "Right Rear",
-      "25": "Left Arm",
-      "30": "Right Arm"
-      
-    },
-    
-    "field": {
-      "w": 27,
-      "h": 27,
-      "px_per_ft": 10,
-      
-      "objects": [
-      	{ "color": "blue",
-      	  "points": [ [0, 0], [0, 4.5], [24, 4.5], [24, 0] ] },
-      	  
-      	{ "color": "black",
-      	  "points": [ [26.833, 0], [27.167, 0], [27.167, 27], [26.833, 27] ] },
-      	
-      	{ "color": "black",
-      	  "points": [ [25.666, 0], [25.833, 0], [25.833, 27], [25.666, 27] ] },
-      	  
-      	{ "color": "yellow",
-          "points": [ [20, 27], [20, 5], [16, 5], [16, 27] ] },
-          
-        { "color": "purple",
-      	  "points": [ [16, 22.6], [16, 18.2], [20, 18.2], [20, 22.6] ] }, 
-      	
-      	{ "color": "purple",
-      	  "points": [ [16, 13.8], [16, 9.4], [20, 9.4] , [20, 13.8] ] },
-      	
-      	{ "color": "red",
-      	  "points": [ [0, 10.5], [2, 10.5], [3.73, 11.5],  [5.73, 15], [5.73, 17], [3.73, 20.5], [2, 21.5], [0, 21.5] ] },
-      	  
-      	{ "color": "black", 
-      	  "points": [ [0, 14], [2, 15], [2, 17], [0, 18] ] }
-      ]
-    },
-    
-    "joysticks": {
-      "0": {
-      	"axes": {
-      	  "Y": "Left Side" 
-      	},
-      
-        "buttons": {
-        }
-      },
-      
-      "1": {
-        "axes": {
-      	  "Y": "Right Side" 
-      	},
-      
-        "buttons": {
-        }
-      }
-    }
-  }
+	"pyfrc": {
+		"robot": {
+			"w": 3,
+			"h": 2,
+			"starting_x": 25,
+			"starting_y": 25,
+			"starting_angle": 180
+		},
+		"analog": {},
+		"dio": {},
+		"pwm": {
+			"0": "Winch Motor",
+			"1": "Kicker Motor",
+			"9": "Intake"
+		},
+		"CAN": {
+			"5": "Left Front",
+			"10": "Left Rear",
+			"15": "Right Front",
+			"20": "Right Rear",
+			"25": "Left Arm",
+			"30": "Right Arm"
+
+		},
+		"field": {
+			"w": 27,
+			"h": 27,
+			"px_per_ft": 10,
+			"objects": [{
+				"color": "blue",
+				"points": [
+					[0, 0],
+					[0, 4.5],
+					[24, 4.5],
+					[24, 0]
+				]
+			}, {
+				"color": "black",
+				"points": [
+					[26.833, 0],
+					[27.167, 0],
+					[27.167, 27],
+					[26.833, 27]
+				]
+			}, {
+				"color": "black",
+				"points": [
+					[25.666, 0],
+					[25.833, 0],
+					[25.833, 27],
+					[25.666, 27]
+				]
+			}, {
+				"color": "yellow",
+				"points": [
+					[20, 27],
+					[20, 5],
+					[16, 5],
+					[16, 27]
+				]
+			}, {
+				"color": "purple",
+				"points": [
+					[16, 22.6],
+					[16, 18.2],
+					[20, 18.2],
+					[20, 22.6]
+				]
+			}, {
+				"color": "purple",
+				"points": [
+					[16, 13.8],
+					[16, 9.4],
+					[20, 9.4],
+					[20, 13.8]
+				]
+			}, {
+				"color": "red",
+				"points": [
+					[0, 10.5],
+					[2, 10.5],
+					[3.73, 11.5],
+					[5.73, 15],
+					[5.73, 17],
+					[3.73, 20.5],
+					[2, 21.5],
+					[0, 21.5]
+				]
+			}, {
+				"color": "black",
+				"points": [
+					[0, 14],
+					[2, 15],
+					[2, 17],
+					[0, 18]
+				]
+			}]
+		},
+		"joysticks": {
+			"0": {
+				"axes": {
+					"Y": "Left Side"
+				},
+				"buttons": {}
+			},
+			"1": {
+				"axes": {
+					"Y": "Right Side"
+				},
+				"buttons": {}
+			}
+		}
+	}
 }
