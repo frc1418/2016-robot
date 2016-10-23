@@ -24,8 +24,8 @@ class Arm:
         self.sd = NetworkTable.getTable('SmartDashboard')
 
         self.positions = [
-            self.sd.getAutoUpdateValue('Arm/Bottom', 3000),
-            self.sd.getAutoUpdateValue('Arm/Middle', 2300),
+            self.sd.getAutoUpdateValue('Arm/Bottom', 3600),
+            self.sd.getAutoUpdateValue('Arm/Middle', 2635),
             self.sd.getAutoUpdateValue('Arm/Top', -20),
         ]
         self.position_threshold = self.sd.getAutoUpdateValue('Arm/On Target Threshold', 25)
@@ -206,10 +206,10 @@ class Arm:
                 self.isCalibrating = False
 
     def intake(self):
-        self.leftBallSpeed = reverse
+        self.leftBallSpeed = forward
 
     def outtake(self):
-        self.leftBallSpeed = forward
+        self.leftBallSpeed = reverse
 
     def manualZero(self):
         self.leftArm.set(0)
@@ -258,7 +258,8 @@ class Arm:
             self.leftArm.set(0)
 
         if self.leftArm.isFwdLimitSwitchClosed():
-            self.leftArm.setPosition(3600)
+            self.leftArm.setPosition(2800)
+            #pass
 
         if self.leftArm.isRevLimitSwitchClosed():
             self.leftArm.setPosition(0)

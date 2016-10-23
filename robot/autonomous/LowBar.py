@@ -3,6 +3,31 @@ from components import intake, drive as Drive
 from networktables.util import ntproperty
 from networktables import NetworkTable
 
+class SimpleLowBar(StatefulAutonomous):
+    MODE_NAME='SimpleLowBar'
+    DEFAULT = False
+
+    intake = intake.Arm
+    drive = Drive.Drive
+    sd = NetworkTable
+    
+    def initialize(self):
+        self.register_sd_var('Rotate_Angle', 46)
+        self.register_sd_var('Max_Drive_Speed', .5)
+
+    @timed_state(duration = 1, next_state='drive_forward', first = True)
+    def lower_arm(self, initial_call):
+
+        self.drive.reset_drive_encoders()
+        self.intake.set_arm_bottom()
+
+        if self.intake.on_target():
+            self.next_state('drive_forward')
+
+    @timed_state(duration = 2)
+    def drive_forward(self):
+        self.drive.move(1,0)
+        
 class LowBar(StatefulAutonomous):
     MODE_NAME='LowBar'
     DEFAULT = False
